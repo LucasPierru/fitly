@@ -1,0 +1,10 @@
+{
+  "Common": {
+    "metaTitle": "Fitly",
+    "metaDescription": "Find experts in the real estate business",
+    "errors": {
+      "isRequired": "This field is required",
+      "invalidEmail": "This is not a valid e-mail"
+    }
+  }
+}
