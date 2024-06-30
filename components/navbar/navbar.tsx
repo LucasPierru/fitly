@@ -44,7 +44,7 @@ const Navbar = async ({ locale }: { locale: string }) => {
     <nav className="w-full flex justify-center border-b border-b-foreground/10 h-20">
       <div className="w-full mx-12 flex justify-between items-center p-3 text-sm">
         <Link href="/" className="font-semibold text-xl">
-          HealthTrack
+          FitLy
         </Link>
         <div className="hidden lg:flex gap-6">
           {links.map((link, index) => {

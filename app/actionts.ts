@@ -24,8 +24,8 @@ export const signUp = async (data: Inputs) => {
   });
 
   if (error) {
-    return redirect('/login?message=Could not authenticate user');
+    return redirect('/signup?message=Could not authenticate user');
   }
 
-  return redirect('/login?message=Check email to continue sign in process');
+  return redirect('/?message=Check email to continue sign in process');
 };

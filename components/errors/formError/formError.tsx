@@ -3,14 +3,10 @@ import { FieldError } from 'react-hook-form';
 
 const FormError = ({ error }: { error?: FieldError }) => {
   return (
-    error && (
-      <div className="flex gap-2 justify-end text-red-400">
-        <div className="w-6 h-6">
-          <ExclamationCircleIcon />
-        </div>
-        {error && error.message}
-      </div>
-    )
+    <div className="flex gap-2 justify-end text-red-400">
+      <div className="w-6 h-6">{error && <ExclamationCircleIcon />}</div>
+      {error && error.message}
+    </div>
   );
 };
 
