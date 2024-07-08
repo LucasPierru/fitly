@@ -32,9 +32,22 @@ export default function RootLayout({
       <body className="bg-background text-foreground overflow-hidden">
         <NextIntlClientProvider locale={locale} messages={messages}>
           <Navbar locale={locale} />
-          <main className="overflow-y-auto max-h-[var(--page-size)] flex flex-col items-center scrollbar scrollbar-smooth">
-            {children}
-          </main>
+          <div className="overflow-y-auto max-h-[var(--page-size)] scrollbar scrollbar-smooth">
+            <main className="flex flex-col items-center">{children}</main>
+            <footer className="w-full border-t border-t-foreground/10 p-8 flex justify-center text-center text-xs">
+              <p>
+                Powered by{' '}
+                <a
+                  href="https://supabase.com/?utm_source=create-next-app&utm_medium=template&utm_term=nextjs"
+                  target="_blank"
+                  className="font-bold hover:underline"
+                  rel="noreferrer"
+                >
+                  Supabase
+                </a>
+              </p>
+            </footer>
+          </div>
         </NextIntlClientProvider>
       </body>
     </html>
