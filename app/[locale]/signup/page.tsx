@@ -1,4 +1,4 @@
-import SignUpForm from '@/components/forms/signUpForm';
+import SignUpForm from '@/components/forms/signUpForm/signUpForm';
 
 export default function SignUpPage({
   searchParams

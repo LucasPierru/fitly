@@ -6,8 +6,8 @@ import { useForm, SubmitHandler, FieldError } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import FormError from '@/components/errors/formError/formError';
-import { signUp } from '@/app/actionts';
-import RadioButton from './radioButton/radioButton';
+import { signUp } from '@/app/actions';
+import RadioButton from '../radioButton/radioButton';
 import { HowActive, Sex, Goal } from '@/types/users';
 
 const SignUpForm = () => {

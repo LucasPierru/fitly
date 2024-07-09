@@ -5,6 +5,22 @@ import { redirect } from 'next/navigation';
 import { createClient } from '@/utils/supabase/server';
 import { User } from '@/types/users';
 
+export const signIn = async (data: { email: string; password: string }) => {
+  const { email, password } = data;
+  const supabase = createClient();
+
+  const { error } = await supabase.auth.signInWithPassword({
+    email,
+    password
+  });
+
+  if (error) {
+    return redirect('/login?message=Could not authenticate user');
+  }
+
+  return redirect('/');
+};
+
 export const signUp = async (data: User) => {
   const {
     email,
@@ -56,5 +72,15 @@ export const signUp = async (data: User) => {
     return redirect('/?message=Check email to continue sign in process');
   } catch (error) {
     return redirect('/signup?message=Could not authenticate user');
+  }
+};
+
+export const signOut = async () => {
+  try {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    return redirect('/');
+  } catch (error) {
+    return redirect('/?message=Could not logout');
   }
 };

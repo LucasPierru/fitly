@@ -1,6 +1,8 @@
 import { Key } from 'react';
 import Link from 'next/link';
 import { Link as NavLink, pathnames } from '@/navigation';
+import { createClient } from '@/utils/supabase/server';
+import { signOut } from '@/app/actions';
 
 type LinkProps = {
   name: string;
@@ -20,6 +22,12 @@ const Navbar = async ({ locale }: { locale: string }) => {
     .select('*')
     .eq('id', user?.id);
  */
+  const supabase = createClient();
+
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
+
   const newLocale = locale === 'en' ? 'fr' : 'en';
   const links: LinkProps[] = [
     {
@@ -58,12 +66,32 @@ const Navbar = async ({ locale }: { locale: string }) => {
               </NavLink>
             );
           })}
-          <NavLink href="/login" className="btn btn-primary text-foreground">
-            Log In
-          </NavLink>
-          <NavLink href="/signup" className="btn btn-secondary text-foreground">
-            Sign Up
-          </NavLink>
+          {user ? (
+            <form action={signOut}>
+              <button
+                className="btn btn-secondary text-foreground"
+                type="submit"
+              >
+                Log out
+              </button>
+            </form>
+          ) : (
+            <>
+              <NavLink
+                href="/login"
+                className="btn btn-primary text-foreground"
+              >
+                Log In
+              </NavLink>
+              <NavLink
+                href="/signup"
+                className="btn btn-secondary text-foreground"
+              >
+                Sign Up
+              </NavLink>
+            </>
+          )}
+
           <NavLink
             className="text-lg p-2 px-4 rounded-full font-semibold"
             href="/"
