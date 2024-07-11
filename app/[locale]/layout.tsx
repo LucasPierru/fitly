@@ -11,7 +11,7 @@ const defaultUrl = process.env.VERCEL_URL
 export const metadata = {
   metadataBase: new URL(defaultUrl),
   title: 'Fitly',
-  description: 'The fastest way to build apps with Next.js and Supabase'
+  description: 'Achieve your fitness goals with our workout and meal'
 };
 
 const lexend = Lexend({

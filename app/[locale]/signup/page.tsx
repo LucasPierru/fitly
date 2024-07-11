@@ -1,5 +1,9 @@
 import SignUpForm from '@/components/forms/signUpForm/signUpForm';
 
+export const metadata = {
+  title: 'Fitly | Signup'
+};
+
 export default function SignUpPage({
   searchParams
 }: {

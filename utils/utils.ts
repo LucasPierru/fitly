@@ -14,3 +14,10 @@ export const formatPhoneNumber = (phoneNumber: string) => {
     return `${newPhoneNumber.slice(0, 3)}-${newPhoneNumber.slice(3)}`;
   return `${newPhoneNumber.slice(0, 3)}-${newPhoneNumber.slice(3, 6)}-${newPhoneNumber.slice(6)}`;
 };
+
+export const capitalizeWord = (word: string) => {
+  const firstLetter = word.charAt(0).toUpperCase();
+  const remainingLetters = word.substring(1);
+
+  return firstLetter + remainingLetters;
+};
