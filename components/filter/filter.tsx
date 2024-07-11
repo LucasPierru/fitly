@@ -2,15 +2,17 @@
 
 import { Key, useState } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
+import { Link, usePathname } from '@/navigation';
+import { capitalizeWord } from '@/utils/utils';
 
 type FilterProps = {
   selectedFilter: string;
   filters: string[];
-  selectFilter: (filter: string) => void;
 };
 
-const Filter = ({ selectedFilter, filters, selectFilter }: FilterProps) => {
+const Filter = ({ selectedFilter, filters }: FilterProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
 
   return (
     <button
@@ -23,19 +25,16 @@ const Filter = ({ selectedFilter, filters, selectFilter }: FilterProps) => {
       <span>{selectedFilter}</span>
       <ChevronDownIcon className="w-6 h-6" />
       {isOpen && (
-        <div className="absolute flex flex-col bg-secondary top-10 pt-1 pb-3 left-0 w-full rounded-b-2xl gap-0">
+        <div className="absolute flex flex-col bg-secondary top-10 pt-1 pb-3 left-0 w-full rounded-b-2xl gap-0 z-20">
           {filters.map((filter, index) => {
             return (
-              <button
+              <Link
                 key={index as Key}
-                type="button"
-                className="text-left px-4 py-1  hover:bg-primary"
-                onClick={() => {
-                  selectFilter(filter);
-                }}
+                href={{ pathname, query: { time: filter } }}
+                className="text-left px-4 py-1 hover:bg-primary"
               >
-                {filter}
-              </button>
+                {capitalizeWord(filter)}
+              </Link>
             );
           })}
         </div>
