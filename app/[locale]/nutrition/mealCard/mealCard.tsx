@@ -16,7 +16,7 @@ const MealCard = ({
   imageUrl
 }: MealCardProps) => {
   return (
-    <div className="flex gap-4 justify-between">
+    <div className="flex gap-4 justify-between mb-4">
       <div className="relative rounded-2xl aspect-square w-24">
         <Image
           className="absolute object-cover rounded-2xl"

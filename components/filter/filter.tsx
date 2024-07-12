@@ -20,7 +20,7 @@ const Filter = ({ selectedFilter, filters }: FilterProps) => {
       onClick={() => {
         setIsOpen((previousState) => !previousState);
       }}
-      className={`flex relative gap-2 bg-secondary w-fit px-4 py-2 ${isOpen ? 'rounded-t-2xl' : 'rounded-2xl'}`}
+      className={`flex justify-between relative gap-2 bg-secondary min-w-36 px-4 py-2 ${isOpen ? 'rounded-t-2xl' : 'rounded-2xl'}`}
     >
       <span>{selectedFilter}</span>
       <ChevronDownIcon className="w-6 h-6" />

@@ -1,4 +1,4 @@
-import SignInForm from '@/components/forms/signInForm.tsx/signInForm';
+import SignInForm from '@/components/forms/signInForm/signInForm';
 
 export const metadata = {
   title: 'Fitly | Login'
