@@ -6,6 +6,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { MinusIcon, PlusIcon } from '@heroicons/react/24/outline';
 import FormInput from '@/components/inputs/formInput';
+import FormTextArea from '@/components/inputs/formTextArea';
 
 const AddMealForm = () => {
   const defaultValues = {
@@ -51,6 +52,27 @@ const AddMealForm = () => {
       className="flex flex-col gap-4 min-w-full mt-4"
       onSubmit={handleSubmit(onSubmit)}
     >
+      <FormInput
+        id="title"
+        error={errors.title}
+        {...register('title', {
+          required: true
+        })}
+        type="text"
+        placeholder="E.g. Chicken Salad"
+      >
+        Name
+      </FormInput>
+      <FormTextArea
+        id="description"
+        error={errors.description}
+        {...register('description', {
+          required: true
+        })}
+        placeholder="E.g. Lettuce with chicken breast and caesar dressing"
+      >
+        Description
+      </FormTextArea>
       {fields.map((field, index) => (
         <div key={field.id} className="flex items-center gap-4">
           <FormInput
@@ -73,7 +95,7 @@ const AddMealForm = () => {
           >
             Quantity
           </FormInput>
-          {index > 0 && (
+          {(index > 0 || fields.length > 1) && (
             <button
               type="button"
               className="btn btn-secondary"
@@ -85,19 +107,19 @@ const AddMealForm = () => {
               Remove
             </button>
           )}
-          <button
-            type="button"
-            className="btn btn-secondary"
-            onClick={() => {
-              append({ ingredient: '', quantity: 0 });
-            }}
-          >
-            <PlusIcon className="w-6 h-6" />
-            Add ingredient
-          </button>
         </div>
       ))}
-      <button type="submit">Submit</button>
+      <button
+        type="button"
+        className="btn btn-secondary"
+        onClick={() => {
+          append({ ingredient: '', quantity: 0 });
+        }}
+      >
+        <PlusIcon className="w-6 h-6" />
+        Add ingredient
+      </button>
+      <button type="submit">Add meal</button>
     </form>
   );
 };

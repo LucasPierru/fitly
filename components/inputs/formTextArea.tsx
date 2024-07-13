@@ -1,32 +1,30 @@
 import {
   ForwardedRef,
-  InputHTMLAttributes,
+  TextareaHTMLAttributes,
   ReactNode,
   forwardRef
 } from 'react';
 import { FieldError } from 'react-hook-form';
 import FormError from '../errors/formError/formError';
 
-type FormInputProps = {
+type FormTextAreaProps = {
   id: string;
   children: ReactNode;
   error?: FieldError;
-  type: string;
-} & InputHTMLAttributes<HTMLInputElement>;
+} & TextareaHTMLAttributes<HTMLTextAreaElement>;
 
-const FormInput = forwardRef(
+const FormTextArea = forwardRef(
   (
-    { id, children, error, type, ...otherProps }: FormInputProps,
-    ref: ForwardedRef<HTMLInputElement>
+    { id, children, error, ...otherProps }: FormTextAreaProps,
+    ref: ForwardedRef<HTMLTextAreaElement>
   ) => {
     return (
       <label htmlFor={id} className="w-full">
         {children}
-        <input
+        <textarea
           id={id}
-          type={type}
-          className="input bg-secondary text-white placeholder:text-white w-full focus:outline-0 mt-2"
           ref={ref}
+          className="textarea resize-none text-base bg-secondary text-white placeholder:text-white w-full focus:outline-0 mt-2"
           {...otherProps}
         />
         <FormError error={error} />
@@ -35,6 +33,6 @@ const FormInput = forwardRef(
   }
 );
 
-FormInput.displayName = 'FormInput';
+FormTextArea.displayName = 'FormInput';
 
-export default FormInput;
+export default FormTextArea;
