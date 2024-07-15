@@ -2,7 +2,7 @@ import { Key } from 'react';
 import Link from 'next/link';
 import { Link as NavLink, pathnames } from '@/navigation';
 import { createClient } from '@/utils/supabase/server';
-import { signOut } from '@/app/actions';
+import { signOut } from '@/actions/auth';
 
 type LinkProps = {
   name: string;

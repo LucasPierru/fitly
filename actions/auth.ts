@@ -84,3 +84,18 @@ export const signOut = async () => {
     return redirect('/?message=Could not logout');
   }
 };
+
+export const searchIngredients = async (query: string) => {
+  try {
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from('foods')
+      .select()
+      .limit(5)
+      .ilike('name', `%${query}%`);
+    if (error) throw error;
+    return data;
+  } catch (error) {
+    return null;
+  }
+};

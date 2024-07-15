@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, ChangeEvent } from 'react';
 import { useTranslations } from 'next-intl';
 import { useForm, SubmitHandler, useFieldArray } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -7,12 +8,15 @@ import * as yup from 'yup';
 import { MinusIcon, PlusIcon } from '@heroicons/react/24/outline';
 import FormInput from '@/components/inputs/formInput';
 import FormTextArea from '@/components/inputs/formTextArea';
+import { ingredientSearchAutocomplete } from '@/actions/food';
+import type { FoodInformation } from '@/types/foods';
 
 const AddMealForm = () => {
   const defaultValues = {
     ingredients: [{ ingredient: '', quantity: 0 }]
   };
   const t = useTranslations('Common');
+  const [ingredients, setIngredients] = useState<FoodInformation[]>([]);
 
   const schema = yup.object({
     title: yup.string().required(t('errors.isRequired')),
@@ -45,6 +49,17 @@ const AddMealForm = () => {
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     console.log({ data });
     reset();
+  };
+
+  const onChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    if (event.target.value.length > 3) {
+      const data = await ingredientSearchAutocomplete(event.target.value);
+      if (data) {
+        setIngredients(data);
+      }
+    } else if (event.target.value.length <= 3 && ingredients.length !== 0) {
+      setIngredients([]);
+    }
   };
 
   return (
@@ -82,6 +97,7 @@ const AddMealForm = () => {
               required: true
             })}
             type="text"
+            onChange={onChange}
           >
             Ingredient
           </FormInput>
