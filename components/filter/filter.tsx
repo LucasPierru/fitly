@@ -2,7 +2,7 @@
 
 import { Key, useState } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
-import { Link, usePathname } from '@/navigation';
+import { Link, AppPathname, usePathname } from '@/navigation';
 import { capitalizeWord } from '@/utils/utils';
 
 type FilterProps = {
@@ -30,7 +30,12 @@ const Filter = ({ selectedFilter, filters }: FilterProps) => {
             return (
               <Link
                 key={index as Key}
-                href={{ pathname, query: { time: filter } }}
+                href={
+                  { pathname, query: { time: filter } } as {
+                    pathname: AppPathname;
+                    query: { time: string };
+                  }
+                }
                 className="text-left px-4 py-1 hover:bg-primary"
               >
                 {capitalizeWord(filter)}

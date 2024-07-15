@@ -14,6 +14,7 @@ export const pathnames = {
   '/nutrition': '/nutrition',
   '/nutrition/add-meal': '/nutrition/add-meal',
   '/nutrition/edit-meal/[id]': '/nutrition/edit-meal/[id]',
+  '/nutrition/meal-plan/[id]': '/nutrition/meal-plan/[id]',
   '/community': '/community'
 } satisfies Pathnames<typeof locales>;
 

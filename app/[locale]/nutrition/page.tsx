@@ -1,90 +1,72 @@
 import { PlusIcon } from '@heroicons/react/24/outline';
-import Filter from '@/components/filter/filter';
-import { capitalizeWord } from '@/utils/utils';
-import MealCard from './mealCard/mealCard';
 import { Link } from '@/navigation';
+import MealPlanCard from './mealPlanCard/mealPlanCard';
 
-export default function NutritionPage({
-  searchParams
-}: {
-  searchParams: { time: string };
-}) {
-  const filters = ['all', 'breakfast', 'lunch', 'dinner', 'snack'];
-  const defaultTimeFilter = 'all';
-  const { time } = searchParams;
-
-  const meals = [
+export default function NutritionPage() {
+  const mealPlans = [
     {
       id: '1',
-      title: 'Sweet and sour tofu',
-      description:
-        'Scrambled eggs with spinach and feta, tomato slices, coffee with almond milk',
-      ingredients: [
-        'eggs',
-        'spinach',
-        'feta',
-        'tomatoes',
-        'coffee',
-        'almond milk'
-      ],
+      title: 'Bulking plan',
+      description: 'High calories meals that hit daily protein intake',
       imageUrl: '/meals/sweet_sour_tofu.jpg',
-      time: 'lunch'
+      plan: {
+        recipes: 1,
+        meals: 5,
+        snacks: 3
+      }
     },
     {
       id: '2',
-      title: 'Honey garlic chicken',
+      title: 'Cutting meal plan',
       description:
-        'Scrambled eggs with spinach and feta, tomato slices, coffee with almond milk',
-      ingredients: ['chicken', 'honey', 'garlic'],
+        'Healthy meals for a daily calorie deficit while still hitting the protein intake',
       imageUrl: '/meals/honey_garlic_chicken.jpg',
-      time: 'dinner'
+      plan: {
+        recipes: 1,
+        meals: 5,
+        snacks: 3
+      }
     },
     {
       id: '3',
-      title: 'French toasts',
-      description:
-        'Scrambled eggs with spinach and feta, tomato slices, coffee with almond milk',
-      ingredients: ['bread', 'milk', 'eggs', 'sugar', 'maple syrup'],
+      title: "Kids' meal plan",
+      description: 'Meal preparation for the kids',
       imageUrl: '/meals/french_toast.jpg',
-      time: 'breakfast'
+      plan: {
+        recipes: 1,
+        meals: 5,
+        snacks: 3
+      }
     }
   ];
 
-  const getMeals = () => {
-    if (!time || time === 'all') {
-      return meals;
-    }
-    return meals.filter((meal) => meal.time === time);
+  const getMealPlans = () => {
+    return mealPlans;
   };
 
-  const filteredMeals = getMeals();
+  const filteredMeals = getMealPlans();
 
   return (
     <div className="flex-1 flex flex-col max-w-screen-xl w-full px-8 justify-center gap-2 py-8">
-      <h1 className="text-3xl text-bold">Setup your meals</h1>
-      <div className="flex gap-2 mb-4">
-        <Filter
-          selectedFilter={
-            time ? capitalizeWord(time) : capitalizeWord(defaultTimeFilter)
-          }
-          filters={filters}
-        />
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl text-bold">Setup your meal plans</h1>
         <Link
           href="/nutrition/add-meal"
           className="flex gap-2 bg-secondary w-fit px-4 py-2 rounded-2xl"
         >
           <PlusIcon className="w-6 h-6" />
-          Add meal
+          Create Meal Plan
         </Link>
       </div>
       <div>
         {filteredMeals.map((meal) => (
-          <MealCard
+          <MealPlanCard
             key={meal.id}
+            id={meal.id}
             title={meal.title}
-            ingredients={capitalizeWord(meal.ingredients.join(', '))}
             description={meal.description}
             imageUrl={meal.imageUrl}
+            plan={meal.plan}
           />
         ))}
       </div>
