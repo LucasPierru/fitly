@@ -1,4 +1,4 @@
-export default function AddMealPage({ params }: { params: { id: string } }) {
+export default function EditMealPage({ params }: { params: { id: string } }) {
   const { id } = params;
 
   return (

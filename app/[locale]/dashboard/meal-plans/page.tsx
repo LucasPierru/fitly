@@ -2,7 +2,7 @@ import { PlusIcon } from '@heroicons/react/24/outline';
 import { Link } from '@/navigation';
 import MealPlanCard from './mealPlanCard/mealPlanCard';
 
-export default function NutritionPage() {
+export default function MealPlansPage() {
   const mealPlans = [
     {
       id: '1',

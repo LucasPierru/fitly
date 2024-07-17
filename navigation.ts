@@ -12,9 +12,17 @@ export const pathnames = {
   '/signup': '/signup',
   '/workouts': '/workouts',
   '/nutrition': '/nutrition',
-  '/nutrition/add-meal': '/nutrition/add-meal',
-  '/nutrition/edit-meal/[id]': '/nutrition/edit-meal/[id]',
-  '/nutrition/meal-plan/[id]': '/nutrition/meal-plan/[id]',
+  '/nutrition/recipes': '/nutrition/recipes',
+  '/nutrition/recipes/[id]': '/nutrition/recipes/[id]',
+  '/nutrition/products': '/nutrition/products',
+  '/nutrition/products/[id]': '/nutrition/products/[id]',
+  '/dashboard': '/dashboard',
+  '/dashboard/meal-plans': '/dashboard/meal-plans',
+  '/dashboard/meal-plans/create': '/dashboard/meal-plans/create',
+  '/dashboard/meal-plans/[id]': '/dashboard/meal-plans/[id]',
+  '/dashboard/meals': '/dashboard/meals',
+  '/dashboard/meals/create': '/dashboard/meals/create',
+  '/dashboard/meals/[id]': '/dashboard/meals/[id]',
   '/community': '/community'
 } satisfies Pathnames<typeof locales>;
 

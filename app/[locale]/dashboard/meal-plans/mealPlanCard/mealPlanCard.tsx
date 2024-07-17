@@ -43,7 +43,7 @@ const MealCard = ({
       <DropdownButton>
         <Link
           className="text-left"
-          href={{ pathname: '/nutrition/meal-plan/[id]', params: { id } }}
+          href={{ pathname: '/dashboard/meal-plans/[id]', params: { id } }}
         >
           Edit
         </Link>

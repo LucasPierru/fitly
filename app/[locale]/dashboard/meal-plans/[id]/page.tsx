@@ -4,7 +4,7 @@ import DayFilters from '@/components/filter/dayFilters/dayFilters';
 import MealCard from '../../mealCard/mealCard';
 import { capitalizeWord } from '@/utils/utils';
 
-export default function MealPlanPage({
+export default function EditMealPlanPage({
   params,
   searchParams
 }: {
@@ -13,8 +13,9 @@ export default function MealPlanPage({
 }) {
   const { id } = params;
   const { day } = searchParams;
+  const mealTimes = ['breakfast', 'lunch', 'dinner', 'snack'];
 
-  const meals = [
+  const mealsMock = [
     {
       id: '1',
       title: 'Sweet and sour tofu',
@@ -52,7 +53,11 @@ export default function MealPlanPage({
   ];
 
   const getMealPlans = () => {
-    return meals;
+    return mealsMock;
+  };
+
+  const getTimeMeals = (meals: typeof mealsMock, time: string) => {
+    return meals.filter((meal) => meal.time === time);
   };
 
   const filteredMeals = getMealPlans();
@@ -69,18 +74,29 @@ export default function MealPlanPage({
           Add Meal
         </Link>
       </div>
-      <DayFilters currentDay={day} />
-      <div className="mt-4">
-        <span>Breakfast</span>
-        {filteredMeals.map((meal) => {
+      <DayFilters id={id} currentDay={day} />
+      <div className="mt-4 px-4">
+        {mealTimes.map((mealTime) => {
+          const meals = getTimeMeals(filteredMeals, mealTime);
           return (
-            <MealCard
-              key={meal.id}
-              title={meal.title}
-              ingredients={capitalizeWord(meal.ingredients.join(', '))}
-              description={meal.description}
-              imageUrl={meal.imageUrl}
-            />
+            meals.length > 0 && (
+              <div key={mealTime}>
+                <span className="block text-lg mb-2">
+                  {capitalizeWord(mealTime)}
+                </span>
+                {meals.map((meal) => {
+                  return (
+                    <MealCard
+                      key={meal.id}
+                      title={meal.title}
+                      ingredients={capitalizeWord(meal.ingredients.join(', '))}
+                      description={meal.description}
+                      imageUrl={meal.imageUrl}
+                    />
+                  );
+                })}
+              </div>
+            )
           );
         })}
       </div>

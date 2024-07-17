@@ -3,10 +3,11 @@
 import { Link, usePathname, AppPathname } from '@/navigation';
 
 type DayFiltersProps = {
+  id: string;
   currentDay: string;
 };
 
-const DayFilters = ({ currentDay }: DayFiltersProps) => {
+const DayFilters = ({ id, currentDay }: DayFiltersProps) => {
   const days = [
     {
       shortName: 'Mon',
@@ -54,7 +55,7 @@ const DayFilters = ({ currentDay }: DayFiltersProps) => {
           <Link
             key={day.query}
             href={
-              { pathname, params: { id: '1' }, query: { day: day.query } } as {
+              { pathname, params: { id }, query: { day: day.query } } as {
                 pathname: AppPathname;
                 params: { id: string };
                 query: { day: string };
