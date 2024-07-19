@@ -39,7 +39,7 @@ export const getRecipe = async (
 ): Promise<RecipeInformation | null> => {
   try {
     const res = await fetch(
-      `${BASE_URL}/recipes/${id}/information?apiKey=${process.env.NEXT_PUBLIC_SPOONACULAR_API_KEY}`
+      `${BASE_URL}/recipes/${id}/information?apiKey=${process.env.NEXT_PUBLIC_SPOONACULAR_API_KEY}&includeNutrition=true`
     );
     const data = await res.json();
     return data;
