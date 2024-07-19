@@ -2,8 +2,7 @@ import { Key } from 'react';
 import Image from 'next/image';
 import { getRecipe } from '@/actions/food';
 import Checkbox from '@/components/buttons/checkbox/checkbox';
-import { Flavonoid } from '@/types/foods';
-import { RecipeInformation } from '@/types/recipes';
+import DescriptionCard from '@/components/cards/descriptionCard/descriptionCard';
 
 export default async function RecipePage({
   params
@@ -26,29 +25,19 @@ export default async function RecipePage({
     'Cholesterol'
   ];
 
-  const findMacroAmount = (name: string, nutrients: Flavonoid[]) => {
-    const value =
-      nutrients.find((nutrient) => nutrient.name === name)?.amount || 0;
-    return value;
+  const convertMinutesToHoursAndMinutes = (minutes: number) => {
+    return {
+      hours: Math.floor(minutes / 60),
+      minutes: minutes % 60
+    };
   };
 
-  /* const getMacros = (currentRecipe: RecipeInformation) => {
-    const macros = currentRecipe.nutrition?.ingredients.reduce(
-      (acc, ingredient) => {
-        return {
-          kcal: acc.kcal + findMacroAmount('Calories', ingredient.nutrients),
-          protein:
-            acc.protein + findMacroAmount('Protein', ingredient.nutrients),
-          fat: acc.fat + findMacroAmount('Fat', ingredient.nutrients),
-          carbs:
-            acc.carbs + findMacroAmount('Carbohydrates', ingredient.nutrients)
-        };
-      },
-      { kcal: 0, protein: 0, fat: 0, carbs: 0 }
-    );
-    return macros;
+  const getHoursAndMinutesString = (mins: number) => {
+    const { hours, minutes } = convertMinutesToHoursAndMinutes(mins);
+
+    return `${hours ? `${hours}h ` : ''}${minutes ? `${minutes} mins` : ''}`;
   };
- */
+
   return (
     recipe && (
       <div className="flex-1 flex flex-col max-w-screen-xl w-full px-8 justify-center gap-8 py-8">
@@ -86,27 +75,60 @@ export default async function RecipePage({
         <div>
           <span className="block text-xl font-semibold mb-4">Instructions</span>
           <div className="flex flex-col gap-4">
-            {recipe.analyzedInstructions.map((instruction) => {
-              return instruction.steps.map((step) => (
-                <div key={step.number} className="flex gap-4 items-center">
-                  <div className="bg-secondary text-lg py-4 px-6 rounded-box">
-                    {step.number}
+            {recipe.analyzedInstructions.map(
+              (instruction, instructionIndex) => {
+                return (
+                  <div
+                    key={instructionIndex as Key}
+                    className="flex flex-col gap-4"
+                  >
+                    {instruction.name && <span>{instruction.name}</span>}
+                    {instruction.steps.map((step) => {
+                      // console.log(step.step.split('.'));
+                      return (
+                        <div
+                          key={`${instructionIndex}-${step.number}` as Key}
+                          className="flex gap-4 items-center"
+                        >
+                          <div className="bg-secondary text-lg py-4 px-6 rounded-box">
+                            {step.number}
+                          </div>
+                          <span>{step.step.replace('.', '. ')}</span>
+                        </div>
+                      );
+                    })}
                   </div>
-                  <span>{step.step}</span>
-                </div>
-              ));
-            })}
+                );
+              }
+            )}
           </div>
+        </div>
+        <div className="flex gap-4">
+          <DescriptionCard
+            title="Preparation time"
+            description={getHoursAndMinutesString(recipe.readyInMinutes)}
+          />
+          <DescriptionCard
+            title="Cost per serving"
+            description={`${Math.round(recipe.pricePerServing) / 100} $`}
+          />
+          <DescriptionCard
+            title="Servings"
+            description={recipe.servings.toString()}
+          />
         </div>
         <div>
           <span className="block text-xl font-semibold mb-4">
             Nutrition Facts
           </span>
           <div className="flex flex-col gap-4">
-            {recipe.nutrition.nutrients.map((nutrient, index) => {
+            {recipe.nutrition.nutrients.map((nutrient) => {
               return (
                 nutrientsList.includes(nutrient.name) && (
-                  <div key={index as Key} className="flex justify-between">
+                  <div
+                    key={nutrient.name as Key}
+                    className="flex justify-between"
+                  >
                     <span className="text-secondary-content">
                       {nutrient.name}
                     </span>
@@ -118,6 +140,26 @@ export default async function RecipePage({
               );
             })}
           </div>
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <span className="block text-xl font-semibold col-span-2">
+            Add this recipe to one of your plans
+          </span>
+          <select className="select bg-secondary text-white placeholder:text-white w-full focus:outline-0 text-base font-light">
+            <option value="1">Bulking Plan</option>
+          </select>
+          <select className="select bg-secondary text-white placeholder:text-white w-full focus:outline-0 text-base font-light">
+            <option value="breakfast">Breakfast</option>
+            <option value="lunch">Lunch</option>
+            <option value="dinner">Dinner</option>
+            <option value="snack">Snack</option>
+          </select>
+          <button
+            className="btn btn-primary text-foreground col-span-2"
+            type="button"
+          >
+            Add To My Meals
+          </button>
         </div>
       </div>
     )
