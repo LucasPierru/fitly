@@ -58,6 +58,11 @@ body {
   }
 }
 
+.menu li > *:not(ul):not(.menu-title):not(details):active {
+  @apply bg-secondary;
+  @apply text-white;
+}
+
 .animate-in {
   animation: animateIn 0.3s ease 0.15s both;
 }

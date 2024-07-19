@@ -5,6 +5,8 @@ const withNextIntl = require('next-intl/plugin')(
 
 /** @type {import('next').NextConfig} */
 
-const nextConfig = {};
+const nextConfig = {
+  images: { domains: ['img.spoonacular.com'] }
+};
 
 module.exports = withNextIntl(nextConfig);

@@ -1,6 +1,6 @@
 import { Key } from 'react';
 import Link from 'next/link';
-import { Link as NavLink, pathnames } from '@/navigation';
+import { Link as NavLink, pathnames, AppPathname } from '@/navigation';
 import { createClient } from '@/utils/supabase/server';
 import { signOut } from '@/actions/auth';
 
@@ -60,7 +60,7 @@ const Navbar = async ({ locale }: { locale: string }) => {
               <NavLink
                 key={index as Key}
                 className="text-lg p-2 px-4 rounded-full font-base"
-                href={link.path}
+                href={link.path as AppPathname}
               >
                 {link.name}
               </NavLink>
