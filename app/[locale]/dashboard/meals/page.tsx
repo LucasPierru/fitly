@@ -81,7 +81,7 @@ export default function MealsPage({
           })}
         </div>
         <Link
-          href="/dashboard/meal-plans/create"
+          href="/dashboard/meals/create"
           className="flex gap-2 bg-secondary w-fit px-4 py-2 rounded-2xl"
         >
           <PlusIcon className="w-6 h-6" />

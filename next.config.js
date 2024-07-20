@@ -6,7 +6,16 @@ const withNextIntl = require('next-intl/plugin')(
 /** @type {import('next').NextConfig} */
 
 const nextConfig = {
-  images: { domains: ['img.spoonacular.com'] }
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'img.spoonacular.com',
+        port: '',
+        pathname: '/'
+      }
+    ]
+  }
 };
 
 module.exports = withNextIntl(nextConfig);

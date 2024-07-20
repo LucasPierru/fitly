@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, ChangeEvent } from 'react';
+import { useState, ChangeEvent, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import { useForm, SubmitHandler, useFieldArray } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -8,15 +8,20 @@ import * as yup from 'yup';
 import { MinusIcon, PlusIcon } from '@heroicons/react/24/outline';
 import FormInput from '@/components/inputs/formInput';
 import FormTextArea from '@/components/inputs/formTextArea';
-import { ingredientSearchAutocomplete } from '@/actions/food';
 import type { FoodInformation } from '@/types/foods';
+import { capitalizeWord } from '@/utils/utils';
+import { getIngredientsAutocomplete } from '@/requests/food';
+import useOutsideClick from '@/hooks/useOutsideClick';
 
 const AddMealForm = () => {
   const defaultValues = {
     ingredients: [{ ingredient: '', quantity: 0 }]
   };
   const t = useTranslations('Common');
-  const [ingredients, setIngredients] = useState<FoodInformation[]>([]);
+  const [ingredients, setIngredients] = useState<
+    Record<string, FoodInformation[]>
+  >({});
+  const ref = useRef<HTMLDivElement>(null);
 
   const schema = yup.object({
     title: yup.string().required(t('errors.isRequired')),
@@ -51,16 +56,26 @@ const AddMealForm = () => {
     reset();
   };
 
-  const onChange = async (event: ChangeEvent<HTMLInputElement>) => {
+  const onChange = async (event: ChangeEvent<HTMLInputElement>, id: string) => {
     if (event.target.value.length > 3) {
-      const data = await ingredientSearchAutocomplete(event.target.value);
+      const data = await getIngredientsAutocomplete(event.target.value);
       if (data) {
-        setIngredients(data);
+        setIngredients((currentState) => ({ ...currentState, [id]: data }));
       }
-    } else if (event.target.value.length <= 3 && ingredients.length !== 0) {
-      setIngredients([]);
+    } else if (
+      event.target.value.length <= 3 &&
+      ingredients[id] &&
+      ingredients[id].length !== 0
+    ) {
+      setIngredients({});
     }
   };
+
+  const clickOutsideHandler = () => {
+    setIngredients({});
+  };
+
+  useOutsideClick(ref, clickOutsideHandler);
 
   return (
     <form
@@ -90,17 +105,28 @@ const AddMealForm = () => {
       </FormTextArea>
       {fields.map((field, index) => (
         <div key={field.id} className="flex items-center gap-4">
-          <FormInput
-            id={`ingredients.${index}.ingredient`}
-            error={errors.ingredients?.[0]?.ingredient}
-            {...register(`ingredients.${index}.ingredient`, {
-              required: true
-            })}
-            type="text"
-            onChange={onChange}
-          >
-            Ingredient
-          </FormInput>
+          <div className="relative w-full group" ref={ref}>
+            <FormInput
+              id={`ingredients.${index}.ingredient`}
+              error={errors.ingredients?.[0]?.ingredient}
+              {...register(`ingredients.${index}.ingredient`, {
+                required: true
+              })}
+              type="text"
+              onChange={(event) => {
+                onChange(event, field.id);
+              }}
+            >
+              Ingredient
+            </FormInput>
+            {ingredients[field.id] && ingredients[field.id].length > 0 && (
+              <div className="absolute top-16 mt-2 w-full gap-2 px-4 py-2 flex flex-col bg-secondary rounded-b-xl border border-secondary group-focus-within:border-b-white group-focus-within:border-x-white group-focus-within:text-red z-20">
+                {ingredients[field.id].map((ingredient) => {
+                  return <span>{capitalizeWord(ingredient.name)}</span>;
+                })}
+              </div>
+            )}
+          </div>
           <FormInput
             id={`ingredients.${index}.quantity`}
             error={errors.ingredients?.[0]?.quantity}
