@@ -1,7 +1,7 @@
 import { PlusIcon } from '@heroicons/react/24/outline';
 import { Link } from '@/navigation';
 import DayFilters from '@/components/filter/dayFilters/dayFilters';
-import MealCard from '../../mealCard/mealCard';
+import MealCard from '../../meals/mealCard/mealCard';
 import { capitalizeWord } from '@/utils/utils';
 
 export default function EditMealPlanPage({

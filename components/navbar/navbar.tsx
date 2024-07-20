@@ -35,6 +35,10 @@ const Navbar = async ({ locale }: { locale: string }) => {
       path: '/'
     },
     {
+      name: 'Dashboard',
+      path: '/dashboard'
+    },
+    {
       name: 'Workouts',
       path: '/workouts'
     },

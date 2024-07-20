@@ -16,7 +16,7 @@ type MealPlanCardProps = {
   plan: Plan;
 };
 
-const MealCard = ({
+const MealPlanCard = ({
   id,
   title,
   description,
@@ -55,4 +55,4 @@ const MealCard = ({
   );
 };
 
-export default MealCard;
+export default MealPlanCard;
