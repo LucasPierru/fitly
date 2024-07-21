@@ -1,5 +1,5 @@
 import { AxiosError, AxiosResponse } from 'axios';
-import { FoodInformation } from '@/types/foods';
+import { FoodInformation, FoodInformationDetails } from '@/types/foods';
 import { api } from './spoonacular';
 
 interface ApiError extends Error {
@@ -36,6 +36,19 @@ export const getIngredientsAutocomplete = async (
   try {
     const response: AxiosResponse<FoodInformation[]> = await api.get(
       `/food/ingredients/autocomplete?query=${query}&number=5&metaInformation=true&apiKey=${process.env.NEXT_PUBLIC_SPOONACULAR_API_KEY}`
+    );
+    return response.data;
+  } catch (error) {
+    throw createApiError(error as AxiosError);
+  }
+};
+
+export const getIngredientsInformation = async (
+  id: number
+): Promise<FoodInformationDetails[]> => {
+  try {
+    const response: AxiosResponse<FoodInformationDetails[]> = await api.get(
+      `/food/ingredients/${id}/information?apiKey=${process.env.NEXT_PUBLIC_SPOONACULAR_API_KEY}`
     );
     return response.data;
   } catch (error) {

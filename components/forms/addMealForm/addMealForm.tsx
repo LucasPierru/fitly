@@ -12,10 +12,16 @@ import type { FoodInformation } from '@/types/foods';
 import { capitalizeWord } from '@/utils/utils';
 import { getIngredientsAutocomplete } from '@/requests/food';
 import useOutsideClick from '@/hooks/useOutsideClick';
+import { createRecipe } from '@/actions/ingredients';
 
 const AddMealForm = () => {
+  const defaultIngredient = {
+    ingredient: { name: '', id: 0, possibleUnits: [] },
+    quantity: 0,
+    unit: ''
+  };
   const defaultValues = {
-    ingredients: [{ ingredient: '', quantity: 0 }]
+    ingredients: [defaultIngredient]
   };
   const t = useTranslations('Common');
   const [ingredients, setIngredients] = useState<
@@ -26,12 +32,22 @@ const AddMealForm = () => {
   const schema = yup.object({
     title: yup.string().required(t('errors.isRequired')),
     description: yup.string().required(t('errors.isRequired')),
-    ingredients: yup.array().of(
-      yup.object({
-        ingredient: yup.string().required(t('errors.isRequired')),
-        quantity: yup.number().required(t('errors.isRequired'))
-      })
-    )
+    ingredients: yup
+      .array()
+      .of(
+        yup.object({
+          ingredient: yup
+            .object({
+              name: yup.string().required(),
+              id: yup.number().required(),
+              possibleUnits: yup.array().of(yup.string().required()).required()
+            })
+            .required(t('errors.isRequired')),
+          quantity: yup.number().required(t('errors.isRequired')).min(1),
+          unit: yup.string().required()
+        })
+      )
+      .required()
   });
 
   type Inputs = yup.InferType<typeof schema>;
@@ -41,6 +57,8 @@ const AddMealForm = () => {
     register,
     handleSubmit,
     reset,
+    setValue,
+    watch,
     formState: { errors }
   } = useForm<Inputs>({ resolver: yupResolver(schema), defaultValues });
 
@@ -49,10 +67,8 @@ const AddMealForm = () => {
     name: 'ingredients' // unique name for your Field Array
   });
 
-  console.log({ errors, fields });
-
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    console.log({ data });
+    createRecipe(data);
     reset();
   };
 
@@ -69,6 +85,16 @@ const AddMealForm = () => {
     ) {
       setIngredients({});
     }
+  };
+
+  const onSelectIngredient = (index: number, ingredient: FoodInformation) => {
+    const { id, name, possibleUnits } = ingredient;
+    setValue(`ingredients.${index}.ingredient`, {
+      id,
+      name: capitalizeWord(name),
+      possibleUnits
+    });
+    setIngredients({});
   };
 
   const clickOutsideHandler = () => {
@@ -107,22 +133,34 @@ const AddMealForm = () => {
         <div key={field.id} className="flex items-center gap-4">
           <div className="relative w-full group" ref={ref}>
             <FormInput
-              id={`ingredients.${index}.ingredient`}
-              error={errors.ingredients?.[0]?.ingredient}
-              {...register(`ingredients.${index}.ingredient`, {
+              id={`ingredients.${index}.ingredient.name`}
+              error={errors.ingredients?.[index]?.ingredient?.name}
+              {...register(`ingredients.${index}.ingredient.name`, {
                 required: true
               })}
               type="text"
               onChange={(event) => {
                 onChange(event, field.id);
               }}
+              autoComplete="off"
             >
               Ingredient
             </FormInput>
             {ingredients[field.id] && ingredients[field.id].length > 0 && (
-              <div className="absolute top-16 mt-2 w-full gap-2 px-4 py-2 flex flex-col bg-secondary rounded-b-xl border border-secondary group-focus-within:border-b-white group-focus-within:border-x-white group-focus-within:text-red z-20">
+              <div className="absolute top-16 mt-2 w-full gap-2 px-2 py-2 flex flex-col bg-secondary rounded-b-xl border border-secondary group-focus-within:border-b-white group-focus-within:border-x-white group-focus-within:text-red z-20">
                 {ingredients[field.id].map((ingredient) => {
-                  return <span>{capitalizeWord(ingredient.name)}</span>;
+                  return (
+                    <button
+                      key={ingredient.id}
+                      type="button"
+                      className="btn btn-secondary btn-sm justify-start"
+                      onClick={() => {
+                        onSelectIngredient(index, ingredient);
+                      }}
+                    >
+                      {capitalizeWord(ingredient.name)}
+                    </button>
+                  );
                 })}
               </div>
             )}
@@ -137,6 +175,28 @@ const AddMealForm = () => {
           >
             Quantity
           </FormInput>
+          {watch(`ingredients.${index}.ingredient.possibleUnits`).length >
+            0 && (
+            <select
+              className="select bg-secondary text-white placeholder:text-white w-full focus:outline-0"
+              {...register(`ingredients.${index}.unit`, {
+                required: true
+              })}
+            >
+              <option hidden selected disabled value="">
+                Select an option
+              </option>
+              {watch(`ingredients.${index}.ingredient.possibleUnits`).map(
+                (unit) => {
+                  return (
+                    <option key={unit} value={unit}>
+                      {unit}
+                    </option>
+                  );
+                }
+              )}
+            </select>
+          )}
           {(index > 0 || fields.length > 1) && (
             <button
               type="button"
@@ -155,7 +215,7 @@ const AddMealForm = () => {
         type="button"
         className="btn btn-secondary"
         onClick={() => {
-          append({ ingredient: '', quantity: 0 });
+          append(defaultIngredient);
         }}
       >
         <PlusIcon className="w-6 h-6" />

@@ -1,6 +1,6 @@
 import { Key } from 'react';
 import Image from 'next/image';
-import { getRecipe } from '@/actions/food';
+import { getRecipe } from '@/actions/recipes';
 import Checkbox from '@/components/buttons/checkbox/checkbox';
 import DescriptionCard from '@/components/cards/descriptionCard/descriptionCard';
 

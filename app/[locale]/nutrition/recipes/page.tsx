@@ -1,4 +1,4 @@
-import { searchRecipes } from '@/actions/food';
+import { searchRecipes } from '@/actions/recipes';
 import RecipeCard from './recipeCard/recipeCard';
 import SearchInput from '@/components/inputs/searchInput/searchInput';
 
