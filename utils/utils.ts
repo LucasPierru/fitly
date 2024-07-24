@@ -21,3 +21,22 @@ export const capitalizeWord = (word: string) => {
 
   return firstLetter + remainingLetters;
 };
+
+export const getMacrosList = () => {
+  const macrosList = [
+    'Fiber',
+    'Fat',
+    'Sugar',
+    'Sodium',
+    'Iron',
+    'Cholesterol',
+    'Calories',
+    'Protein',
+    'Alcohol',
+    'Carbohydrates',
+    'Caffeine',
+    'Saturated Fat',
+    'Potassium'
+  ];
+  return macrosList;
+};
