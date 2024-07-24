@@ -40,3 +40,10 @@ export const getMacrosList = () => {
   ];
   return macrosList;
 };
+
+export const dropDuplicates = <T>(array: Array<T>)=> {
+  const uniqueArray = array.filter((value, index, self) => {
+    return self.indexOf(value) === index;
+  });
+  return uniqueArray
+}

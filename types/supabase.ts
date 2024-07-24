@@ -165,7 +165,7 @@ export type Database = {
           alcohol_g: number | null
           caffeine_mg: number | null
           calories_kcal: number
-          carbohydratess_g: number
+          carbohydrates_g: number
           cholesterol_mg: number | null
           created_at: string
           fat_g: number
@@ -186,7 +186,7 @@ export type Database = {
           alcohol_g?: number | null
           caffeine_mg?: number | null
           calories_kcal: number
-          carbohydratess_g: number
+          carbohydrates_g: number
           cholesterol_mg?: number | null
           created_at?: string
           fat_g: number
@@ -207,7 +207,7 @@ export type Database = {
           alcohol_g?: number | null
           caffeine_mg?: number | null
           calories_kcal?: number
-          carbohydratess_g?: number
+          carbohydrates_g?: number
           cholesterol_mg?: number | null
           created_at?: string
           fat_g?: number

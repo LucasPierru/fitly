@@ -100,8 +100,62 @@ const AddMealForm = () => {
   } as never);
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    createRecipe(data);
+    await createRecipe(data);
     reset();
+  };
+
+  const mockSubmit = async () => {
+    const mockData: Inputs = {
+      ingredients: [
+        {
+          unit: 'g',
+          quantity: 200,
+          ingredient: {
+            id: 5062,
+            name: 'Chicken breast',
+            possibleUnits: [
+              'unit',
+              'piece',
+              'g',
+              'oz',
+              'breast',
+              'cup',
+              'serving'
+            ]
+          }
+        },
+        {
+          unit: 'head',
+          quantity: 1,
+          ingredient: {
+            id: 10111251,
+            name: 'Romaine',
+            possibleUnits: [
+              'head',
+              'piece',
+              'leave',
+              'g',
+              'oz',
+              'cup',
+              'serving'
+            ]
+          }
+        }
+      ],
+      instructions: [
+        {
+          content: 'Cut the chicken into pieces'
+        },
+        {
+          content: 'Cook the chicken'
+        }
+      ],
+      description: 'Chicken salad',
+      title: 'Chicken salad'
+    };
+
+    console.log(mockData);
+    await createRecipe(mockData);
   };
 
   const onChange = async (event: ChangeEvent<HTMLInputElement>, id: string) => {
@@ -301,7 +355,9 @@ const AddMealForm = () => {
           Add ingredient
         </button>
       </div>
-      <button type="submit">Add meal</button>
+      <button type="button" onClick={mockSubmit}>
+        Add meal
+      </button>
     </form>
   );
 };
