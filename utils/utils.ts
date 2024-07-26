@@ -1,3 +1,5 @@
+import { Database } from "@/types/supabase";
+
 export const formatPhoneNumber = (phoneNumber: string) => {
   let newPhoneNumber;
   if (phoneNumber?.length === 11 && !phoneNumber.includes('-')) {
@@ -39,6 +41,16 @@ export const getMacrosList = () => {
     'Potassium'
   ];
   return macrosList;
+};
+
+export const getMealTimeList = (): Database["public"]["Enums"]["meal_time"][] => {
+  const mealTimes: Database["public"]["Enums"]["meal_time"][] = [
+    'breakfast',
+    'lunch',
+    'dinner',
+    'snack',
+  ];
+  return mealTimes;
 };
 
 export const dropDuplicates = <T>(array: Array<T>)=> {

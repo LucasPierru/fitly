@@ -9,10 +9,11 @@ import { MinusIcon, PlusIcon } from '@heroicons/react/24/outline';
 import FormInput from '@/components/inputs/formInput';
 import FormTextArea from '@/components/inputs/formTextArea';
 import type { FoodInformation } from '@/types/foods';
-import { capitalizeWord } from '@/utils/utils';
+import { capitalizeWord, getMealTimeList } from '@/utils/utils';
 import { getIngredientsAutocomplete } from '@/requests/food';
 import useOutsideClick from '@/hooks/useOutsideClick';
-import { createRecipe } from '@/actions/ingredients';
+import { createRecipeWithTransaction } from '@/actions/ingredients';
+import ImagesModal from '@/components/imagesModal/imagesModal';
 
 const AddMealForm = () => {
   const defaultIngredient = {
@@ -28,9 +29,26 @@ const AddMealForm = () => {
   const defaultValues = {
     title: '',
     description: '',
+    image: undefined,
+    mealTime: undefined,
+    vegetarian: false,
+    vegan: false,
+    glutenFree: false,
+    dairyFree: false,
+    servings: 0,
+    preparationTime: 0,
     instructions: [],
     ingredients: [defaultIngredient]
   };
+
+  const mealTimes = getMealTimeList();
+  const filters: ('vegetarian' | 'vegan' | 'glutenFree' | 'dairyFree')[] = [
+    'vegetarian',
+    'vegan',
+    'glutenFree',
+    'dairyFree'
+  ];
+
   const t = useTranslations('Common');
   const [ingredients, setIngredients] = useState<
     Record<string, FoodInformation[]>
@@ -40,11 +58,25 @@ const AddMealForm = () => {
   const schema = yup.object({
     title: yup.string().required(t('errors.isRequired')),
     description: yup.string().required(t('errors.isRequired')),
+    picture: yup.string().required(t('errors.isRequired')),
     instructions: yup.array().of(
       yup.object({
         content: yup.string().required(t('errors.isRequired'))
       })
     ),
+    mealTime: yup.string().oneOf(mealTimes).required(t('errors.isRequired')),
+    vegetarian: yup.bool().required(t('errors.isRequired')),
+    vegan: yup.bool().required(t('errors.isRequired')),
+    glutenFree: yup.bool().required(t('errors.isRequired')),
+    dairyFree: yup.bool().required(t('errors.isRequired')),
+    servings: yup
+      .number()
+      .required(t('errors.isRequired'))
+      .min(1, 'Quantity must be higher than 1'),
+    preparationTime: yup
+      .number()
+      .required(t('errors.isRequired'))
+      .min(1, 'Quantity must be higher than 1'),
     ingredients: yup
       .array()
       .of(
@@ -100,7 +132,7 @@ const AddMealForm = () => {
   } as never);
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    await createRecipe(data);
+    await createRecipeWithTransaction(data);
     reset();
   };
 
@@ -140,6 +172,12 @@ const AddMealForm = () => {
       className="flex flex-col min-w-full mt-4"
       onSubmit={handleSubmit(onSubmit)}
     >
+      <ImagesModal
+        query={watch('title')}
+        onSelect={(image: string) => {
+          setValue('picture', image);
+        }}
+      />
       <div>
         <FormInput
           id="title"
@@ -162,6 +200,64 @@ const AddMealForm = () => {
         >
           Description
         </FormTextArea>
+      </div>
+
+      <div className="flex gap-4 mb-8">
+        {mealTimes.map((time) => {
+          return (
+            <button
+              key={time}
+              type="button"
+              className={`btn ${watch('mealTime') === time ? 'btn-primary bg-primary text-white' : 'btn-secondary bg-secondary'} rounded-full py-2 px-4 text-base`}
+              onClick={() => {
+                setValue('mealTime', time);
+              }}
+            >
+              {capitalizeWord(time)}
+            </button>
+          );
+        })}
+      </div>
+      <div className="flex gap-4 mb-8">
+        {filters.map((filter) => {
+          const filterValue = watch(filter);
+          return (
+            <button
+              key={filter}
+              type="button"
+              className={`btn ${filterValue ? 'btn-primary bg-primary text-white' : 'btn-secondary bg-secondary'} rounded-full py-2 px-4 text-base`}
+              onClick={() => {
+                setValue(filter, !filterValue);
+              }}
+            >
+              {capitalizeWord(filter.split(/(?=[A-Z])/)?.join(' '))}
+            </button>
+          );
+        })}
+      </div>
+      <div className="flex gap-4">
+        <FormInput
+          id="servings"
+          error={errors.servings}
+          {...register('servings', {
+            required: true
+          })}
+          type="text"
+          placeholder="E.g. 1"
+        >
+          Servings
+        </FormInput>
+        <FormInput
+          id="preparationTime"
+          error={errors.preparationTime}
+          {...register('preparationTime', {
+            required: true
+          })}
+          type="text"
+          placeholder="E.g. 45"
+        >
+          Preparation time (in minutes)
+        </FormInput>
       </div>
       <div className="mb-8">
         <span className="block text-xl mb-2">Instructions</span>
