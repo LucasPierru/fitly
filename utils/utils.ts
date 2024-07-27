@@ -59,3 +59,12 @@ export const dropDuplicates = <T>(array: Array<T>)=> {
   });
   return uniqueArray
 }
+
+export const checkExternalUrl = (url: string) => {
+  return url.includes('https')
+}
+
+export const removeFirstChar = (url: string) => {
+  const name = url.substring(1);
+  return name;
+}

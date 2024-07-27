@@ -3,7 +3,7 @@
 import { Database } from '@/types/supabase';
 import { FoodInformation, FoodInformationDetails } from '@/types/foods';
 import { createClient } from '@/utils/supabase/server';
-import { capitalizeWord, getMacrosList } from '@/utils/utils';
+import { capitalizeWord, checkExternalUrl, getMacrosList, removeFirstChar } from '@/utils/utils';
 
 const BASE_URL = 'https://api.spoonacular.com';
 
@@ -151,8 +151,38 @@ export const getMeals = async(mealTime?: string) => {
     }
     const { data, error } = await query.returns<Meal[]>()
     if(error) throw error;
-    return data;
+    const finalData = await Promise.all(data.map(async(meal) => {
+      const picture = checkExternalUrl(meal.picture) ? meal.picture : (await selectMealPicture(meal.picture));
+        return {
+
+          ...meal,
+          picture
+        }
+    }));
+    return finalData;
   } catch(error) {
     return null;
+  }
+}
+
+export const uploadMealPicture = async(file: File) => {
+  try {
+    const supabase = createClient();
+    const { data, error } = await supabase.storage.from('meals').upload(file.name, file);
+    if(error) throw error;
+    return data;
+  } catch(error) {
+    return null
+  }
+}
+
+export const selectMealPicture = async(fileName: string) => {
+  try {
+    const supabase = createClient();
+    const {data, error} = await supabase.storage.from('meals').createSignedUrl(fileName, 86400);
+    if(error) throw error;
+    return data.signedUrl;
+  } catch(error) {
+    return null
   }
 }
