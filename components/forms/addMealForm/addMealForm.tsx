@@ -9,7 +9,7 @@ import { MinusIcon, PlusIcon } from '@heroicons/react/24/outline';
 import FormInput from '@/components/inputs/formInput';
 import FormTextArea from '@/components/inputs/formTextArea';
 import type { FoodInformation } from '@/types/foods';
-import { capitalizeWord, getMealTimeList } from '@/utils/utils';
+import { capitalizeWord, getMealTypeList } from '@/utils/utils';
 import { getIngredientsAutocomplete } from '@/requests/food';
 import useOutsideClick from '@/hooks/useOutsideClick';
 import { createRecipeWithTransaction } from '@/actions/ingredients';
@@ -30,7 +30,7 @@ const AddMealForm = () => {
     title: '',
     description: '',
     image: undefined,
-    mealTime: undefined,
+    mealTypes: [],
     vegetarian: false,
     vegan: false,
     glutenFree: false,
@@ -41,7 +41,7 @@ const AddMealForm = () => {
     ingredients: [defaultIngredient]
   };
 
-  const mealTimes = getMealTimeList();
+  const mealTypes = getMealTypeList();
   const filters: ('vegetarian' | 'vegan' | 'glutenFree' | 'dairyFree')[] = [
     'vegetarian',
     'vegan',
@@ -64,7 +64,10 @@ const AddMealForm = () => {
         content: yup.string().required(t('errors.isRequired'))
       })
     ),
-    mealTime: yup.string().oneOf(mealTimes).required(t('errors.isRequired')),
+    mealTypes: yup
+      .array()
+      .of(yup.string().oneOf(mealTypes).required(t('errors.isRequired')))
+      .required(t('errors.isRequired')),
     vegetarian: yup.bool().required(t('errors.isRequired')),
     vegan: yup.bool().required(t('errors.isRequired')),
     glutenFree: yup.bool().required(t('errors.isRequired')),
@@ -202,18 +205,26 @@ const AddMealForm = () => {
         </FormTextArea>
       </div>
 
-      <div className="flex gap-4 mb-8">
-        {mealTimes.map((time) => {
+      <div className="flex gap-4 flex-wrap mb-8">
+        {mealTypes.map((type) => {
           return (
             <button
-              key={time}
+              key={type}
               type="button"
-              className={`btn ${watch('mealTime') === time ? 'btn-primary bg-primary text-white' : 'btn-secondary bg-secondary'} rounded-full py-2 px-4 text-base`}
+              className={`btn ${watch('mealTypes').includes(type) ? 'btn-primary bg-primary text-white' : 'btn-secondary bg-secondary'} rounded-full py-2 px-4 text-base`}
               onClick={() => {
-                setValue('mealTime', time);
+                const currentMealTypes = watch('mealTypes');
+                if (currentMealTypes.includes(type)) {
+                  const index = currentMealTypes.indexOf(type);
+                  currentMealTypes.splice(index, 1);
+                  setValue('mealTypes', currentMealTypes);
+                } else {
+                  currentMealTypes.push(type);
+                  setValue('mealTypes', currentMealTypes);
+                }
               }}
             >
-              {capitalizeWord(time)}
+              {capitalizeWord(type)}
             </button>
           );
         })}

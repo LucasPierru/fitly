@@ -84,6 +84,8 @@ export type Nutrition = {
   weightPerServing: WeightPerServing;
 };
 
+export type DishTypes = 'main course' | 'side dish' | 'dessert' | 'appetizer' | 'salad' | 'bread' | 'breakfast' | 'soup' | 'beverage' | 'sauce' | 'marinade' | 'fingerfood' | 'snack' | 'drink'
+
 export type RecipeInformation = {
   vegetarian: boolean;
   vegan: boolean;
@@ -115,7 +117,7 @@ export type RecipeInformation = {
   nutrition: Nutrition;
   summary: string;
   cuisines: string[];
-  dishTypes: string[];
+  dishTypes: DishTypes[];
   diets: string[];
   occasions: string[];
   instructions: string;

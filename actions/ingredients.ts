@@ -3,7 +3,8 @@
 import { Database } from '@/types/supabase';
 import { FoodInformation, FoodInformationDetails } from '@/types/foods';
 import { createClient } from '@/utils/supabase/server';
-import { capitalizeWord, checkExternalUrl, getMacrosList, removeFirstChar } from '@/utils/utils';
+import { capitalizeWord, checkExternalUrl, getMacrosList } from '@/utils/utils';
+import { DishTypes } from '@/types/recipes';
 
 const BASE_URL = 'https://api.spoonacular.com';
 
@@ -30,14 +31,15 @@ export const createRecipeWithTransaction = async({
   description,
   picture,
   ingredients,
-  mealTime,
+  mealTypes,
   vegetarian,
   vegan,
   glutenFree,
   dairyFree,
   servings,
   preparationTime,
-  instructions
+  instructions,
+  recipeId
 }: {
   title: string;
   description: string;
@@ -47,7 +49,7 @@ export const createRecipeWithTransaction = async({
     quantity: number;
     unit: string;
   }[];
-  mealTime: Database["public"]["Enums"]["meal_time"];
+  mealTypes: DishTypes[]
   vegetarian: boolean;
   vegan: boolean;
   glutenFree:boolean;
@@ -55,6 +57,7 @@ export const createRecipeWithTransaction = async({
   servings: number;
   preparationTime: number;
   instructions?: { content: string }[];
+  recipeId?: number;
 }) => {
   try {
     const supabase = createClient();
@@ -98,7 +101,6 @@ export const createRecipeWithTransaction = async({
     }, 0) / servings;
 
     const meal = {
-      time: mealTime,
       name: title,
       description,
       picture,
@@ -113,7 +115,9 @@ export const createRecipeWithTransaction = async({
         instruction: ins.content,
         step: index+1
       })),
-      author_id: userId
+      author_id: userId,
+      meal_types: mealTypes.map(type => ({content: type})),
+      og_id: recipeId,
     }
 
     const { data, error } = await supabase
@@ -128,7 +132,7 @@ export const createRecipeWithTransaction = async({
   }
 }
 
-export const getMeals = async(mealTime?: string) => {
+export const getMeals = async(mealType?: string) => {
   type Meal = {
     id: string; 
     name: string; 
@@ -139,25 +143,29 @@ export const getMeals = async(mealTime?: string) => {
         id: string; 
         name: string;
       }
+    }[],
+    meal_types: {
+      id: string
+      meal_type: DishTypes
     }[]
   };
 
   try {
     const supabase = createClient();
     const userId  = (await supabase.auth.getUser()).data.user?.id
-    let query = supabase.from('meals').select('id, name, description, picture, meal_foods(ingredients(id, name))').eq('author_id', userId);
-    if(mealTime && mealTime !== 'all') {
-      query = query.eq('time', mealTime)
+    let query = supabase.from('meals').select('id, name, description, picture, meal_foods(ingredients(id, name)), meal_types!inner(id, meal_type)').eq('author_id', userId);
+    if(mealType && mealType !== 'all') {
+      query = query.eq('meal_types.meal_type', mealType)
     }
     const { data, error } = await query.returns<Meal[]>()
     if(error) throw error;
     const finalData = await Promise.all(data.map(async(meal) => {
-      const picture = checkExternalUrl(meal.picture) ? meal.picture : (await selectMealPicture(meal.picture));
-        return {
-
-          ...meal,
-          picture
-        }
+      const picture = checkExternalUrl(meal.picture) ? meal.picture : (await selectMealPicture(meal.picture)) as string;
+      return {
+        
+        ...meal,
+        picture
+      }
     }));
     return finalData;
   } catch(error) {
