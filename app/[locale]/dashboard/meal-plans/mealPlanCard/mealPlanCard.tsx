@@ -13,7 +13,7 @@ type MealPlanCardProps = {
   title: string;
   description: string;
   imageUrl: string;
-  plan: Plan;
+  plan?: Plan;
 };
 
 const MealPlanCard = ({
@@ -36,9 +36,11 @@ const MealPlanCard = ({
       <div className="flex flex-col">
         <span className="text-lg">{title}</span>
         <span className="">{description}</span>
-        <span className="">
-          {plan.recipes} recipes - {plan.meals} meals - {plan.snacks} snack
-        </span>
+        {plan && (
+          <span className="">
+            {plan.recipes} recipes - {plan.meals} meals - {plan.snacks} snack
+          </span>
+        )}
       </div>
       <DropdownButton>
         <Link

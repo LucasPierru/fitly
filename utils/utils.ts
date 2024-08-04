@@ -1,5 +1,5 @@
-import { DishTypes } from "@/types/recipes";
-import { Database } from "@/types/supabase";
+import { DishTypes } from '@/types/recipes';
+import { Database } from '@/types/supabase';
 
 export const formatPhoneNumber = (phoneNumber: string) => {
   let newPhoneNumber;
@@ -44,35 +44,66 @@ export const getMacrosList = () => {
   return macrosList;
 };
 
-export const getMealTimeList = (): Database["public"]["Enums"]["meal_time"][] => {
-  const mealTimes: Database["public"]["Enums"]["meal_time"][] = [
-    'breakfast',
-    'lunch',
-    'dinner',
-    'snack',
-  ];
-  return mealTimes;
-};
+export const getMealTimeList =
+  (): Database['public']['Enums']['meal_time'][] => {
+    const mealTimes: Database['public']['Enums']['meal_time'][] = [
+      'breakfast',
+      'lunch',
+      'dinner',
+      'snack'
+    ];
+    return mealTimes;
+  };
 
 export const getMealTypeList = (): DishTypes[] => {
   const mealTimes: DishTypes[] = [
-     'main course', 'side dish', 'dessert', 'appetizer', 'salad', 'bread', 'breakfast', 'soup', 'beverage', 'sauce', 'marinade', 'fingerfood', 'snack', 'drink'
+    'main course',
+    'side dish',
+    'dessert',
+    'appetizer',
+    'salad',
+    'bread',
+    'breakfast',
+    'soup',
+    'beverage',
+    'sauce',
+    'marinade',
+    'fingerfood',
+    'snack',
+    'drink'
   ];
   return mealTimes;
 };
 
-export const dropDuplicates = <T>(array: Array<T>)=> {
+export const dropDuplicates = <T>(array: Array<T>) => {
   const uniqueArray = array.filter((value, index, self) => {
     return self.indexOf(value) === index;
   });
-  return uniqueArray
-}
+  return uniqueArray;
+};
 
 export const checkExternalUrl = (url: string) => {
-  return url.includes('https')
-}
+  return url.includes('https');
+};
 
 export const removeFirstChar = (url: string) => {
   const name = url.substring(1);
   return name;
-}
+};
+
+export const mergeArrays = <T extends { id: string }>(arr1: T[], arr2: T[]) => {
+  if (arr1.length === 0) return arr2;
+  if (arr2.length === 0) return arr1;
+
+  const combinedArray = [...arr1, ...arr2];
+
+  const uniqueArray = combinedArray.reduce((acc, current) => {
+    const x = acc.find((item) => item.id === current.id);
+    if (!x) {
+      return acc.concat([current]);
+    }
+    return acc;
+  }, [] as T[]);
+
+  return uniqueArray;
+};

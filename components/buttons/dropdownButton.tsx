@@ -1,7 +1,8 @@
 'use client';
 
-import { ReactNode, useState } from 'react';
+import { ReactNode, useRef, useState } from 'react';
 import { EllipsisHorizontalIcon } from '@heroicons/react/24/outline';
+import useOutsideClick from '@/hooks/useOutsideClick';
 
 type DropdownButtonProps = {
   children: ReactNode;
@@ -9,9 +10,17 @@ type DropdownButtonProps = {
 
 const DropdownButton = ({ children }: DropdownButtonProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const ref = useRef<HTMLButtonElement>(null);
+
+  const clickOutsideHandler = () => {
+    setIsOpen(false);
+  };
+
+  useOutsideClick(ref, clickOutsideHandler);
 
   return (
     <button
+      ref={ref}
       type="button"
       className="relative ml-auto"
       onClick={() => {

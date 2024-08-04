@@ -3,6 +3,8 @@ import Image from 'next/image';
 import { getRecipe } from '@/actions/recipes';
 import Checkbox from '@/components/buttons/checkbox/checkbox';
 import DescriptionCard from '@/components/cards/descriptionCard/descriptionCard';
+import AddToMealPlanForm from '@/components/forms/addToMealPlanForm/addToMealPlanForm';
+import { getMealPlans } from '@/actions/mealPlans';
 
 export default async function RecipePage({
   params
@@ -12,6 +14,7 @@ export default async function RecipePage({
   const { id } = params;
 
   const recipe = await getRecipe(id);
+  const { data: mealPlans } = await getMealPlans();
 
   const nutrientsList = [
     'Calories',
@@ -141,26 +144,7 @@ export default async function RecipePage({
             })}
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-4">
-          <span className="block text-xl font-semibold col-span-2">
-            Add this recipe to one of your plans
-          </span>
-          <select className="select bg-secondary text-white placeholder:text-white w-full focus:outline-0 text-base font-light">
-            <option value="1">Bulking Plan</option>
-          </select>
-          <select className="select bg-secondary text-white placeholder:text-white w-full focus:outline-0 text-base font-light">
-            <option value="breakfast">Breakfast</option>
-            <option value="lunch">Lunch</option>
-            <option value="dinner">Dinner</option>
-            <option value="snack">Snack</option>
-          </select>
-          <button
-            className="btn btn-primary text-foreground col-span-2"
-            type="button"
-          >
-            Add To My Meals
-          </button>
-        </div>
+        <AddToMealPlanForm mealPlans={mealPlans} recipe={recipe} />
       </div>
     )
   );

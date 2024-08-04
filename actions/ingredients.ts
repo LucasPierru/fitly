@@ -3,12 +3,21 @@
 import { Database } from '@/types/supabase';
 import { FoodInformation, FoodInformationDetails } from '@/types/foods';
 import { createClient } from '@/utils/supabase/server';
-import { capitalizeWord, checkExternalUrl, getMacrosList } from '@/utils/utils';
+import {
+  capitalizeWord,
+  checkExternalUrl,
+  getMacrosList,
+  mergeArrays
+} from '@/utils/utils';
 import { DishTypes } from '@/types/recipes';
 
 const BASE_URL = 'https://api.spoonacular.com';
 
-type Ingredient = {ingredient: Database['public']['Tables']['ingredients']['Row']; possible_units: string[]; categories: string[];}
+type Ingredient = {
+  ingredient: Database['public']['Tables']['ingredients']['Row'];
+  possible_units: string[];
+  categories: string[];
+};
 
 export const getIngredientInformation = async (
   id: number,
@@ -26,7 +35,7 @@ export const getIngredientInformation = async (
   }
 };
 
-export const createRecipeWithTransaction = async({
+export const createRecipeWithTransaction = async ({
   title,
   description,
   picture,
@@ -49,10 +58,10 @@ export const createRecipeWithTransaction = async({
     quantity: number;
     unit: string;
   }[];
-  mealTypes: DishTypes[]
+  mealTypes: DishTypes[];
   vegetarian: boolean;
   vegan: boolean;
-  glutenFree:boolean;
+  glutenFree: boolean;
   dairyFree: boolean;
   servings: number;
   preparationTime: number;
@@ -61,44 +70,13 @@ export const createRecipeWithTransaction = async({
 }) => {
   try {
     const supabase = createClient();
-    const macrosList = getMacrosList();
-    const userId  = (await supabase.auth.getUser()).data.user?.id
-    const ingredientsData = await Promise.all(
-      ingredients.map(async (ingredient) => {
-        const ingredientInformation = await getIngredientInformation(
-          ingredient.ingredient.id,
-          100,
-          'g'
-        );
-        const nutrients: Ingredient['ingredient'] = ingredientInformation?.nutrition.nutrients.reduce(
-          (acc: Ingredient['ingredient'], nutrient) => {
-            if (macrosList.includes(nutrient.name)) {
-              return {
-                ...acc,
-                [`${nutrient.name.toLowerCase().replace(' ', '_')}_${nutrient.unit}`]:
-                  nutrient.amount
-              };
-            }
-            return acc;
-          },
-          {} as Ingredient['ingredient']
-        ) as Ingredient['ingredient'];
-        return {
-          ...nutrients,
-          name: capitalizeWord(ingredientInformation?.originalName as string),
-          price: ingredientInformation?.estimatedCost.value as number,
-          og_id: ingredientInformation?.id as number,
-          possible_units: ingredientInformation?.possibleUnits,
-          categories: ingredientInformation?.categoryPath,
-          quantity: ingredient.quantity,
-          unit: ingredient.unit
-        };
-      })
-    );
+    const userId = (await supabase.auth.getUser()).data.user?.id;
+    const ingredientsData = await getIngredientsData(ingredients);
 
-    const costPerServing = ingredientsData.reduce((acc, currentValue) => {
-      return acc + currentValue.price
-    }, 0) / servings;
+    const costPerServing =
+      ingredientsData.reduce((acc, currentValue) => {
+        return acc + currentValue.price;
+      }, 0) / servings;
 
     const meal = {
       name: title,
@@ -113,84 +91,174 @@ export const createRecipeWithTransaction = async({
       dairy_free: dairyFree,
       instructions: instructions?.map((ins, index) => ({
         instruction: ins.content,
-        step: index+1
+        step: index + 1
       })),
       author_id: userId,
-      meal_types: mealTypes.map(type => ({content: type})),
-      og_id: recipeId,
-    }
+      meal_types: mealTypes.map((type) => ({ content: type })),
+      og_id: recipeId
+    };
 
-    const { data, error } = await supabase
-    .rpc('insert_meal', {
+    const { data, error } = await supabase.rpc('insert_meal', {
       meal_data: meal,
-      ingredients_data: ingredientsData,
-    })
+      ingredients_data: ingredientsData
+    });
     if (error) throw error;
     return data;
-  } catch(error) {
-    return null
-  }
-}
-
-export const getMeals = async(mealType?: string) => {
-  type Meal = {
-    id: string; 
-    name: string; 
-    description: string; 
-    picture: string; 
-    meal_foods: {
-      ingredients: {
-        id: string; 
-        name: string;
-      }
-    }[],
-    meal_types: {
-      id: string
-      meal_type: DishTypes
-    }[]
-  };
-
-  try {
-    const supabase = createClient();
-    const userId  = (await supabase.auth.getUser()).data.user?.id
-    let query = supabase.from('meals').select('id, name, description, picture, meal_foods(ingredients(id, name)), meal_types!inner(id, meal_type)').eq('author_id', userId);
-    if(mealType && mealType !== 'all') {
-      query = query.eq('meal_types.meal_type', mealType)
-    }
-    const { data, error } = await query.returns<Meal[]>()
-    if(error) throw error;
-    const finalData = await Promise.all(data.map(async(meal) => {
-      const picture = checkExternalUrl(meal.picture) ? meal.picture : (await selectMealPicture(meal.picture)) as string;
-      return {
-        
-        ...meal,
-        picture
-      }
-    }));
-    return finalData;
-  } catch(error) {
+  } catch (error) {
     return null;
   }
-}
+};
 
-export const uploadMealPicture = async(file: File) => {
+export const getIngredientsData = async (
+  ingredients: {
+    ingredient: Pick<FoodInformation, 'name' | 'id' | 'possibleUnits'>;
+    quantity: number;
+    unit: string;
+  }[]
+) => {
+  const macrosList = getMacrosList();
+  const ingredientsData = await Promise.all(
+    ingredients.map(async (ingredient) => {
+      const ingredientInformation = await getIngredientInformation(
+        ingredient.ingredient.id,
+        100,
+        'g'
+      );
+      const nutrients: Ingredient['ingredient'] =
+        ingredientInformation?.nutrition.nutrients.reduce(
+          (acc: Ingredient['ingredient'], nutrient) => {
+            if (macrosList.includes(nutrient.name)) {
+              return {
+                ...acc,
+                [`${nutrient.name.toLowerCase().replace(' ', '_')}_${nutrient.unit}`]:
+                  nutrient.amount
+              };
+            }
+            return acc;
+          },
+          {} as Ingredient['ingredient']
+        ) as Ingredient['ingredient'];
+      return {
+        ...nutrients,
+        name: capitalizeWord(ingredientInformation?.originalName as string),
+        price: ingredientInformation?.estimatedCost.value as number,
+        og_id: ingredientInformation?.id as number,
+        possible_units: ingredientInformation?.possibleUnits,
+        categories: ingredientInformation?.categoryPath,
+        quantity: ingredient.quantity,
+        unit: ingredient.unit
+      };
+    })
+  );
+
+  return ingredientsData;
+};
+
+export type Meal = {
+  id: string;
+  name: string;
+  description: string;
+  picture: string;
+  meal_foods: {
+    ingredients: {
+      id: string;
+      name: string;
+    };
+  }[];
+  meal_types: {
+    id: string;
+    meal_type: DishTypes;
+  }[];
+  userMeal: boolean;
+};
+
+export const getMeals = async (mealType?: string) => {
   try {
     const supabase = createClient();
-    const { data, error } = await supabase.storage.from('meals').upload(file.name, file);
-    if(error) throw error;
+    const userId = (await supabase.auth.getUser()).data.user?.id;
+    let mealPlansQuery = supabase
+      .from('meal_plans')
+      .select(
+        'id, meal_plan_meals(id, meal_id, meals!inner(id, name, description, picture, meal_foods(ingredients(id, name)), meal_types!inner(id, meal_type)))'
+      )
+      .eq('user_id', userId);
+
+    if (mealType && mealType !== 'all') {
+      mealPlansQuery = mealPlansQuery.eq(
+        'meal_plan_meals.meals.meal_types.meal_type',
+        mealType
+      );
+    }
+
+    const { data: mealPlansData, error: mealPlansError } =
+      await mealPlansQuery.returns<
+        { meal_plan_meals: { meals: Meal[] }[] }[]
+      >();
+
+    if (mealPlansError) throw mealPlansError;
+    const mealPlanMeals = mealPlansData.flatMap(
+      (mealPlan) => mealPlan.meal_plan_meals
+    );
+    const mealsFromMealPlans: Meal[] = mealPlanMeals.flatMap((mealPlan) => ({
+      ...mealPlan.meals,
+      userMeal: false
+    }));
+
+    let query = supabase
+      .from('meals')
+      .select(
+        'id, name, description, picture, meal_foods(ingredients(id, name)), meal_types!inner(id, meal_type)'
+      )
+      .eq('author_id', userId);
+    if (mealType && mealType !== 'all') {
+      query = query.eq('meal_types.meal_type', mealType);
+    }
+    const { data, error } = await query.returns<Meal[]>();
+
+    if (error) throw error;
+    const mergedData = mergeArrays(
+      data.map((meals) => ({ ...meals, userMeal: true })),
+      mealsFromMealPlans
+    );
+    const finalData = await Promise.all(
+      mergedData.map(async (meal) => {
+        const picture = checkExternalUrl(meal.picture)
+          ? meal.picture
+          : ((await selectMealPicture(meal.picture)) as string);
+        return {
+          ...meal,
+          picture
+        };
+      })
+    );
+    return finalData;
+  } catch (error) {
+    return null;
+  }
+};
+
+export const uploadMealPicture = async (file: File) => {
+  try {
+    const supabase = createClient();
+    const { data, error } = await supabase.storage
+      .from('meals')
+      .upload(file.name, file);
+    if (error) throw error;
     return data;
-  } catch(error) {
-    return null
+  } catch (error) {
+    return null;
   }
-}
+};
 
-export const selectMealPicture = async(fileName: string) => {
+export const selectMealPicture = async (fileName: string) => {
   try {
     const supabase = createClient();
-    const {data, error} = await supabase.storage.from('meals').createSignedUrl(fileName, 86400);
-    if(error) throw error;
+    const { data, error } = await supabase.storage
+      .from('meals')
+      .createSignedUrl(fileName, 86400);
+    if (error) throw error;
     return data.signedUrl;
-  } catch(error) {
-    return null
+  } catch (error) {
+    return null;
   }
-}
+};

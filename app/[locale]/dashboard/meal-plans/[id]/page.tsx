@@ -4,7 +4,7 @@ import DayFilters from '@/components/filter/dayFilters/dayFilters';
 import MealCard from '../../meals/mealCard/mealCard';
 import { capitalizeWord } from '@/utils/utils';
 
-export default function EditMealPlanPage({
+export default async function EditMealPlanPage({
   params,
   searchParams
 }: {
@@ -67,7 +67,7 @@ export default function EditMealPlanPage({
       <div className="flex justify-between items-center">
         <h1 className="text-3xl text-bold px-4">Meal Plan</h1>
         <Link
-          href="/nutrition/add-meal"
+          href="/dashboard/meal-plans/create"
           className="flex gap-2 bg-secondary w-fit px-4 py-2 rounded-2xl"
         >
           <PlusIcon className="w-6 h-6" />

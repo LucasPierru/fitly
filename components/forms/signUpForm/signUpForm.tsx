@@ -7,7 +7,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import FormError from '@/components/errors/formError/formError';
 import { signUp } from '@/actions/auth';
-import RadioButton from '../radioButton/radioButton';
+import RadioButton from '../../buttons/radioButton/radioButton';
 import { HowActive, Sex, Goal } from '@/types/users';
 
 const SignUpForm = () => {

@@ -10,7 +10,7 @@ export default async function MealsPage({
 }: {
   searchParams: { day: string };
 }) {
-  const { day, query } = searchParams;
+  const { day /* query */ } = searchParams;
   const mealTypes = getMealTypeList();
 
   const mealsFinal = await getMeals(day);

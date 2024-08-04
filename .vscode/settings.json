@@ -1,14 +1,9 @@
 {
   "[typescript]": {
-    "editor.defaultFormatter": "denoland.vscode-deno"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "deno.enablePaths": [
-    "supabase/functions"
-  ],
+  "deno.enablePaths": ["supabase/functions"],
   "deno.lint": true,
   "deno.unstable": true,
-  "i18n-ally.localesPaths": [
-    "i18n",
-    "i18n/locales"
-  ]
+  "i18n-ally.localesPaths": ["i18n", "i18n/locales"]
 }

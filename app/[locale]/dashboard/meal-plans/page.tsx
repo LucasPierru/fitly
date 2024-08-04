@@ -1,50 +1,27 @@
 import { PlusIcon } from '@heroicons/react/24/outline';
 import { Link } from '@/navigation';
 import MealPlanCard from './mealPlanCard/mealPlanCard';
+import { getMealPlansDetails } from '@/actions/mealPlans';
 
-export default function MealPlansPage() {
-  const mealPlans = [
-    {
-      id: '1',
-      title: 'Bulking plan',
-      description: 'High calories meals that hit daily protein intake',
-      imageUrl: '/meals/sweet_sour_tofu.jpg',
-      plan: {
-        recipes: 1,
-        meals: 5,
-        snacks: 3
-      }
-    },
-    {
-      id: '2',
-      title: 'Cutting meal plan',
-      description:
-        'Healthy meals for a daily calorie deficit while still hitting the protein intake',
-      imageUrl: '/meals/honey_garlic_chicken.jpg',
-      plan: {
-        recipes: 1,
-        meals: 5,
-        snacks: 3
-      }
-    },
-    {
-      id: '3',
-      title: "Kids' meal plan",
-      description: 'Meal preparation for the kids',
-      imageUrl: '/meals/french_toast.jpg',
-      plan: {
-        recipes: 1,
-        meals: 5,
-        snacks: 3
-      }
-    }
-  ];
+export default async function MealPlansPage() {
+  const { data } = await getMealPlansDetails();
 
-  const getMealPlans = () => {
-    return mealPlans;
-  };
-
-  const filteredMeals = getMealPlans();
+  const mealPlanMeals = data?.map((mealPlan) => {
+    const meals = mealPlan.meal_plan_meals?.flatMap(
+      (mealPlanMeal) => mealPlanMeal.meals
+    );
+    return {
+      recipes: meals?.reduce((acc, meal) => (acc + meal.og_id ? 1 : 0), 0),
+      meals: mealPlan.meal_plan_meals?.reduce(
+        (acc, mealPlanMeal) => acc + (mealPlanMeal.time !== 'snack' ? 1 : 0),
+        0
+      ),
+      snacks: mealPlan.meal_plan_meals?.reduce(
+        (acc, mealPlanMeal) => acc + (mealPlanMeal.time === 'snack' ? 1 : 0),
+        0
+      )
+    };
+  });
 
   return (
     <div className="flex flex-col flex-1 px-8 justify-center gap-2">
@@ -59,14 +36,14 @@ export default function MealPlansPage() {
         </Link>
       </div>
       <div>
-        {filteredMeals.map((meal) => (
+        {data?.map((meal, index) => (
           <MealPlanCard
             key={meal.id}
             id={meal.id}
-            title={meal.title}
+            title={meal.name}
             description={meal.description}
-            imageUrl={meal.imageUrl}
-            plan={meal.plan}
+            imageUrl={meal.meal_plan_meals[0].meals.picture}
+            plan={mealPlanMeals?.[index]}
           />
         ))}
       </div>
