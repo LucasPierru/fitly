@@ -1,8 +1,7 @@
 import { Key } from 'react';
 import Link from 'next/link';
+import { Home, Utensils, Calendar, User } from 'lucide-react';
 import { Link as NavLink, pathnames, AppPathname } from '@/navigation';
-import { createClient } from '@/utils/supabase/server';
-import { signOut } from '@/actions/auth';
 
 type LinkProps = {
   name: string;
@@ -10,24 +9,6 @@ type LinkProps = {
 };
 
 const Navbar = async ({ locale }: { locale: string }) => {
-  /* const cookieStore = cookies();
-  const supabase = createClient(cookieStore);
-
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
-
-  const { data: users } = await supabase
-    .from('Users')
-    .select('*')
-    .eq('id', user?.id);
- */
-  const supabase = createClient();
-
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
-
   const newLocale = locale === 'en' ? 'fr' : 'en';
   const links: LinkProps[] = [
     {
@@ -53,8 +34,8 @@ const Navbar = async ({ locale }: { locale: string }) => {
   ];
 
   return (
-    <nav className="w-full flex justify-center border-b border-b-foreground/10 h-20">
-      <div className="w-full mx-12 flex justify-between items-center p-3 text-sm">
+    <nav className="flex items-center bg-background-secondary h-20 shadow-sm">
+      <div className="w-full mx-8 flex justify-between items-center text-sm">
         <Link href="/" className="font-semibold text-xl">
           FitLy
         </Link>
@@ -70,8 +51,8 @@ const Navbar = async ({ locale }: { locale: string }) => {
               </NavLink>
             );
           })}
-          {user ? (
-            <form action={signOut}>
+          {'test'.includes('t') ? (
+            <form>
               <button
                 className="btn btn-secondary text-foreground"
                 type="submit"

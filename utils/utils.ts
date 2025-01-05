@@ -1,5 +1,4 @@
 import { DishTypes } from '@/types/recipes';
-import { Database } from '@/types/supabase';
 
 export const formatPhoneNumber = (phoneNumber: string) => {
   let newPhoneNumber;
@@ -43,17 +42,6 @@ export const getMacrosList = () => {
   ];
   return macrosList;
 };
-
-export const getMealTimeList =
-  (): Database['public']['Enums']['meal_time'][] => {
-    const mealTimes: Database['public']['Enums']['meal_time'][] = [
-      'breakfast',
-      'lunch',
-      'dinner',
-      'snack'
-    ];
-    return mealTimes;
-  };
 
 export const getMealTypeList = (): DishTypes[] => {
   const mealTimes: DishTypes[] = [

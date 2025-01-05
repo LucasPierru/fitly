@@ -1,16 +1,9 @@
 'use client';
 
 import { ChangeEvent, useState, useEffect } from 'react';
-import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
 import Image from 'next/image';
-import {
-  PhotoIcon,
-  MagnifyingGlassIcon,
-  XMarkIcon
-} from '@heroicons/react/24/outline';
 import { getImages } from '@/requests/unsplash';
 import { Result } from '@/types/unsplash';
-import { createClient } from '@/utils/supabase/client';
 
 type ImagesModalProps = {
   query: string;
@@ -55,17 +48,13 @@ const ImagesModal = ({ query, onSelect }: ImagesModalProps) => {
     try {
       if (event.target.files) {
         const file = event.target.files[0];
-        const supabase = createClient();
-        const { data, error } = await supabase.storage
-          .from('meals')
-          .upload(file.name, file);
-        if (error) throw error;
+        /* if (error) throw error;
         if (data) {
-          onSelect(data.path);
           setSelectedImage(URL.createObjectURL(file));
-        }
+        } */
       }
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.log(error);
     }
   };
@@ -80,14 +69,12 @@ const ImagesModal = ({ query, onSelect }: ImagesModalProps) => {
             onClick={open}
           >
             {' '}
-            <MagnifyingGlassIcon className="w-24 h-24" />
           </button>
           <label
             htmlFor="fileInput"
             className="btn btn-secondary btn-square btn-lg relative rounded-box p-16 w-fit h-fit"
           >
             {' '}
-            <PhotoIcon className="w-24 h-24" />
           </label>
           <input
             id="fileInput"
@@ -113,11 +100,10 @@ const ImagesModal = ({ query, onSelect }: ImagesModalProps) => {
             className="opacity-0 hover:opacity-100 absolute w-full h-full z-20"
           >
             {' '}
-            <XMarkIcon className="w-16 h-16 mx-auto" />
           </button>
         </div>
       )}
-      <Dialog
+      {/* <Dialog
         open={isOpen}
         as="div"
         className="relative z-10 focus:outline-none"
@@ -178,7 +164,7 @@ const ImagesModal = ({ query, onSelect }: ImagesModalProps) => {
             </DialogPanel>
           </div>
         </div>
-      </Dialog>
+      </Dialog> */}
     </div>
   );
 };

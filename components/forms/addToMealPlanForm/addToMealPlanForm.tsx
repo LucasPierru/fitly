@@ -5,9 +5,7 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import FormError from '@/components/errors/formError/formError';
-import { Database } from '@/types/supabase';
 import FormInput from '@/components/inputs/formInput';
-import { addMealPlan } from '@/actions/mealPlans';
 import { RecipeInformation } from '@/types/recipes';
 
 type AddToMealPlanFormProps = {
@@ -40,12 +38,8 @@ const AddToMealPlanForm = ({ mealPlans, recipe }: AddToMealPlanFormProps) => {
         },
         [['newMealPlanName', 'planId']]
       ),
-      mealTime: yup
-        .string<Database['public']['Enums']['meal_time']>()
-        .required(t('errors.isRequired')),
-      mealDay: yup
-        .string<Database['public']['Enums']['day']>()
-        .required(t('errors.isRequired'))
+      mealTime: yup.string().required(t('errors.isRequired')),
+      mealDay: yup.string().required(t('errors.isRequired'))
     })
     .required();
   type Inputs = yup.InferType<typeof schema>;
@@ -58,7 +52,6 @@ const AddToMealPlanForm = ({ mealPlans, recipe }: AddToMealPlanFormProps) => {
   } = useForm<Inputs>({ resolver: yupResolver(schema) });
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    await addMealPlan({ ...data, recipe });
     reset();
   };
 

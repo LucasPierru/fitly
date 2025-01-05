@@ -1,6 +1,5 @@
 const daisyui = require('daisyui');
 const typography = require('@tailwindcss/typography');
-const headlessui = require('@headlessui/tailwindcss');
 const forms = require('@tailwindcss/forms');
 
 /** @type {import('tailwindcss').Config} */
@@ -19,10 +18,10 @@ module.exports = {
             btn: {
               background: 'hsl(var(--btn-background))',
               'background-hover': 'hsl(var(--btn-background-hover))'
-            }
+            },
           },
-          primary: '#15b85c',
-          secondary: '#254632',
+          primary: '#4f47e4',
+          secondary:  '#e0e6fe',
           accent: '#10231a',
           neutral: '#e8eef2'
         }
@@ -34,6 +33,7 @@ module.exports = {
       colors: {
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
+        "background-secondary": 'hsl(var(--background-secondary))',
         btn: {
           background: 'hsl(var(--btn-background))',
           'background-hover': 'hsl(var(--btn-background-hover))'
@@ -52,5 +52,5 @@ module.exports = {
       }
     }
   },
-  plugins: [typography, daisyui, headlessui, forms]
+  plugins: [typography, daisyui, forms]
 };

@@ -16,6 +16,9 @@ const SignUpForm = () => {
   const [isKg, setIsKg] = useState(true);
   const [isCm, setIsCm] = useState(true);
   const [trueBmr, setTrueBmr] = useState(0);
+
+  // eslint-disable-next-line no-console
+  console.log({trueBmr})
   const stepCount = 3;
   const activityMultiplier = {
     sedentary: 1.2,
