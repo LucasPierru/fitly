@@ -1,28 +1,29 @@
-import { addDays, format } from 'date-fns';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { WeeklyCalendar } from './weeklyCalendar/weeklyCalendar';
 import { DayMeals } from './dayMeals/dayMeals';
+import WeekSwitch from './weekSwitch/weekSwitch';
+import { getStartOfWeek } from '@/utils/utils';
 
-export default function PlannerPage() {
+export default function PlannerPage({
+  searchParams
+}: {
+  searchParams: { start: string };
+}) {
+  const { start } = searchParams;
+
+  const startDate = start
+    ? getStartOfWeek(new Date(start))
+    : getStartOfWeek(new Date());
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold text-foreground">Meal Planner</h1>
-        <div className="flex items-center gap-4">
-          <button type="button" className="p-2 hover:bg-gray-100 rounded-full">
-            <ChevronLeft className="h-5 w-5" />{' '}
-          </button>
-          <span className="font-medium">
-            {format(new Date(), 'MMMM d')} -{' '}
-            {format(addDays(new Date(), 6), 'MMMM d')}
-          </span>
-          <button type="button" className="p-2 hover:bg-gray-100 rounded-full">
-            <ChevronRight className="h-5 w-5" />{' '}
-          </button>
-        </div>
+        <WeekSwitch startDate={startDate} />
       </div>
-
-      <WeeklyCalendar />
+      <WeeklyCalendar
+        startDate={startDate}
+        selectedDate={start ? new Date(start) : new Date()}
+      />
       <DayMeals />
     </div>
   );

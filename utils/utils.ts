@@ -95,3 +95,12 @@ export const mergeArrays = <T extends { id: string }>(arr1: T[], arr2: T[]) => {
 
   return uniqueArray;
 };
+
+export function getStartOfWeek(date = new Date()) {
+  const dayOfWeek = date.getDay(); // Sunday is 0, Monday is 1, ..., Saturday is 6
+  const daysSinceMonday = (dayOfWeek + 6) % 7; // Adjust so Monday is 0, ..., Sunday is 6
+  const monday = new Date(date); // Clone the date
+  monday.setDate(date.getDate() - daysSinceMonday); // Go back to Monday
+  monday.setHours(0, 0, 0, 0); // Reset time to start of the day
+  return monday;
+}
