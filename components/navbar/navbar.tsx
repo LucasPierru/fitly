@@ -20,12 +20,12 @@ const Navbar = async ({ locale }: { locale: string }) => {
       path: '/dashboard'
     },
     {
-      name: 'Workouts',
-      path: '/workouts'
+      name: 'Meals',
+      path: '/meals'
     },
     {
-      name: 'Nutrition',
-      path: '/nutrition'
+      name: 'Planner',
+      path: '/planner'
     },
     {
       name: 'Community',

@@ -23,7 +23,9 @@ export const pathnames = {
   '/dashboard/meals': '/dashboard/meals',
   '/dashboard/meals/create': '/dashboard/meals/create',
   '/dashboard/meals/[id]': '/dashboard/meals/[id]',
-  '/community': '/community'
+  '/community': '/community',
+  '/meals': '/meals',
+  '/planner': '/planner'
 } satisfies Pathnames<typeof locales>;
 
 export type AppPathnames = keyof typeof pathnames;
