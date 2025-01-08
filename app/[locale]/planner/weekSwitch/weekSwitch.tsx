@@ -15,8 +15,7 @@ const WeekSwitch = ({ startDate }: { startDate: Date }) => {
         <ChevronLeft className="h-5 w-5" />{' '}
       </Link>
       <span className="font-medium">
-        {format(startDate, 'MMMM d')} -{' '}
-        {format(addDays(startDate, 6), 'MMMM d')}
+        {format(startDate, 'MMM d')} - {format(addDays(startDate, 6), 'MMM d')}
       </span>
       <Link
         href={{

@@ -47,7 +47,7 @@ export function NextMeals() {
             </button>
             <div>
               <h3 className="font-medium">{meal.name}</h3>
-              <p className="text-sm text-gray-500">
+              <p className="text-md text-gray-500">
                 {meal.time} • {meal.calories} kcal
               </p>
             </div>

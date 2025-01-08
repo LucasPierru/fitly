@@ -9,11 +9,12 @@ const NavLink = ({
   ...linkProps
 }: { children: ReactNode } & LinkProps) => {
   const pathname = usePathname();
+  const path = `/${linkProps.locale}${linkProps.href}`;
 
   return (
     <Link
       {...linkProps}
-      className={`text-lg p-2 px-4 hover:bg-gray-200 rounded-full ${pathname === linkProps.href ? 'font-semibold hover:bg-background' : ''}`}
+      className={`text-lg p-2 px-4 hover:bg-gray-200 rounded-full ${pathname === path ? 'font-semibold hover:bg-background' : ''}`}
     >
       {children}
     </Link>

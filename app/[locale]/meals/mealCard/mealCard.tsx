@@ -3,7 +3,7 @@ import Image from 'next/image';
 
 const MealCard = () => {
   return (
-    <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+    <div className="bg-background-secondary rounded-lg shadow-sm overflow-hidden">
       <div className="relative w-full h-48">
         <Image
           src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c"

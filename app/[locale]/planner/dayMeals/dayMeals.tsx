@@ -10,10 +10,10 @@ export function DayMeals() {
   ];
 
   return (
-    <div className="space-y-4">
-      {timeSlots.map((slot, index) => (
+    <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+      {timeSlots.map((slot) => (
         <div
-          key={index}
+          key={slot.name}
           className="bg-background-secondary rounded-lg shadow-sm p-4"
         >
           <div className="flex items-center justify-between mb-2">

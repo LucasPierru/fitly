@@ -45,6 +45,7 @@ const Navbar = async ({ locale }: { locale: string }) => {
                 key={index as Key}
                 className="text-lg p-2 px-4 rounded-full font-base"
                 href={link.path as AppPathname}
+                locale={locale as 'en' | 'fr'}
               >
                 {link.name}
               </NavLink>

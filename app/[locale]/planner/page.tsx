@@ -16,7 +16,7 @@ export default function PlannerPage({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center flex-col sm:flex-row justify-between">
         <h1 className="text-xl font-bold text-foreground">Meal Planner</h1>
         <WeekSwitch startDate={startDate} />
       </div>
