@@ -104,3 +104,42 @@ export function getStartOfWeek(date = new Date()) {
   monday.setHours(0, 0, 0, 0); // Reset time to start of the day
   return monday;
 }
+
+interface BMRParams {
+  weight: number; // in kg
+  height: number; // in cm
+  age: number;
+  gender: 'male' | 'female';
+  activityLevel: 'sedentary' | 'light' | 'moderate' | 'active' | 'very_active';
+}
+
+const ACTIVITY_MULTIPLIERS = {
+  sedentary: 1.2,
+  light: 1.375,
+  moderate: 1.55,
+  active: 1.725,
+  very_active: 1.9
+};
+
+export const calculateBMR = ({
+  weight,
+  height,
+  age,
+  gender,
+  activityLevel
+}: BMRParams) => {
+  // Mifflin-St Jeor Equation
+  let bmr = 10 * weight + 6.25 * height - 5 * age;
+  bmr = gender === 'male' ? bmr + 5 : bmr - 161;
+
+  // Apply activity multiplier
+  const tdee = bmr * ACTIVITY_MULTIPLIERS[activityLevel];
+
+  return {
+    bmr: Math.round(bmr),
+    tdee: Math.round(tdee),
+    maintenance: Math.round(tdee),
+    weightLoss: Math.round(tdee - 500), // 500 calorie deficit
+    weightGain: Math.round(tdee + 500) // 500 calorie surplus
+  };
+};

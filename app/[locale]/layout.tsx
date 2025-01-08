@@ -3,6 +3,7 @@ import { Lexend } from 'next/font/google';
 import { NextIntlClientProvider, useMessages } from 'next-intl';
 import './globals.css';
 import Navbar from '@/components/navbar/navbar';
+import MobileNavbar from '@/components/navbar/mobileNavbar';
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -37,6 +38,7 @@ export default function RootLayout({
               {children}
             </main>
           </div>
+          <MobileNavbar locale={locale} />
         </NextIntlClientProvider>
       </body>
     </html>

@@ -1,6 +1,5 @@
 import { Key } from 'react';
 import Link from 'next/link';
-import { Home, Utensils, Calendar, User } from 'lucide-react';
 import { Link as NavLink, pathnames, AppPathname } from '@/navigation';
 
 type LinkProps = {

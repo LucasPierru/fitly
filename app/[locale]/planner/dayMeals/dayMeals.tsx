@@ -12,7 +12,10 @@ export function DayMeals() {
   return (
     <div className="space-y-4">
       {timeSlots.map((slot, index) => (
-        <div key={index} className="bg-white rounded-lg shadow-sm p-4">
+        <div
+          key={index}
+          className="bg-background-secondary rounded-lg shadow-sm p-4"
+        >
           <div className="flex items-center justify-between mb-2">
             <div>
               <p className="font-medium">{slot.name}</p>
