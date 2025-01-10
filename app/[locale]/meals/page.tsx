@@ -1,7 +1,11 @@
 import { Plus, Search } from 'lucide-react';
 import MealCard from './mealCard/mealCard';
+import { getRecipes } from '@/actions/recipes';
+import { getIngredientsListString, getSelectNutrients } from '@/utils/utils';
 
-export default function MealsPage() {
+export default async function MealsPage() {
+  const recipes = await getRecipes();
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       <div className="col-span-full flex items-center justify-between">
@@ -22,14 +26,21 @@ export default function MealsPage() {
         </div>
         {/* <MealFilters /> */}
       </div>
-      <MealCard />
-      <MealCard />
-      <MealCard />
-      <MealCard />
-      <MealCard />
-      <MealCard />
-      <MealCard />
-      <MealCard />
+      {recipes.map((recipe) => {
+        const macros = getSelectNutrients(recipe);
+        const ingredientsString = getIngredientsListString(recipe);
+
+        return (
+          <MealCard
+            key={recipe.id}
+            title={recipe.title}
+            ingredientsString={ingredientsString}
+            imageUrl={recipe.image}
+            readyInMinutes={recipe.readyInMinutes}
+            macros={macros}
+          />
+        );
+      })}
     </div>
   );
 }

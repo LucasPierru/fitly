@@ -12,7 +12,8 @@ export function WeeklyCalendar({
     <div className="grid grid-cols-7 gap-2 sm:gap-4">
       {Array.from({ length: 7 }).map((_, i) => {
         const date = addDays(startDate, i);
-        const isToday = date.getUTCDate() === selectedDate.getUTCDate();
+        const isToday =
+          date.toLocaleDateString() === selectedDate.toLocaleDateString();
 
         return (
           <Link

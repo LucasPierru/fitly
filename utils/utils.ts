@@ -1,4 +1,4 @@
-import { DishTypes } from '@/types/recipes';
+import { DishTypes, RecipeInformation } from '@/types/recipes';
 
 export const formatPhoneNumber = (phoneNumber: string) => {
   let newPhoneNumber;
@@ -142,4 +142,30 @@ export const calculateBMR = ({
     weightLoss: Math.round(tdee - 500), // 500 calorie deficit
     weightGain: Math.round(tdee + 500) // 500 calorie surplus
   };
+};
+
+export const getSelectNutrients = (recipe: RecipeInformation) => {
+  const { nutrients } = recipe.nutrition;
+  const selectNutrients = nutrients.reduce(
+    (acc, nutrient) => {
+      if (nutrient.name === 'Calories')
+        acc.calories = Math.round(nutrient.amount);
+      if (nutrient.name === 'Protein')
+        acc.protein = Math.round(nutrient.amount);
+      if (nutrient.name === 'Carbohydrates')
+        acc.carbs = Math.round(nutrient.amount);
+      if (nutrient.name === 'Fat') acc.fat = Math.round(nutrient.amount);
+      return acc;
+    },
+    { calories: 0, protein: 0, carbs: 0, fat: 0 }
+  );
+
+  return selectNutrients;
+};
+
+export const getIngredientsListString = (recipe: RecipeInformation) => {
+  const ingredientsList = recipe.nutrition.ingredients.map((ingredient) => {
+    return ingredient.name;
+  });
+  return ingredientsList.join(', ');
 };

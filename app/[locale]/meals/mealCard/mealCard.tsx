@@ -1,42 +1,56 @@
-import { Clock, Plus } from 'lucide-react';
 import Image from 'next/image';
+import { Clock, Plus } from 'lucide-react';
 
-const MealCard = () => {
+type MealCardProps = {
+  title: string;
+  ingredientsString: string;
+  imageUrl: string;
+  readyInMinutes: number;
+  macros: { calories: number; protein: number; carbs: number; fat: number };
+};
+
+const MealCard = ({
+  title,
+  ingredientsString,
+  imageUrl,
+  readyInMinutes,
+  macros
+}: MealCardProps) => {
   return (
     <div className="bg-background-secondary rounded-lg shadow-sm overflow-hidden">
       <div className="relative w-full h-48">
         <Image
-          src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c"
+          src={imageUrl.replace('312x231', '556x370')}
           alt="Meal"
           fill
           className="w-full h-full object-cover absolute"
         />
       </div>
       <div className="p-4">
-        <h3 className="font-semibold text-lg">Healthy Bowl</h3>
-        <p className="text-md text-gray-500 mt-1">
-          Fresh vegetables, quinoa, avocado
+        <h3 className="font-semibold text-lg truncate">{title}</h3>
+        <p className="text-md text-gray-500 mt-1 truncate">
+          {ingredientsString}
         </p>
 
         <div className="mt-4 flex items-center justify-between text-md">
           <div className="flex items-center gap-2 text-gray-500">
             <Clock className="h-4 w-4" />
-            <span>25 min</span>
+            <span>{readyInMinutes} min</span>
           </div>
-          <span className="font-medium">450 kcal</span>
+          <span className="font-medium">{macros.calories} kcal</span>
         </div>
         <div className="mt-4 grid grid-cols-3 gap-2 text-md">
           <div>
             <span className="text-gray-500">Protein</span>
-            <p className="font-medium">25g</p>
+            <p className="font-medium">{macros.protein}g</p>
           </div>
           <div>
             <span className="text-gray-500">Carbs</span>
-            <p className="font-medium">45g</p>
+            <p className="font-medium">{macros.carbs}g</p>
           </div>
           <div>
             <span className="text-gray-500">Fat</span>
-            <p className="font-medium">15g</p>
+            <p className="font-medium">{macros.fat}g</p>
           </div>
         </div>
         <button
