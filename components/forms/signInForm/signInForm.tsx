@@ -5,10 +5,13 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import FormError from '@/components/errors/formError/formError';
-import { signIn } from '@/actions/auth';
+import Card from '@/components/cards/card';
+import { login } from '@/requests/auth';
+import { useRouter } from '@/navigation';
 
 const SignUpForm = () => {
   const t = useTranslations('Common');
+  const router = useRouter();
 
   const schema = yup
     .object({
@@ -30,7 +33,9 @@ const SignUpForm = () => {
   } = useForm<Inputs>({ resolver: yupResolver(schema) });
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    await signIn(data);
+    const { token, message, error } = await login(data.email, data.password);
+    router.push('/dashboard');
+    console.log({ token, message, error });
     reset();
   };
 
@@ -48,31 +53,35 @@ const SignUpForm = () => {
   ];
 
   return (
-    <form
-      className="flex flex-col gap-4 min-w-full mt-4"
-      onSubmit={handleSubmit(onSubmit)}
-    >
-      <span className="text-2xl font-semibold">Log into your account</span>
-      <div className="flex flex-col grow rounded-lg gap-1 items-center">
-        {inputs.map((input) => (
-          <label key={input.id} htmlFor={input.id} className="w-full">
-            {input.label}
-            <input
-              id={input.id}
-              type={input.type}
-              className="input bg-secondary text-white placeholder:text-white w-full focus:outline-0 mt-2"
-              {...register(input.id, {
-                required: true
-              })}
-            />
-            <FormError error={errors[input.id]} />
-          </label>
-        ))}
-        <button type="submit" className="btn btn-primary max-w-xs w-full">
-          Log In
-        </button>
-      </div>
-    </form>
+    <Card>
+      <form
+        className="flex flex-col gap-4 min-w-full mt-4"
+        onSubmit={handleSubmit(onSubmit)}
+      >
+        <div className="flex flex-col grow rounded-lg gap-1 items-center">
+          {inputs.map((input) => (
+            <label key={input.id} htmlFor={input.id} className="w-full">
+              {input.label}
+              <input
+                id={input.id}
+                type={input.type}
+                className="input bg-secondary text-foreground placeholder:text-white w-full focus:outline-0 mt-2"
+                {...register(input.id, {
+                  required: true
+                })}
+              />
+              <FormError error={errors[input.id]} />
+            </label>
+          ))}
+          <button
+            type="submit"
+            className="btn btn-primary max-w-xs w-full text-white"
+          >
+            Sign in
+          </button>
+        </div>
+      </form>
+    </Card>
   );
 };
 

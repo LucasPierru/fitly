@@ -7,7 +7,7 @@ type CardProps = {
 
 const Card = ({ className, children }: CardProps) => (
   <div
-    className={`bg-background-secondary rounded-lg shadow-sm p-6 ${className}`}
+    className={`bg-background-secondary rounded-lg shadow-sm p-6 ${className || ''}`}
   >
     {children}
   </div>

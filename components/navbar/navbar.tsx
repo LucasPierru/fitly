@@ -1,6 +1,8 @@
 import { Key } from 'react';
 import Link from 'next/link';
+import { cookies } from 'next/headers';
 import { Link as NavLink, pathnames, AppPathname } from '@/navigation';
+import { logout } from '@/requests/auth';
 
 type LinkProps = {
   name: string;
@@ -27,9 +29,13 @@ const Navbar = async ({ locale }: { locale: string }) => {
       path: '/planner'
     },
     {
+      name: 'Profile',
+      path: '/profile'
+    }
+    /* {
       name: 'Community',
       path: '/community'
-    }
+    } */
   ];
 
   return (
@@ -51,8 +57,8 @@ const Navbar = async ({ locale }: { locale: string }) => {
               </NavLink>
             );
           })}
-          {'test'.includes('t') ? (
-            <form>
+          {cookies().get('token') ? (
+            <form action={logout}>
               <button
                 className="btn btn-secondary text-foreground"
                 type="submit"
@@ -62,10 +68,7 @@ const Navbar = async ({ locale }: { locale: string }) => {
             </form>
           ) : (
             <>
-              <NavLink
-                href="/login"
-                className="btn btn-primary text-foreground"
-              >
+              <NavLink href="/login" className="btn btn-primary text-white">
                 Log In
               </NavLink>
               <NavLink

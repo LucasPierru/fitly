@@ -1,17 +1,18 @@
 import React from 'react';
 import { calculateBMR } from '@/utils/utils';
+import Card from '@/components/cards/card';
 
 export function BMRCalculator() {
   const result = calculateBMR({
-    weight: 75,
-    height: 175,
-    age: 30,
+    weight: 89,
+    height: 190,
+    age: 27,
     gender: 'male',
-    activityLevel: 'moderate'
+    activityLevel: 'active'
   });
 
   return (
-    <div className="bg-white rounded-lg shadow-sm p-6">
+    <Card>
       <h2 className="text-lg font-semibold mb-4">BMR & Calorie Goals</h2>
 
       <div className="grid grid-cols-2 gap-4">
@@ -59,6 +60,6 @@ export function BMRCalculator() {
           </p>
         </div>
       </div>
-    </div>
+    </Card>
   );
 }

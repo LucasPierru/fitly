@@ -1,11 +1,51 @@
-import React from 'react';
+'use client';
 
-export function UserSettings() {
+import { useTranslations } from 'next-intl';
+import { useForm, SubmitHandler } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import FormError from '@/components/errors/formError/formError';
+import { HowActive, Sex, User } from '@/types/users';
+import Card from '@/components/cards/card';
+import { updateProfile } from '@/requests/profile';
+
+export function UserSettings({ profile }: { profile: User }) {
+  const t = useTranslations('Common');
+  const schema = yup
+    .object({
+      height: yup.number(),
+      weight: yup.number(),
+      birthday: yup.date(),
+      sex: yup.string<Sex>().oneOf(['male', 'female']),
+      howActive: yup
+        .string<HowActive>()
+        .oneOf(['sedentary', 'light', 'moderate', 'active', 'very_active'])
+    })
+    .required();
+
+  type Inputs = yup.InferType<typeof schema>;
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors }
+  } = useForm<Inputs>({
+    resolver: yupResolver(schema),
+    defaultValues: profile
+  });
+
+  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+    // router.push('/dashboard');
+    await updateProfile(data);
+    reset();
+  };
+
   return (
-    <div className="bg-white rounded-lg shadow-sm p-6">
+    <Card>
       <h2 className="text-lg font-semibold mb-4">Personal Information</h2>
 
-      <form className="space-y-4">
+      <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label
@@ -16,7 +56,10 @@ export function UserSettings() {
               <input
                 id="height"
                 type="number"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                className="mt-1 block bg-secondary w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                {...register('height', {
+                  required: true
+                })}
               />
             </label>
           </div>
@@ -29,7 +72,10 @@ export function UserSettings() {
               <input
                 id="weight"
                 type="number"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                className="mt-1 block bg-secondary w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                {...register('weight', {
+                  required: true
+                })}
               />
             </label>
           </div>
@@ -44,20 +90,23 @@ export function UserSettings() {
             <input
               id="age"
               type="number"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="mt-1 block bg-secondary w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
             />
           </label>
         </div>
 
         <div>
           <label
-            htmlFor="gender"
+            htmlFor="sex"
             className="block text-md font-medium textforeground-secondary"
           >
-            Gender
+            Sex
             <select
-              id="gender"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              id="sex"
+              className="mt-1 block bg-secondary w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              {...register('sex', {
+                required: true
+              })}
             >
               <option value="male">Male</option>
               <option value="female">Female</option>
@@ -67,13 +116,16 @@ export function UserSettings() {
 
         <div>
           <label
-            htmlFor="level"
+            htmlFor="howActive"
             className="block text-md font-medium textforeground-secondary"
           >
             Activity Level
             <select
-              id="level"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              id="howActive"
+              className="mt-1 block bg-secondary w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              {...register('howActive', {
+                required: true
+              })}
             >
               <option value="sedentary">Sedentary</option>
               <option value="light">Light Exercise</option>
@@ -91,6 +143,6 @@ export function UserSettings() {
           Save Changes
         </button>
       </form>
-    </div>
+    </Card>
   );
 }

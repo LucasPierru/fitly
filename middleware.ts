@@ -1,5 +1,6 @@
 import createMiddleware from 'next-intl/middleware';
-import { type NextRequest } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
+import { cookies } from 'next/headers';
 import { localePrefix, locales, pathnames } from './navigation';
 
 const publicPages = ['/', '/login', '/signup'];
@@ -11,15 +12,26 @@ const intlMiddleware = createMiddleware({
   pathnames
 });
 
-/* const authMiddleware = async (request: NextRequest) => {
+const authMiddleware = async (request: NextRequest) => {
   const requestHeaders = new Headers(request.headers);
-  requestHeaders.set('x-next-pathname', request.nextUrl.pathname);
+  const defaultLocale = request.headers.get('x-default-locale') || 'en';
   try {
-    return null;
-  } catch (e) {
-    return NextResponse.error(e);
+    const cookieStore = cookies();
+    const token = cookieStore.get('token');
+    if (!token) {
+      request.nextUrl.pathname = `/${defaultLocale}/login`;
+    }
+    const intlResponse = intlMiddleware(request);
+    intlResponse.headers.set('x-default-locale', defaultLocale);
+    return intlResponse;
+  } catch (error) {
+    return NextResponse.next({
+      request: {
+        headers: requestHeaders
+      }
+    });
   }
-}; */
+};
 
 export default async function middleware(request: NextRequest) {
   const publicPathnameRegex = RegExp(
@@ -33,8 +45,7 @@ export default async function middleware(request: NextRequest) {
   if (isPublicPage) {
     return intlMiddleware(request);
   }
-  return intlMiddleware(request);
-  /* return authMiddleware(request); */
+  return authMiddleware(request);
 }
 
 export const config = {

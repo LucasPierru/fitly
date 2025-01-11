@@ -9,7 +9,7 @@ export const metadata = {
   title: 'Fitly | Dashboard'
 };
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div className="col-span-full flex items-center justify-between">

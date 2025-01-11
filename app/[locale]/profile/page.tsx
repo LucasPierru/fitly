@@ -1,17 +1,18 @@
+import { getProfile } from '@/requests/profile';
 import { BMRCalculator } from './bmrCalculator/bmrCalculator';
 import { UserSettings } from './userSettings/userSettings';
 import { WeightTracker } from './weightTracker/weightTracker';
+import { User } from '@/types/users';
 
-export default function ProfilePage() {
+export default async function ProfilePage() {
+  const { profile } = await getProfile();
   return (
     <div className="space-y-6">
       <h1 className="text-xl font-bold text-foreground">Profile</h1>
-
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <UserSettings />
+        <UserSettings profile={profile as User} />
         <BMRCalculator />
       </div>
-
       <WeightTracker />
     </div>
   );

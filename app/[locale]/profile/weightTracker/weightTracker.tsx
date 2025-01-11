@@ -1,5 +1,6 @@
 'use client';
 
+import Card from '@/components/cards/card';
 import { format, subDays } from 'date-fns';
 import {
   LineChart,
@@ -27,7 +28,7 @@ export function WeightTracker() {
     .reverse();
 
   return (
-    <div className="bg-white rounded-lg shadow-sm p-6">
+    <Card>
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-lg font-semibold">Weight History</h2>
         <button type="button" className="btn btn-primary text-white">
@@ -68,6 +69,6 @@ export function WeightTracker() {
           </LineChart>
         </ResponsiveContainer>
       </div>
-    </div>
+    </Card>
   );
 }
