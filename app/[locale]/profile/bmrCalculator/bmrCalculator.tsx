@@ -1,14 +1,23 @@
 import React from 'react';
-import { calculateBMR } from '@/utils/utils';
+import { calculateAgeFromBirthday, calculateBMR } from '@/utils/utils';
 import Card from '@/components/cards/card';
+import { UserBMRData } from '@/types/users';
 
-export function BMRCalculator() {
+export function BMRCalculator({
+  weight,
+  height,
+  birthday,
+  sex,
+  howActive
+}: UserBMRData) {
+  const age = calculateAgeFromBirthday(birthday!);
+
   const result = calculateBMR({
-    weight: 89,
-    height: 190,
-    age: 27,
-    gender: 'male',
-    activityLevel: 'active'
+    weight: weight!,
+    height: height!,
+    age,
+    sex: sex!,
+    howActive: howActive!
   });
 
   return (

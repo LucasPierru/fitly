@@ -1,6 +1,5 @@
 'use client';
 
-import Card from '@/components/cards/card';
 import { format, subDays } from 'date-fns';
 import {
   LineChart,
@@ -12,6 +11,7 @@ import {
   Legend,
   ResponsiveContainer
 } from 'recharts';
+import Card from '@/components/cards/card';
 
 export function WeightTracker() {
   const weightData = Array.from(Array(30).keys())

@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -11,11 +12,12 @@ import { updateProfile } from '@/requests/profile';
 
 export function UserSettings({ profile }: { profile: User }) {
   const t = useTranslations('Common');
+  const router = useRouter();
   const schema = yup
     .object({
       height: yup.number(),
       weight: yup.number(),
-      birthday: yup.date(),
+      birthday: yup.string(),
       sex: yup.string<Sex>().oneOf(['male', 'female']),
       howActive: yup
         .string<HowActive>()
@@ -28,7 +30,6 @@ export function UserSettings({ profile }: { profile: User }) {
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors }
   } = useForm<Inputs>({
     resolver: yupResolver(schema),
@@ -36,9 +37,8 @@ export function UserSettings({ profile }: { profile: User }) {
   });
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    // router.push('/dashboard');
     await updateProfile(data);
-    reset();
+    router.refresh();
   };
 
   return (
@@ -83,13 +83,17 @@ export function UserSettings({ profile }: { profile: User }) {
 
         <div>
           <label
-            htmlFor="age"
+            htmlFor="birthday"
             className="block text-md font-medium textforeground-secondary"
           >
-            Age
+            Birthday
             <input
-              id="age"
-              type="number"
+              id="birthday"
+              type="date"
+              {...register('birthday', {
+                required: true
+              })}
+              defaultValue={new Date(profile.birthday!).toLocaleDateString()}
               className="mt-1 block bg-secondary w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
             />
           </label>

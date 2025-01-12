@@ -21,7 +21,7 @@ export type User = {
   confirmPassword: string;
   height?: number;
   weight?: number;
-  age?: number;
+  birthday?: string;
   sex?: Sex;
   howActive?: HowActive;
   goal?: Goal;
@@ -29,5 +29,5 @@ export type User = {
 
 export type UserBMRData = Pick<
   User,
-  'height' | 'weight' | 'age' | 'sex' | 'howActive'
+  'height' | 'weight' | 'birthday' | 'sex' | 'howActive'
 >;

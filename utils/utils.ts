@@ -109,8 +109,8 @@ interface BMRParams {
   weight: number; // in kg
   height: number; // in cm
   age: number;
-  gender: 'male' | 'female';
-  activityLevel: 'sedentary' | 'light' | 'moderate' | 'active' | 'very_active';
+  sex: 'male' | 'female';
+  howActive: 'sedentary' | 'light' | 'moderate' | 'active' | 'very_active';
 }
 
 const ACTIVITY_MULTIPLIERS = {
@@ -125,15 +125,15 @@ export const calculateBMR = ({
   weight,
   height,
   age,
-  gender,
-  activityLevel
+  sex,
+  howActive
 }: BMRParams) => {
   // Mifflin-St Jeor Equation
   let bmr = 10 * weight + 6.25 * height - 5 * age;
-  bmr = gender === 'male' ? bmr + 5 : bmr - 161;
+  bmr = sex === 'male' ? bmr + 5 : bmr - 161;
 
   // Apply activity multiplier
-  const tdee = bmr * ACTIVITY_MULTIPLIERS[activityLevel];
+  const tdee = bmr * ACTIVITY_MULTIPLIERS[howActive];
 
   return {
     bmr: Math.round(bmr),
@@ -168,4 +168,12 @@ export const getIngredientsListString = (recipe: RecipeInformation) => {
     return ingredient.name;
   });
   return ingredientsList.join(', ');
+};
+
+export const calculateAgeFromBirthday = (birthday: string) => {
+  const now = new Date().getTime();
+  const timeDiff = Math.abs(now - new Date(birthday).getTime());
+  const age = Math.floor(timeDiff / (1000 * 3600 * 24) / 365.25);
+
+  return age;
 };
