@@ -2,6 +2,7 @@ import { Plus, Search } from 'lucide-react';
 import MealCard from './mealCard/mealCard';
 import { getRecipes } from '@/actions/recipes';
 import { getIngredientsListString, getSelectNutrients } from '@/utils/utils';
+import CreateMealForm from './createMealForm/createMealForm';
 
 export default async function MealsPage() {
   const recipes = await getRecipes();
@@ -10,10 +11,11 @@ export default async function MealsPage() {
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       <div className="col-span-full flex items-center justify-between">
         <h1 className="text-xl font-bold text-foreground">My Meals</h1>
-        <button type="button" className="btn btn-primary text-white">
+        <CreateMealForm />
+        {/* <button type="button" className="btn btn-primary text-white">
           <Plus className="h-4 w-4 mr-2" />
           Add Meal
-        </button>
+        </button> */}
       </div>
       <div className="col-span-full flex items-center gap-4 bg-white p-4 rounded-lg shadow-sm">
         <div className="flex-1 relative">

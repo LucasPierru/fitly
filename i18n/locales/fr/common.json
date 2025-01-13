@@ -4,7 +4,8 @@
     "metaDescription": "Find experts in the real estate business",
     "errors": {
       "isRequired": "Ce champ est requis",
-      "invalidEmail": "Ce courriel n'est pas valide"
+      "invalidEmail": "Ce courriel n'est pas valide",
+      "isNotNumber": "Veuillez entre un chiffre"
     }
   }
 }

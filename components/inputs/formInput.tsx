@@ -9,7 +9,7 @@ import FormError from '../errors/formError/formError';
 
 type FormInputProps = {
   id: string;
-  children: ReactNode;
+  children?: ReactNode;
   error?: FieldError;
   type: string;
 } & InputHTMLAttributes<HTMLInputElement>;
@@ -25,11 +25,11 @@ const FormInput = forwardRef(
         <input
           id={id}
           type={type}
-          className="input bg-secondary text-white placeholder:text-white w-full focus:outline-0 mt-2"
+          className="input bg-secondary text-foreground placeholder:text-foreground w-full focus:outline-0 mt-2"
           ref={ref}
           {...otherProps}
         />
-        <FormError error={error} />
+        {error && <FormError error={error} />}
       </label>
     );
   }

@@ -15,8 +15,8 @@ export function UserSettings({ profile }: { profile: User }) {
   const router = useRouter();
   const schema = yup
     .object({
-      height: yup.number(),
-      weight: yup.number(),
+      height: yup.number().min(0, t('errors.isNotNumber')),
+      weight: yup.number().min(0, t('errors.isNotNumber')),
       birthday: yup.string(),
       sex: yup.string<Sex>().oneOf(['male', 'female']),
       howActive: yup
