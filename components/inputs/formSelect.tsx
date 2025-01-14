@@ -14,6 +14,7 @@ type Option = {
 
 type FormInputProps = {
   id: string;
+  className?: string;
   children?: ReactNode;
   error?: FieldError;
   options: Option[];
@@ -21,11 +22,11 @@ type FormInputProps = {
 
 const FormSelect = forwardRef(
   (
-    { id, children, error, options, ...otherProps }: FormInputProps,
+    { id, className, children, error, options, ...otherProps }: FormInputProps,
     ref: ForwardedRef<HTMLSelectElement>
   ) => {
     return (
-      <label htmlFor={id} className="w-full">
+      <label htmlFor={id} className={`w-full ${className || ''}`}>
         {children}
         <select
           id={id}

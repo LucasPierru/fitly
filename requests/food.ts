@@ -8,7 +8,7 @@ export const getIngredientsAutocomplete = async (
 ): Promise<FoodInformation[]> => {
   try {
     const response: AxiosResponse<FoodInformation[]> = await api.get(
-      `/food/ingredients/autocomplete?query=${query}&number=5&metaInformation=true&apiKey=${process.env.NEXT_PUBLIC_SPOONACULAR_API_KEY}`
+      `/food/ingredients/autocomplete?query=${query}&number=3&metaInformation=true&apiKey=${process.env.NEXT_PUBLIC_SPOONACULAR_API_KEY}`
     );
     return response.data;
   } catch (error) {

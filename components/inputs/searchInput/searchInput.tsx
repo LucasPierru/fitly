@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef } from 'react';
-import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import { Search } from 'lucide-react';
 import { useRouter, usePathname, AppPathname } from '@/navigation';
 
 const SearchInput = ({ ...otherProps }) => {
@@ -12,7 +12,7 @@ const SearchInput = ({ ...otherProps }) => {
   return (
     <div className="relative">
       <div className="absolute aspect-square h-full top-0 left-2 flex items-center ml-1">
-        <MagnifyingGlassIcon className="absolute aspect-square h-3/5" />
+        <Search className="absolute aspect-square h-3/5" />
       </div>
       <input
         ref={inputRef}

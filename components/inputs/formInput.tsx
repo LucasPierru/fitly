@@ -9,6 +9,7 @@ import FormError from '../errors/formError/formError';
 
 type FormInputProps = {
   id: string;
+  className?: string;
   children?: ReactNode;
   error?: FieldError;
   type: string;
@@ -16,11 +17,11 @@ type FormInputProps = {
 
 const FormInput = forwardRef(
   (
-    { id, children, error, type, ...otherProps }: FormInputProps,
+    { id, className, children, error, type, ...otherProps }: FormInputProps,
     ref: ForwardedRef<HTMLInputElement>
   ) => {
     return (
-      <label htmlFor={id} className="w-full">
+      <label htmlFor={id} className={`w-full ${className || ''}`}>
         {children}
         <input
           id={id}

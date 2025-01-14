@@ -7,11 +7,16 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { Minus, Plus, X } from 'lucide-react';
 import FormInput from '@/components/inputs/formInput';
-import FormError from '@/components/errors/formError/formError';
 import FormSelect from '@/components/inputs/formSelect';
+import { getIngredientsAutocomplete } from '@/requests/food';
+import { capitalizeWord } from '@/utils/utils';
+import { FoodInformation } from '@/types/foods';
 
 const CreateMealForm = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [ingredients, setIngredients] = useState<
+    Record<string, FoodInformation[]>
+  >({});
 
   const defaultIngredient = {
     ingredient: { name: '', id: 0, possibleUnits: [] },
@@ -63,6 +68,7 @@ const CreateMealForm = () => {
     control,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors }
   } = useForm<Inputs>({
     resolver: yupResolver(schema),
@@ -91,6 +97,7 @@ const CreateMealForm = () => {
   });
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
+    console.log({ data });
     // router.push('/dashboard');
     reset();
   };
@@ -104,18 +111,30 @@ const CreateMealForm = () => {
   };
 
   const onChange = async (event: ChangeEvent<HTMLInputElement>, id: string) => {
-    /* if (event.target.value.length > 3) {
+    if (event.target.value.length > 3) {
       const data = await getIngredientsAutocomplete(event.target.value);
       if (data) {
+        console.log({ data });
         setIngredients((currentState) => ({ ...currentState, [id]: data }));
       }
-    } else if (
+    } /* else if (
       event.target.value.length <= 3 &&
       ingredients[id] &&
       ingredients[id].length !== 0
     ) {
       setIngredients({});
     } */
+  };
+
+  const onSelectIngredient = (index: number, ingredient: FoodInformation) => {
+    console.log({ ingredient });
+    const { id, name, possibleUnits } = ingredient;
+    setValue(`ingredients.${index}.ingredient`, {
+      id,
+      name: capitalizeWord(name),
+      possibleUnits
+    });
+    setIngredients({});
   };
 
   return (
@@ -129,7 +148,7 @@ const CreateMealForm = () => {
         Add Meal
       </button>
       {isOpen && (
-        <div className="z-20 fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center p-4">
+        <div className="z-10 fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] overflow-hidden">
             <div className="p-4 border-b flex justify-between items-center">
               <h2 className="text-lg font-semibold">Create New Recipe</h2>
@@ -151,6 +170,7 @@ const CreateMealForm = () => {
                     {...register('name', {
                       required: true
                     })}
+                    error={errors.name}
                   >
                     Recipe Name
                   </FormInput>
@@ -163,6 +183,7 @@ const CreateMealForm = () => {
                     {...register('description', {
                       required: true
                     })}
+                    error={errors.description}
                   >
                     Description
                   </FormInput>
@@ -170,9 +191,9 @@ const CreateMealForm = () => {
 
                 <div>
                   <div className="flex justify-between items-center mb-2">
-                    <label className="block text-lg font-medium text-gray-700">
+                    <span className="block text-lg font-medium text-gray-700">
                       Ingredients
-                    </label>
+                    </span>
                     <button
                       type="button"
                       onClick={() => ingredientAppend(defaultIngredient)}
@@ -184,25 +205,48 @@ const CreateMealForm = () => {
                   </div>
                   <div className="space-y-2">
                     {ingredientFields.map((ingredient, index) => (
-                      <div
-                        key={ingredient.id}
-                        className="flex gap-2 items-center"
-                      >
-                        <FormInput
-                          id={`ingredients.${index}.ingredient.name`}
-                          error={errors.ingredients?.[index]?.ingredient?.name}
-                          {...register(`ingredients.${index}.ingredient.name`, {
-                            required: true
-                          })}
-                          type="text"
-                          onChange={(event) => {
-                            onChange(event, ingredient.id);
-                          }}
-                          autoComplete="off"
-                          placeholder="E.g. Chicken breast"
-                        >
-                          Name
-                        </FormInput>
+                      <div key={ingredient.id} className="flex gap-2">
+                        <div className="relative flex-1">
+                          <FormInput
+                            id={`ingredients.${index}.ingredient.name`}
+                            error={
+                              errors.ingredients?.[index]?.ingredient?.name
+                            }
+                            {...register(
+                              `ingredients.${index}.ingredient.name`,
+                              {
+                                required: true
+                              }
+                            )}
+                            type="text"
+                            onChange={(event) => {
+                              onChange(event, ingredient.id);
+                            }}
+                            autoComplete="off"
+                            placeholder="E.g. Chicken breast"
+                          >
+                            Name
+                          </FormInput>
+                          {ingredients[ingredient.id] &&
+                            ingredients[ingredient.id].length > 0 && (
+                              <div className="z-50 absolute top-16 mt-2 w-full gap-2 px-2 py-2 flex flex-col bg-secondary rounded-b-xl border border-secondary group-focus-within:border-b-white group-focus-within:border-x-white group-focus-within:text-red">
+                                {ingredients[ingredient.id].map((ingr) => {
+                                  return (
+                                    <button
+                                      key={ingr.id}
+                                      type="button"
+                                      className="btn btn-secondary btn-sm justify-start"
+                                      onClick={() => {
+                                        onSelectIngredient(index, ingr);
+                                      }}
+                                    >
+                                      {capitalizeWord(ingr.name)}
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            )}
+                        </div>
                         <FormInput
                           type="number"
                           id={`ingredients.${index}.quantity`}
@@ -210,8 +254,9 @@ const CreateMealForm = () => {
                             required: true
                           })}
                           placeholder="Amount"
+                          className="w-24"
                         >
-                          Qty
+                          Amount
                         </FormInput>
                         <FormSelect
                           id={`ingredients.${index}.unit`}
@@ -225,13 +270,14 @@ const CreateMealForm = () => {
                             { name: 'tbsp', value: 'tbsp' },
                             { name: 'tsp', value: 'tsp' }
                           ]}
+                          className="w-24"
                         >
                           Unit
                         </FormSelect>
                         <button
                           type="button"
                           onClick={() => ingredientRemove(index)}
-                          className="p-2 text-red-600 hover:bg-red-50 rounded-full mt-8"
+                          className="p-2 text-red-600 hover:bg-red-50 rounded-full mt-8 grow-0"
                         >
                           {' '}
                           <Minus className="h-4 w-4" />
@@ -243,9 +289,9 @@ const CreateMealForm = () => {
 
                 <div>
                   <div className="flex justify-between items-center mb-2">
-                    <label className="block text-lg font-medium text-gray-700">
+                    <span className="block text-lg font-medium text-gray-700">
                       Instructions
-                    </label>
+                    </span>
                     <button
                       type="button"
                       onClick={() => instructionAppend(defaultInstruction)}
