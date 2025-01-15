@@ -8,9 +8,12 @@ import * as yup from 'yup';
 import { Minus, Plus, X } from 'lucide-react';
 import FormInput from '@/components/inputs/formInput';
 import FormSelect from '@/components/inputs/formSelect';
-import { getIngredientsAutocomplete } from '@/requests/food';
+import {
+  getIngredientInformations,
+  getIngredientsAutocomplete
+} from '@/requests/food';
 import { capitalizeWord } from '@/utils/utils';
-import { FoodInformation } from '@/types/foods';
+import { FoodInformation, FoodInformationDetails } from '@/types/foods';
 
 const CreateMealForm = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,7 +22,7 @@ const CreateMealForm = () => {
   >({});
 
   const defaultIngredient = {
-    ingredient: { name: '', id: 0, possibleUnits: [] },
+    ingredient: {} as FoodInformationDetails,
     quantity: 0,
     unit: ''
   };
@@ -43,7 +46,67 @@ const CreateMealForm = () => {
               possibleUnits: yup
                 .array()
                 .of(yup.string().required())
-                .required(t('errors.isRequired'))
+                .required(t('errors.isRequired')),
+              image: yup.string().required(t('errors.isRequired')),
+              aisle: yup.string().required(t('errors.isRequired')),
+              original: yup.string().required(t('errors.isRequired')),
+              originalName: yup.string().required(t('errors.isRequired')),
+              amount: yup.number().required(t('errors.isRequired')),
+              unit: yup.string().required(t('errors.isRequired')),
+              unitShort: yup.string().required(t('errors.isRequired')),
+              unitLong: yup.string().required(t('errors.isRequired')),
+              estimatedCost: yup.object({
+                value: yup.number(),
+                unit: yup.string()
+              }),
+              consistency: yup.string().required(t('errors.isRequired')),
+              shoppingListUnits: yup
+                .array()
+                .of(yup.string().required(t('errors.isRequired'))),
+              nutrition: yup.object({
+                nutrients: yup
+                  .array()
+                  .of(
+                    yup.object({
+                      name: yup.string(),
+                      amount: yup.number(),
+                      unit: yup.string(),
+                      percentOfDailyNeeds: yup.number()
+                    })
+                  )
+                  .required(),
+                properties: yup
+                  .array()
+                  .of(
+                    yup.object({
+                      name: yup.string(),
+                      amount: yup.number(),
+                      unit: yup.string(),
+                      percentOfDailyNeeds: yup.number()
+                    })
+                  )
+                  .required(),
+                flavonoids: yup.array().of(
+                  yup.object({
+                    name: yup.string(),
+                    amount: yup.number(),
+                    unit: yup.string(),
+                    percentOfDailyNeeds: yup.number()
+                  })
+                ),
+                caloricBreakdown: yup.object({
+                  percentProtein: yup.number(),
+                  percentFat: yup.number(),
+                  percentCarbs: yup.number()
+                }),
+                weightPerServing: yup.object({
+                  amount: yup.number(),
+                  unit: yup.string()
+                })
+              }),
+              categoryPath: yup
+                .array()
+                .of(yup.string().required(t('errors.isRequired')))
             })
             .required(t('errors.isRequired')),
           quantity: yup
@@ -114,26 +177,24 @@ const CreateMealForm = () => {
     if (event.target.value.length > 3) {
       const data = await getIngredientsAutocomplete(event.target.value);
       if (data) {
-        console.log({ data });
         setIngredients((currentState) => ({ ...currentState, [id]: data }));
       }
-    } /* else if (
+    } else if (
       event.target.value.length <= 3 &&
       ingredients[id] &&
       ingredients[id].length !== 0
     ) {
       setIngredients({});
-    } */
+    }
   };
 
-  const onSelectIngredient = (index: number, ingredient: FoodInformation) => {
-    console.log({ ingredient });
+  const onSelectIngredient = async (
+    index: number,
+    ingredient: FoodInformation
+  ) => {
     const { id, name, possibleUnits } = ingredient;
-    setValue(`ingredients.${index}.ingredient`, {
-      id,
-      name: capitalizeWord(name),
-      possibleUnits
-    });
+    const ingredientInformations = await getIngredientInformations(id);
+    setValue(`ingredients.${index}.ingredient`, ingredientInformations);
     setIngredients({});
   };
 
@@ -254,7 +315,7 @@ const CreateMealForm = () => {
                             required: true
                           })}
                           placeholder="Amount"
-                          className="w-24"
+                          className="!w-24"
                         >
                           Amount
                         </FormInput>
@@ -270,7 +331,7 @@ const CreateMealForm = () => {
                             { name: 'tbsp', value: 'tbsp' },
                             { name: 'tsp', value: 'tsp' }
                           ]}
-                          className="w-24"
+                          className="!w-24"
                         >
                           Unit
                         </FormSelect>
