@@ -4,7 +4,7 @@ import { Clock, Plus } from 'lucide-react';
 type MealCardProps = {
   title: string;
   ingredientsString: string;
-  imageUrl: string;
+  imageUrl?: string;
   readyInMinutes: number;
   macros: { calories: number; protein: number; carbs: number; fat: number };
 };
@@ -20,8 +20,12 @@ const MealCard = ({
     <div className="bg-background-secondary rounded-lg shadow-sm overflow-hidden">
       <div className="relative w-full h-48">
         <Image
-          src={imageUrl.replace('312x231', '556x370')}
-          alt="Meal"
+          src={
+            imageUrl
+              ? imageUrl.replace('312x231', '556x370')
+              : '/defaultImage.jpg'
+          }
+          alt={title}
           fill
           className="w-full h-full object-cover absolute"
         />

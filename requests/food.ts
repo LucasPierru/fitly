@@ -27,7 +27,7 @@ export const getIngredientInformations = async (
   if (cachedData) return cachedData;
   try {
     const response: AxiosResponse<FoodInformationDetails> = await api.get(
-      `/food/ingredients/${id}/information?apiKey=${process.env.NEXT_PUBLIC_SPOONACULAR_API_KEY}`
+      `/food/ingredients/${id}/information?apiKey=${process.env.NEXT_PUBLIC_SPOONACULAR_API_KEY}&amount=100&unit=g`
     );
     setToCache(id.toString(), response.data);
     return response.data;

@@ -20,7 +20,7 @@ export type WeightPerServing = {
 export type Flavonoid = {
   name: string;
   amount: number;
-  unit: Unit;
+  unit?: Unit;
   percentOfDailyNeeds?: number;
 };
 
@@ -47,7 +47,7 @@ export type FoodInformationDetails = FoodInformation & {
   estimatedCost: EstimatedCost;
   consistency: string;
   shoppingListUnits: string[];
-  meta: [];
+  meta?: [];
   nutrition: Nutrition;
   categoryPath: string[];
 };
