@@ -21,13 +21,15 @@ export const getIngredientsAutocomplete = async (
 };
 
 export const getIngredientInformations = async (
-  id: number
+  id: number,
+  amount?: number,
+  unit?: string
 ): Promise<FoodInformationDetails> => {
   const cachedData: FoodInformationDetails = getFromCache(id.toString());
   if (cachedData) return cachedData;
   try {
     const response: AxiosResponse<FoodInformationDetails> = await api.get(
-      `/food/ingredients/${id}/information?apiKey=${process.env.NEXT_PUBLIC_SPOONACULAR_API_KEY}&amount=100&unit=g`
+      `/food/ingredients/${id}/information?apiKey=${process.env.NEXT_PUBLIC_SPOONACULAR_API_KEY}&amount=${amount || 100}&unit=${unit || 'g'}`
     );
     setToCache(id.toString(), response.data);
     return response.data;

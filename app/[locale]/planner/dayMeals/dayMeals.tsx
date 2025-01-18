@@ -13,7 +13,7 @@ export function DayMeals() {
     <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-5 gap-4">
       {timeSlots.map((slot) => (
         <div
-          key={slot.name}
+          key={slot.time}
           className="bg-background-secondary rounded-lg shadow-sm p-4"
         >
           <div className="flex items-center justify-between mb-2">

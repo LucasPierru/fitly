@@ -1,14 +1,19 @@
-import { FoodInformationDetails } from './foods';
-
 export type CreateMeal = {
   name: string;
   description: string;
   ingredients?: {
-    ingredient: FoodInformationDetails;
+    id: number;
+    name: string;
     quantity: number;
     unit: string;
   }[];
   instructions?: {
     content: string;
   }[];
+  nutrition: {
+    calories: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+  };
 };

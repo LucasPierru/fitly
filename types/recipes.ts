@@ -84,7 +84,21 @@ export type Nutrition = {
   weightPerServing: WeightPerServing;
 };
 
-export type DishTypes = 'main course' | 'side dish' | 'dessert' | 'appetizer' | 'salad' | 'bread' | 'breakfast' | 'soup' | 'beverage' | 'sauce' | 'marinade' | 'fingerfood' | 'snack' | 'drink'
+export type DishTypes =
+  | 'main course'
+  | 'side dish'
+  | 'dessert'
+  | 'appetizer'
+  | 'salad'
+  | 'bread'
+  | 'breakfast'
+  | 'soup'
+  | 'beverage'
+  | 'sauce'
+  | 'marinade'
+  | 'fingerfood'
+  | 'snack'
+  | 'drink';
 
 export type RecipeInformation = {
   vegetarian: boolean;
@@ -98,8 +112,8 @@ export type RecipeInformation = {
   lowFodmap: boolean;
   weightWatcherSmartPoints: number;
   gaps: string;
-  preparationMinutes: null;
-  cookingMinutes: null;
+  preparationMinutes: number;
+  cookingMinutes: number;
   aggregateLikes: number;
   healthScore: number;
   creditsText: string;
@@ -111,7 +125,6 @@ export type RecipeInformation = {
   title: string;
   readyInMinutes: number;
   servings: number;
-  sourceUrl: string;
   image: string;
   imageType: string;
   nutrition: Nutrition;
@@ -122,7 +135,4 @@ export type RecipeInformation = {
   occasions: string[];
   instructions: string;
   analyzedInstructions: AnalyzedInstruction[];
-  originalId: null;
-  spoonacularScore: number;
-  spoonacularSourceUrl: string;
 };

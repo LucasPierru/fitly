@@ -13,7 +13,7 @@ import {
   getIngredientsAutocomplete
 } from '@/requests/food';
 import { capitalizeWord } from '@/utils/utils';
-import { FoodInformation, FoodInformationDetails } from '@/types/foods';
+import { FoodInformation } from '@/types/foods';
 import Modal from '@/components/modal/modal';
 import { createMeal } from '@/requests/meal';
 
@@ -24,9 +24,13 @@ const CreateMealForm = () => {
   >({});
 
   const defaultIngredient = {
-    ingredient: {} as FoodInformationDetails,
+    id: 0,
+    name: '',
     quantity: 0,
-    unit: ''
+    unit: '',
+    nutrition: {
+      nutrients: []
+    }
   };
 
   const defaultInstruction = {
@@ -39,101 +43,40 @@ const CreateMealForm = () => {
     .object({
       name: yup.string().required(t('errors.isRequired')),
       description: yup.string().required(t('errors.isRequired')),
+      preparationMinutes: yup.number(),
+      cookingMinutes: yup.number(),
+      pricePerServing: yup.number(),
+      servings: yup.number(),
+      vegetarian: yup.boolean(),
+      vegan: yup.boolean(),
+      glutenFree: yup.boolean(),
+      dairyFree: yup.boolean(),
+      veryHealthy: yup.boolean(),
+      cheap: yup.boolean(),
+      veryPopular: yup.boolean(),
+      sustainable: yup.boolean(),
+      lowFodmap: yup.boolean(),
+      nutrition: yup.object({
+        nutrients: yup.array().of(
+          yup.object({
+            name: yup.string(),
+            amount: yup.number()
+          })
+        )
+      }),
       ingredients: yup.array().of(
         yup.object({
-          ingredient: yup
-            .object({
-              name: yup.string().required(t('errors.isRequired')),
-              id: yup.number().required(t('errors.isRequired')),
-              possibleUnits: yup
-                .array()
-                .of(yup.string().required())
-                .required(t('errors.isRequired')),
-              image: yup.string().required(t('errors.isRequired')),
-              aisle: yup.string().required(t('errors.isRequired')),
-              original: yup.string().required(t('errors.isRequired')),
-              originalName: yup.string().required(t('errors.isRequired')),
-              amount: yup.number().required(t('errors.isRequired')),
-              unit: yup.string().required(t('errors.isRequired')),
-              unitShort: yup.string().required(t('errors.isRequired')),
-              unitLong: yup.string().required(t('errors.isRequired')),
-              estimatedCost: yup
-                .object({
-                  value: yup.number().required(t('errors.isRequired')),
-                  unit: yup.string().required(t('errors.isRequired'))
-                })
-                .required(t('errors.isRequired')),
-              consistency: yup.string().required(t('errors.isRequired')),
-              shoppingListUnits: yup
-                .array()
-                .of(yup.string().required(t('errors.isRequired')))
-                .required(t('errors.isRequired')),
-              nutrition: yup
-                .object({
-                  nutrients: yup
-                    .array()
-                    .of(
-                      yup
-                        .object({
-                          name: yup.string().required(t('errors.isRequired')),
-                          amount: yup.number().required(t('errors.isRequired')),
-                          unit: yup.string(),
-                          percentOfDailyNeeds: yup.number()
-                        })
-                        .required(t('errors.isRequired'))
-                    )
-                    .required(),
-                  properties: yup
-                    .array()
-                    .of(
-                      yup
-                        .object({
-                          name: yup.string().required(t('errors.isRequired')),
-                          amount: yup.number().required(t('errors.isRequired')),
-                          unit: yup.string(),
-                          percentOfDailyNeeds: yup.number()
-                        })
-                        .required(t('errors.isRequired'))
-                    )
-                    .required(),
-                  flavonoids: yup
-                    .array()
-                    .of(
-                      yup
-                        .object({
-                          name: yup.string().required(t('errors.isRequired')),
-                          amount: yup.number().required(t('errors.isRequired')),
-                          unit: yup.string(),
-                          percentOfDailyNeeds: yup.number()
-                        })
-                        .required(t('errors.isRequired'))
-                    )
-                    .required(t('errors.isRequired')),
-                  caloricBreakdown: yup
-                    .object({
-                      percentProtein: yup
-                        .number()
-                        .required(t('errors.isRequired')),
-                      percentFat: yup.number().required(t('errors.isRequired')),
-                      percentCarbs: yup
-                        .number()
-                        .required(t('errors.isRequired'))
-                    })
-                    .required(t('errors.isRequired')),
-                  weightPerServing: yup
-                    .object({
-                      amount: yup.number().required(t('errors.isRequired')),
-                      unit: yup.string().required(t('errors.isRequired'))
-                    })
-                    .required(t('errors.isRequired'))
-                })
-                .required(t('errors.isRequired')),
-              categoryPath: yup
-                .array()
-                .of(yup.string().required(t('errors.isRequired')))
-                .required(t('errors.isRequired'))
-            })
-            .required(t('errors.isRequired')),
+          id: yup.number().required(t('errors.isRequired')),
+          name: yup.string().required(t('errors.isRequired')),
+          cost: yup.number(),
+          nutrition: yup.object({
+            nutrients: yup.array().of(
+              yup.object({
+                name: yup.string().required(),
+                amount: yup.number().required()
+              })
+            )
+          }),
           quantity: yup
             .number()
             .required(t('errors.isRequired'))
@@ -156,12 +99,20 @@ const CreateMealForm = () => {
     control,
     handleSubmit,
     reset,
-    getValues,
     setValue,
     formState: { errors }
   } = useForm<Inputs>({
     resolver: yupResolver(schema),
     defaultValues: {
+      vegetarian: false,
+      vegan: false,
+      glutenFree: false,
+      dairyFree: false,
+      veryHealthy: false,
+      cheap: false,
+      veryPopular: false,
+      sustainable: false,
+      lowFodmap: false,
       ingredients: [],
       instructions: []
     }
@@ -186,8 +137,14 @@ const CreateMealForm = () => {
   });
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    await createMeal(data);
-    console.log({ data });
+    const nutrition = reduceNutrients(
+      data
+        .ingredients!.map((ingredient) =>
+          ingredient.nutrition.nutrients!.flat()
+        )
+        .flat()
+    );
+    await createMeal({ ...data, nutrition });
     // router.push('/dashboard');
     /* reset(); */
   };
@@ -221,9 +178,33 @@ const CreateMealForm = () => {
   ) => {
     const { id, name, possibleUnits } = ingredient;
     const ingredientInformations = await getIngredientInformations(id);
-    console.log({ ingredientInformations });
-    setValue(`ingredients.${index}.ingredient`, ingredientInformations);
+    setValue(`ingredients.${index}.id`, id);
+    setValue(`ingredients.${index}.name`, capitalizeWord(name));
+    setValue(
+      `ingredients.${index}.cost`,
+      ingredientInformations.estimatedCost.value
+    );
+    setValue(
+      `ingredients.${index}.nutrition`,
+      ingredientInformations.nutrition
+    );
     setIngredients({});
+  };
+
+  const reduceNutrients = (nutrients: { name: string; amount: number }[]) => {
+    return nutrients.reduce(
+      (acc, nutrient) => {
+        if (nutrient.name === 'Calories')
+          acc.calories = Math.round(nutrient.amount);
+        if (nutrient.name === 'Protein')
+          acc.protein = Math.round(nutrient.amount);
+        if (nutrient.name === 'Carbohydrates')
+          acc.carbs = Math.round(nutrient.amount);
+        if (nutrient.name === 'Fat') acc.fat = Math.round(nutrient.amount);
+        return acc;
+      },
+      { calories: 0, protein: 0, carbs: 0, fat: 0 }
+    );
   };
 
   return (
@@ -272,6 +253,38 @@ const CreateMealForm = () => {
             >
               Description
             </FormInput>
+            <div className="flex gap-4">
+              <FormInput
+                id="preparationMinutes"
+                type="number"
+                {...register('preparationMinutes', {
+                  required: true
+                })}
+                error={errors.preparationMinutes}
+              >
+                Preparation time (min)
+              </FormInput>
+              <FormInput
+                id="cookingMinutes"
+                type="number"
+                {...register('cookingMinutes', {
+                  required: true
+                })}
+                error={errors.cookingMinutes}
+              >
+                Cooking time (min)
+              </FormInput>
+              <FormInput
+                id="servings"
+                type="number"
+                {...register('servings', {
+                  required: true
+                })}
+                error={errors.servings}
+              >
+                Servings
+              </FormInput>
+            </div>
             <div>
               <div className="flex justify-between items-center mb-2">
                 <span className="block text-lg font-medium text-gray-700">
@@ -292,8 +305,8 @@ const CreateMealForm = () => {
                     <div className="relative flex-1">
                       <FormInput
                         id={`ingredients.${index}.ingredient.name`}
-                        error={errors.ingredients?.[index]?.ingredient?.name}
-                        {...register(`ingredients.${index}.ingredient.name`, {
+                        error={errors.ingredients?.[index]?.name}
+                        {...register(`ingredients.${index}.name`, {
                           required: true
                         })}
                         type="text"
