@@ -16,4 +16,5 @@ export type CreateMeal = {
     carbs: number;
     fat: number;
   };
+  pricePerServing: number;
 };

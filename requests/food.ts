@@ -25,13 +25,18 @@ export const getIngredientInformations = async (
   amount?: number,
   unit?: string
 ): Promise<FoodInformationDetails> => {
-  const cachedData: FoodInformationDetails = getFromCache(id.toString());
+  const cachedData: FoodInformationDetails = getFromCache(
+    `${id.toString()}-${amount || 100}-${unit || 'g'}`
+  );
   if (cachedData) return cachedData;
   try {
     const response: AxiosResponse<FoodInformationDetails> = await api.get(
       `/food/ingredients/${id}/information?apiKey=${process.env.NEXT_PUBLIC_SPOONACULAR_API_KEY}&amount=${amount || 100}&unit=${unit || 'g'}`
     );
-    setToCache(id.toString(), response.data);
+    setToCache(
+      `${id.toString()}-${amount || 100}-${unit || 'g'}`,
+      response.data
+    );
     return response.data;
   } catch (error) {
     throw createApiError(error as AxiosError);

@@ -12,8 +12,8 @@ import {
   getIngredientInformations,
   getIngredientsAutocomplete
 } from '@/requests/food';
-import { capitalizeWord } from '@/utils/utils';
-import { FoodInformation } from '@/types/foods';
+import { calculateMacros, capitalizeWord } from '@/utils/utils';
+import { FoodInformation, FoodInformationDetails } from '@/types/foods';
 import Modal from '@/components/modal/modal';
 import { createMeal } from '@/requests/meal';
 
@@ -137,14 +137,35 @@ const CreateMealForm = () => {
   });
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    const nutrition = reduceNutrients(
-      data
-        .ingredients!.map((ingredient) =>
-          ingredient.nutrition.nutrients!.flat()
-        )
+    let ingredientsInformation: FoodInformationDetails[] = [];
+    if (data.ingredients) {
+      ingredientsInformation = await Promise.all(
+        data.ingredients?.map(async (ingredient) => {
+          const info = await getIngredientInformations(
+            ingredient.id,
+            ingredient.quantity,
+            ingredient.unit
+          );
+          return info;
+        })
+      );
+    }
+
+    const nutrition = calculateMacros(
+      ingredientsInformation!
+        .map((ingredient) => ingredient.nutrition.nutrients!.flat())
         .flat()
     );
-    await createMeal({ ...data, nutrition });
+
+    const pricePerServing = data.servings
+      ? Math.round(
+          ingredientsInformation.reduce(
+            (acc, ingredient) => acc + ingredient.estimatedCost.value,
+            0
+          ) / data.servings
+        ) / 100
+      : 0;
+    await createMeal({ ...data, nutrition, pricePerServing });
     // router.push('/dashboard');
     /* reset(); */
   };
@@ -177,34 +198,11 @@ const CreateMealForm = () => {
     ingredient: FoodInformation
   ) => {
     const { id, name, possibleUnits } = ingredient;
-    const ingredientInformations = await getIngredientInformations(id);
+
     setValue(`ingredients.${index}.id`, id);
     setValue(`ingredients.${index}.name`, capitalizeWord(name));
-    setValue(
-      `ingredients.${index}.cost`,
-      ingredientInformations.estimatedCost.value
-    );
-    setValue(
-      `ingredients.${index}.nutrition`,
-      ingredientInformations.nutrition
-    );
-    setIngredients({});
-  };
 
-  const reduceNutrients = (nutrients: { name: string; amount: number }[]) => {
-    return nutrients.reduce(
-      (acc, nutrient) => {
-        if (nutrient.name === 'Calories')
-          acc.calories = Math.round(nutrient.amount);
-        if (nutrient.name === 'Protein')
-          acc.protein = Math.round(nutrient.amount);
-        if (nutrient.name === 'Carbohydrates')
-          acc.carbs = Math.round(nutrient.amount);
-        if (nutrient.name === 'Fat') acc.fat = Math.round(nutrient.amount);
-        return acc;
-      },
-      { calories: 0, protein: 0, carbs: 0, fat: 0 }
-    );
+    setIngredients({});
   };
 
   return (

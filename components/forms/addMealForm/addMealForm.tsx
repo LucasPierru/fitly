@@ -86,8 +86,8 @@ const AddMealForm = () => {
         yup.object({
           ingredient: yup
             .object({
-              name: yup.string().required(t('errors.isRequired')),
               id: yup.number().required(t('errors.isRequired')),
+              name: yup.string().required(t('errors.isRequired')),
               possibleUnits: yup
                 .array()
                 .of(yup.string().required())
