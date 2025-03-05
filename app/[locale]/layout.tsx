@@ -45,7 +45,7 @@ export default function RootLayout({
           <NextIntlClientProvider locale={locale} messages={messages}>
             <Navbar locale={locale} />
             <div className="overflow-y-auto max-h-[var(--page-size)] h-full scrollbar scrollbar-smooth pb-16 lg:pb-0">
-              <main className="max-w-7-xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+              <main className="max-w-7-xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
                 {children}
               </main>
             </div>

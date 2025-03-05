@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { cookies } from 'next/headers';
 import { localePrefix, locales, pathnames } from './navigation';
 
-const publicPages = ['/', '/login', '/signup'];
+const publicPages = ['/', '/login', '/signup', '/signup/subscribe'];
 
 const intlMiddleware = createMiddleware({
   defaultLocale: 'fr',
