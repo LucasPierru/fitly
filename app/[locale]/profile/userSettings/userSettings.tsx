@@ -6,7 +6,7 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import FormError from '@/components/errors/formError/formError';
-import { HowActive, Sex, User } from '@/types/users';
+import { HowActive, Sex, User } from '@/types-old/users';
 import Card from '@/components/cards/card';
 import { updateProfile } from '@/requests/profile';
 

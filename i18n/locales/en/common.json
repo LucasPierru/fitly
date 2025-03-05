@@ -5,7 +5,8 @@
     "errors": {
       "isRequired": "This field is required",
       "invalidEmail": "This is not a valid e-mail",
-      "isNotNumber": "Please enter a number"
+      "isNotNumber": "Please enter a number",
+      "isNotPositive": "Number must be positive"
     }
   }
 }

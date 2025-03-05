@@ -2,7 +2,7 @@
 
 import { AxiosError } from 'axios';
 import { createApiError } from '@/requests/common';
-import { RecipeInformation } from '@/types/recipes';
+import { RecipeInformation } from '@/types-old/recipes';
 
 export const getRecipes = async (
   query?: string

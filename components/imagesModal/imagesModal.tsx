@@ -3,7 +3,7 @@
 import { ChangeEvent, useState, useEffect } from 'react';
 import Image from 'next/image';
 import { getImages } from '@/requests/unsplash';
-import { Result } from '@/types/unsplash';
+import { Result } from '@/types-old/unsplash';
 
 type ImagesModalProps = {
   query: string;

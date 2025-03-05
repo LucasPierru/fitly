@@ -4,6 +4,7 @@ import { NextIntlClientProvider, useMessages } from 'next-intl';
 import './globals.css';
 import Navbar from '@/components/navbar/navbar';
 import MobileNavbar from '@/components/navbar/mobileNavbar';
+import { ThemeProvider } from '@/components/theme-provider/theme-provider';
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -29,17 +30,28 @@ export default function RootLayout({
 }) {
   const messages = useMessages();
   return (
-    <html lang={locale} className={`bg-background ${lexend.className}`}>
+    <html
+      lang={locale}
+      className={`bg-background ${lexend.className}`}
+      suppressHydrationWarning
+    >
       <body className="bg-background text-foreground h-screen overflow-hidden">
-        <NextIntlClientProvider locale={locale} messages={messages}>
-          <Navbar locale={locale} />
-          <div className="overflow-y-auto max-h-[var(--page-size)] h-full scrollbar scrollbar-smooth pb-16 lg:pb-0">
-            <main className="max-w-7-xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-              {children}
-            </main>
-          </div>
-          <MobileNavbar locale={locale} />
-        </NextIntlClientProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <NextIntlClientProvider locale={locale} messages={messages}>
+            <Navbar locale={locale} />
+            <div className="overflow-y-auto max-h-[var(--page-size)] h-full scrollbar scrollbar-smooth pb-16 lg:pb-0">
+              <main className="max-w-7-xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                {children}
+              </main>
+            </div>
+            <MobileNavbar locale={locale} />
+          </NextIntlClientProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

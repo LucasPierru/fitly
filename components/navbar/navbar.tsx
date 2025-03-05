@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { cookies } from 'next/headers';
 import { Link as NavLink, pathnames, AppPathname } from '@/navigation';
 import { logout } from '@/requests/auth';
+import { ModeToggle } from '../mode-toggle/mode-toggle';
 
 type LinkProps = {
   name: string;
@@ -39,12 +40,12 @@ const Navbar = async ({ locale }: { locale: string }) => {
   ];
 
   return (
-    <nav className="flex items-center bg-background-secondary h-20 shadow-sm">
+    <nav className="flex items-center bg-background h-20 shadow-sm">
       <div className="w-full mx-8 flex justify-between items-center text-sm">
         <Link href="/" className="font-semibold text-xl">
           FitLy
         </Link>
-        <div className="hidden lg:flex gap-6">
+        <div className="hidden lg:flex gap-6 items-center">
           {links.map((link, index) => {
             return (
               <NavLink
@@ -68,12 +69,15 @@ const Navbar = async ({ locale }: { locale: string }) => {
             </form>
           ) : (
             <>
-              <NavLink href="/login" className="btn btn-primary text-white">
+              <NavLink
+                href="/login"
+                className="py-3 px-4 rounded-lg text-base bg-primary hover:bg-primary/50 transition-all ease-in duration-200 text-white outline-0"
+              >
                 Log In
               </NavLink>
               <NavLink
                 href="/signup"
-                className="btn btn-secondary text-foreground"
+                className="py-3 px-4 rounded-lg text-base bg-secondary hover:bg-secondary/50 transition-all ease-in duration-200 outline-0"
               >
                 Sign Up
               </NavLink>
@@ -87,6 +91,7 @@ const Navbar = async ({ locale }: { locale: string }) => {
           >
             {newLocale.toUpperCase()}
           </NavLink>
+          <ModeToggle />
         </div>
       </div>
     </nav>

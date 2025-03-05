@@ -2,7 +2,7 @@ import { getProfile } from '@/requests/profile';
 import { BMRCalculator } from './bmrCalculator/bmrCalculator';
 import { UserSettings } from './userSettings/userSettings';
 import { WeightTracker } from './weightTracker/weightTracker';
-import { User } from '@/types/users';
+import { User } from '@/types-old/users';
 
 export default async function ProfilePage() {
   const { profile } = await getProfile();

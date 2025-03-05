@@ -1,7 +1,7 @@
 'use server';
 
 import { cookies } from 'next/headers';
-import { CreateMeal } from '@/types/meal';
+import { CreateMeal } from '@/types-old/meal';
 
 export const createMeal = async (newMeal: CreateMeal) => {
   const cookieStore = cookies();

@@ -1,5 +1,5 @@
 import { AxiosError, AxiosResponse } from 'axios';
-import { FoodInformation, FoodInformationDetails } from '@/types/foods';
+import { FoodInformation, FoodInformationDetails } from '@/types-old/foods';
 import { api } from './spoonacular';
 import { createApiError } from './common';
 import { getFromCache, setToCache } from '@/utils/cache';

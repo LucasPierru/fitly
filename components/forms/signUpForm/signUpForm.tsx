@@ -2,23 +2,35 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { useForm, SubmitHandler, FieldError } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
+import { useForm, SubmitHandler } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import FormError from '@/components/errors/formError/formError';
-import { signUp } from '@/actions/auth';
+import { signUp } from '@/requests/auth';
 import RadioButton from '../../buttons/radioButton/radioButton';
-import { HowActive, Sex, Goal } from '@/types/users';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectGroup,
+  SelectItem
+} from '@/components/ui/select';
+import { DatePicker } from '@/components/date-picker/date-picker';
 
 const SignUpForm = () => {
   const t = useTranslations('Common');
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(2);
   const [isKg, setIsKg] = useState(true);
   const [isCm, setIsCm] = useState(true);
   const [trueBmr, setTrueBmr] = useState(0);
 
   // eslint-disable-next-line no-console
-  console.log({trueBmr})
+  console.log({ trueBmr });
   const stepCount = 3;
   const activityMultiplier = {
     sedentary: 1.2,
@@ -33,74 +45,103 @@ const SignUpForm = () => {
   };
 
   const convertFeetAndInchesToCms = (feet: number, inches: number) => {
-    return feet * 30.5 + inches * 2.54;
+    return { cm: feet * 30.5 + inches * 2.54, ft: feet, in: inches };
+  };
+
+  const convertCmToFeetAndInches = (cm: number) => {
+    const inches = cm / 2.54;
+    const ft = Math.floor(inches / 12);
+    const remainingInches = Math.round(inches % 12);
+    return { cm, ft, in: remainingInches };
   };
 
   const calculateBmr = (
     weight: number,
-    height: number | { ft: number; in: number },
+    height: { cm: number; ft: number; in: number },
     age: number,
-    sex: 'm' | 'f'
+    sex: 'male' | 'female'
   ) => {
     const kgWeight = isKg ? weight : convertLbsToKgs(weight);
-    const cmHeight =
-      !isCm && typeof height !== 'number'
-        ? convertFeetAndInchesToCms(height.ft, height.in)
-        : (height as number);
-    if (sex === 'm') {
-      return 10 * kgWeight + 6.25 * cmHeight - 5 * age + 5;
+    const h = convertFeetAndInchesToCms(height.ft, height.in);
+    if (sex === 'male') {
+      return 10 * kgWeight + 6.25 * h.cm - 5 * age + 5;
     }
-    return 10 * kgWeight + 6.25 * cmHeight - 5 * age - 161;
+    return 10 * kgWeight + 6.25 * h.cm - 5 * age - 161;
   };
 
-  const schema = yup
+  const schema = z
     .object({
-      firstName: yup.string().required(t('errors.isRequired')),
-      lastName: yup.string().required(t('errors.isRequired')),
-      email: yup
+      firstName: z.string().nonempty(t('errors.isRequired')),
+      lastName: z.string().nonempty(t('errors.isRequired')),
+      email: z
         .string()
-        .required(t('errors.isRequired'))
+        .nonempty(t('errors.isRequired'))
         .email(t('errors.invalidEmail')),
-      password: yup.string().required(t('errors.isRequired')),
-      confirmPassword: yup
-        .string()
-        .oneOf([yup.ref('password')], 'Passwords must match')
-        .required(t('errors.isRequired')),
-      height: !isCm
-        ? yup
-            .number()
-            .transform((value) => (Number.isNaN(value) ? null : value))
-            .nullable()
-            .notRequired()
-        : yup.number().required(t('errors.isRequired')).positive(),
-      heightFt: isCm
-        ? yup
-            .number()
-            .transform((value) => (Number.isNaN(value) ? null : value))
-            .nullable()
-            .notRequired()
-        : yup.number().required(t('errors.isRequired')).positive(),
-      heightIn: isCm
-        ? yup
-            .number()
-            .transform((value) => (Number.isNaN(value) ? null : value))
-            .nullable()
-            .notRequired()
-        : yup.number().required(t('errors.isRequired')).positive(),
-      weight: yup.number().required(t('errors.isRequired')).positive(),
-      sex: yup
-        .mixed<Sex>()
-        .oneOf(['m', 'f'] as const)
-        .defined()
-        .required(t('errors.isRequired')),
-      age: yup.number().required(t('errors.isRequired')).positive(),
-      howActive: yup.string<HowActive>().required(t('errors.isRequired')),
-      goal: yup.string<Goal>().required(t('errors.isRequired'))
+      password: z.string().nonempty(t('errors.isRequired')),
+      confirmPassword: z.string().nonempty(t('errors.isRequired')),
+      height: z
+        .object({
+          cm: z.coerce
+            .number({ message: t('errors.isNotNumber') })
+            .int()
+            .positive(t('errors.isNotPositive'))
+            .optional(),
+          ft: z.coerce
+            .number({ message: t('errors.isNotNumber') })
+            .int()
+            .positive(t('errors.isNotPositive'))
+            .optional(),
+          in: z.coerce
+            .number({ message: t('errors.isNotNumber') })
+            .int()
+            .positive(t('errors.isNotPositive'))
+            .optional()
+        })
+        .refine(
+          (val) => {
+            if (isCm && val.cm) {
+              return val.cm > 0;
+            }
+            return val.ft && val.ft > 0 && val.in && val.in >= 0;
+          },
+          {
+            message: t('errors.isNotPositive'),
+            path: ['height']
+          }
+        )
+        .transform((val) => {
+          if (isCm) {
+            return convertCmToFeetAndInches(Number(val.cm) || 0);
+          }
+          return convertFeetAndInchesToCms(val.ft || 0, val.in || 0);
+        }),
+      weight: z.coerce
+        .number({ message: t('errors.isNotNumber') })
+        .positive(t('errors.isNotPositive')),
+      sex: z.enum(['male', 'female'], { message: t('errors.isRequired') }),
+      birthday: z.date({ message: t('errors.isRequired') }),
+      howActive: z.enum(
+        ['sedentary', 'light', 'moderate', 'active', 'very_active'],
+        { message: t('errors.isRequired') }
+      ),
+      goal: z.enum(
+        ['fat_loss', 'muscle_gain', 'improve_stamina', 'maintenance'],
+        { message: t('errors.isRequired') }
+      )
     })
-    .required();
+    .superRefine(({ confirmPassword, password }, ctx) => {
+      if (confirmPassword !== password) {
+        ctx.addIssue({
+          code: 'custom',
+          message: 'The passwords did not match',
+          path: ['confirmPassword']
+        });
+      }
+    });
 
-  type Inputs = yup.InferType<typeof schema>;
+  type Inputs = z.infer<typeof schema>;
 
+  const form = useForm<Inputs>({ resolver: zodResolver(schema) });
   const {
     register,
     handleSubmit,
@@ -109,44 +150,49 @@ const SignUpForm = () => {
     trigger,
     getValues,
     formState: { errors }
-  } = useForm<Inputs>({ resolver: yupResolver(schema) });
+  } = form;
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     const kgWeight = isKg ? data.weight : convertLbsToKgs(data.weight);
-    const cmHeight =
-      !isCm &&
-      typeof data.heightFt === 'number' &&
-      typeof data.heightIn === 'number'
-        ? convertFeetAndInchesToCms(data.heightFt, data.heightIn)
-        : (data.height as number);
-    await signUp({ ...data, height: cmHeight, weight: kgWeight });
+    const height = convertFeetAndInchesToCms(data.height.ft, data.height.in);
+    await signUp({ ...data, height: height.cm, weight: kgWeight });
     reset();
   };
 
-  const personalInputs: { id: keyof Inputs; label: string; type: string }[] = [
+  const personalInputs: {
+    id: keyof Inputs;
+    label: string;
+    type: string;
+    placeholder: string;
+  }[] = [
     {
       id: 'lastName',
       label: 'Nom',
+      placeholder: 'e.g. Doe',
       type: 'text'
     },
     {
       id: 'firstName',
       label: 'Prénom',
+      placeholder: 'e.g. John',
       type: 'text'
     },
     {
       id: 'email',
       label: 'Courriel',
+      placeholder: 'e.g. john.doe@gmail.com',
       type: 'text'
     },
     {
       id: 'password',
       label: 'Mot de passe',
+      placeholder: 'e.g. abc123',
       type: 'password'
     },
     {
       id: 'confirmPassword',
       label: 'Confirmer mot de passe',
+      placeholder: 'e.g. abc123',
       type: 'password'
     }
   ];
@@ -165,8 +211,8 @@ const SignUpForm = () => {
       label: 'Sex'
     },
     {
-      id: 'age',
-      label: 'Âge'
+      id: 'birthday',
+      label: 'Birthday'
     },
     {
       id: 'howActive',
@@ -188,25 +234,33 @@ const SignUpForm = () => {
     { id: 'Step 3', name: 'Complete', fields: ['goal'] }
   ];
 
+  const calculateAge = (birthday: Date) => {
+    const today = new Date();
+    const birthDate = new Date(birthday);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDifference = today.getMonth() - birthDate.getMonth();
+    if (
+      monthDifference < 0 ||
+      (monthDifference === 0 && today.getDate() < birthDate.getDate())
+    ) {
+      age -= 1;
+    }
+    return age;
+  };
+
   const goToNextStep = async () => {
     if (step === 1) {
       const values = getValues();
-      const bmr = isCm
-        ? calculateBmr(
-            values.weight,
-            values.height as number,
-            values.age,
-            values.sex as 'm' | 'f'
-          )
-        : calculateBmr(
-            values.weight,
-            { ft: values.heightFt as number, in: values.heightIn as number },
-            values.age,
-            values.sex as 'm' | 'f'
-          );
+      const bmr = calculateBmr(
+        values.weight,
+        values.height,
+        calculateAge(values.birthday),
+        values.sex as 'male' | 'female'
+      );
       type keysMultiplier = keyof typeof activityMultiplier;
       const multipliedBmr =
         bmr * activityMultiplier[values.howActive as keysMultiplier];
+
       setTrueBmr(multipliedBmr);
     }
     const { fields } = steps[step];
@@ -223,321 +277,358 @@ const SignUpForm = () => {
   };
 
   return (
-    <form
-      className="flex flex-col gap-4 min-w-full mt-4"
-      onSubmit={handleSubmit(onSubmit)}
-    >
-      <div>
-        <span>
-          Step {step + 1} of {stepCount}
-        </span>
-        <div className="relative w-full bg-secondary h-2 rounded-lg mt-2">
-          <div
-            style={{ width: `${Math.round(100 * ((step + 1) / stepCount))}%` }}
-            className="absolute bg-primary h-2 rounded-lg top-0"
-          />
+    <Form {...form}>
+      <form
+        className="flex flex-col gap-4 min-w-full mt-4"
+        onSubmit={handleSubmit(onSubmit)}
+      >
+        <div>
+          <span>
+            Step {step + 1} of {stepCount}
+          </span>
+          <div className="relative w-full bg-secondary h-2 rounded-lg mt-2">
+            <div
+              style={{
+                width: `${Math.round(100 * ((step + 1) / stepCount))}%`
+              }}
+              className="absolute bg-primary h-2 rounded-lg top-0"
+            />
+          </div>
         </div>
-      </div>
-      <div className="flex flex-col grow rounded-lg gap-1 max-w-5xl">
-        {step === 0 &&
-          personalInputs.map((input) => (
-            <label key={input.id} htmlFor={input.id}>
-              {input.label}
-              <input
-                id={input.id}
-                type={input.type}
-                className="input bg-secondary text-white placeholder:text-white w-full focus:outline-0 mt-2"
-                {...register(input.id, {
-                  required: true
-                })}
+        <div className="flex flex-col grow rounded-lg w-full">
+          {step === 0 &&
+            personalInputs.map((input) => (
+              <FormField
+                control={form.control}
+                key={input.id}
+                name={input.id}
+                render={({ field }) => (
+                  <FormItem>
+                    <Label htmlFor={input.id}>{input.label}</Label>
+                    <Input
+                      id={field.name}
+                      type={input.type}
+                      className="w-full focus:outline-0 mt-2"
+                      placeholder={input.placeholder}
+                      {...register(field.name, {
+                        required: true
+                      })}
+                    />
+                    <FormError error={errors[input.id]?.message as string} />
+                  </FormItem>
+                )}
               />
-              <FormError error={errors[input.id]} />
-            </label>
-          ))}
-        {step === 1 && (
-          <div>
-            <label key="height" htmlFor="height">
-              Taille
-              <div className="flex items-center gap-2 mt-2">
+            ))}
+          {step === 1 && (
+            <div className="grid w-full items-center gap-1.5">
+              <Label key="height" htmlFor="height">
+                Taille
+              </Label>
+              <div className="flex gap-2">
                 {isCm ? (
-                  <input
+                  <Input
                     id="height"
                     placeholder="cms"
-                    className="input bg-secondary text-white placeholder:text-white w-full focus:outline-0"
-                    {...register('height', {
+                    className="w-full focus:outline-0 mt-2"
+                    {...register('height.cm', {
                       required: true
                     })}
                   />
                 ) : (
                   <>
-                    <input
+                    <Input
                       id="heightFt"
                       placeholder="ft"
-                      className="input bg-secondary text-white placeholder:text-white w-full focus:outline-0"
-                      {...register('heightFt', {
+                      className="w-full focus:outline-0 mt-2"
+                      {...register('height.ft', {
                         required: true
                       })}
                     />
-                    <input
+                    <Input
                       id="heightIn"
                       placeholder="in"
-                      className="input bg-secondary text-white placeholder:text-white w-full focus:outline-0"
-                      {...register('heightIn', {
+                      className="w-full focus:outline-0 mt-2"
+                      {...register('height.in', {
                         required: true
                       })}
                     />
                   </>
                 )}
-                <button
+                <Button
                   type="button"
-                  className={`btn btn-primary ${!isCm ? '' : 'btn-outline'}`}
+                  variant={isCm ? 'outline' : 'default'}
+                  className="mt-2"
                   onClick={() => {
                     setIsCm(false);
                   }}
                 >
                   ft
-                </button>
-                <button
+                </Button>
+                <Button
                   type="button"
-                  className={`btn btn-primary ${isCm ? '' : 'btn-outline'}`}
+                  variant={!isCm ? 'outline' : 'default'}
+                  className="mt-2"
                   onClick={() => {
                     setIsCm(true);
                   }}
                 >
                   cm
-                </button>
+                </Button>
               </div>
-              <FormError error={errors.height} />
-            </label>
-            <label key="weight" htmlFor="weight">
-              Poids
+              <FormError
+                error={
+                  isCm
+                    ? errors.height?.cm?.message
+                    : errors.height?.ft?.message || errors.height?.in?.message
+                }
+              />
+              <Label key="weight" htmlFor="weight">
+                Poids
+              </Label>
               <div className="flex items-center gap-2 mt-2">
                 {isKg ? (
-                  <input
+                  <Input
                     id="weight"
                     placeholder="kgs"
-                    className="input bg-secondary text-white placeholder:text-white w-full focus:outline-0"
+                    className="w-full focus:outline-0"
                     {...register('weight', {
-                      required: true
+                      required: true,
+                      valueAsNumber: true
                     })}
                   />
                 ) : (
-                  <input
+                  <Input
                     id="weight"
                     placeholder="lbs"
-                    className="input bg-secondary text-white placeholder:text-white w-full focus:outline-0"
+                    className="w-full focus:outline-0"
                     {...register('weight', {
-                      required: true
+                      required: true,
+                      valueAsNumber: true
                     })}
                   />
                 )}
-                <button
+                <Button
                   type="button"
-                  className={`btn btn-primary ${!isKg ? '' : 'btn-outline'}`}
+                  variant={isKg ? 'outline' : 'default'}
                   onClick={() => {
                     setIsKg(false);
                   }}
                 >
                   lbs
-                </button>
-                <button
+                </Button>
+                <Button
                   type="button"
-                  className={`btn btn-primary ${isKg ? '' : 'btn-outline'}`}
+                  variant={!isKg ? 'outline' : 'default'}
                   onClick={() => {
                     setIsKg(true);
                   }}
                 >
                   kgs
-                </button>
+                </Button>
               </div>
-              <FormError error={errors.weight} />
-            </label>
-            <label key="sex" htmlFor="sex">
-              Sex
-              <select
-                id="sex"
-                className="select bg-secondary text-white placeholder:text-white w-full focus:outline-0 mt-2"
-                {...register('sex', {
-                  required: true
-                })}
-              >
-                <option value="m">Homme</option>
-                <option value="f">Femme</option>
-              </select>
-              <FormError error={'' as unknown as FieldError} />
-            </label>
-            <label key="age" htmlFor="age">
-              Âge
-              <input
-                id="age"
-                className="input bg-secondary text-white placeholder:text-white w-full focus:outline-0 mt-2"
-                {...register('age', {
-                  required: true
-                })}
-              />
-              <FormError error={errors.age} />
-            </label>
+              <FormError error={errors.weight?.message} />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid">
+                  <FormField
+                    control={form.control}
+                    name="sex"
+                    render={({ field }) => (
+                      <FormItem>
+                        <Label key="sex" htmlFor="sex">
+                          Sex
+                        </Label>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select a sex" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectGroup>
+                              <SelectItem value="male">Homme</SelectItem>
+                              <SelectItem value="female">Femme</SelectItem>
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                      </FormItem>
+                    )}
+                  />
+                  <FormError error={errors.sex?.message} />
+                </div>
+                <FormField
+                  control={form.control}
+                  name="birthday"
+                  render={({ field }) => (
+                    <FormItem>
+                      <Label key="birthday" htmlFor="birthday">
+                        Birthday
+                      </Label>
+                      <DatePicker
+                        date={field.value}
+                        onSelect={field.onChange}
+                      />
+                      <FormError error={errors.birthday?.message} />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div>
+                <Label htmlFor="howActive">Votre niveau d&apos;activité</Label>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  <RadioButton
+                    name="howActive"
+                    id="howActive-1"
+                    value="sedentary"
+                    selectedValue={watch('howActive')}
+                    register={() =>
+                      register('howActive', {
+                        required: true
+                      })
+                    }
+                  >
+                    Sedentary (little to no exercise)
+                  </RadioButton>
+                  <RadioButton
+                    name="howActive"
+                    id="howActive-2"
+                    value="light"
+                    selectedValue={watch('howActive')}
+                    register={() =>
+                      register('howActive', {
+                        required: true
+                      })
+                    }
+                  >
+                    Lightly active (light exercise/sports 1-3 days/week)
+                  </RadioButton>
+                  <RadioButton
+                    name="howActive"
+                    id="howActive-3"
+                    value="moderate"
+                    selectedValue={watch('howActive')}
+                    register={() =>
+                      register('howActive', {
+                        required: true
+                      })
+                    }
+                  >
+                    Moderately active (moderate exercise/sports 3-5 days/week)
+                  </RadioButton>
+                  <RadioButton
+                    name="howActive"
+                    id="howActive-4"
+                    value="very"
+                    selectedValue={watch('howActive')}
+                    register={() =>
+                      register('howActive', {
+                        required: true
+                      })
+                    }
+                  >
+                    Very active (hard exercise/sports 6-7 days/week)
+                  </RadioButton>
+                  <RadioButton
+                    name="howActive"
+                    id="howActive-5"
+                    value="super"
+                    selectedValue={watch('howActive')}
+                    register={() =>
+                      register('howActive', {
+                        required: true
+                      })
+                    }
+                  >
+                    Super active (very hard exercise/sports & physical job or 2x
+                    training)
+                  </RadioButton>
+                </div>
+                <FormError error={errors.howActive?.message} />
+              </div>
+            </div>
+          )}
+          {step === 2 && (
             <div>
-              Votre niveau d&apos;activité
+              Quel est votre objectif
               <div className="flex flex-wrap gap-2 mt-2">
                 <RadioButton
-                  name="howActive"
-                  id="howActive-1"
-                  value="sedentary"
-                  selectedValue={watch('howActive')}
+                  name="goal"
+                  id="goal-1"
+                  value="fat_loss"
+                  selectedValue={watch('goal')}
                   register={() =>
-                    register('howActive', {
+                    register('goal', {
                       required: true
                     })
                   }
                 >
-                  Sedentary (little to no exercise)
+                  Lose weight
                 </RadioButton>
                 <RadioButton
-                  name="howActive"
-                  id="howActive-2"
-                  value="light"
-                  selectedValue={watch('howActive')}
+                  name="goal"
+                  id="goal-2"
+                  value="muscle_gain"
+                  selectedValue={watch('goal')}
                   register={() =>
-                    register('howActive', {
+                    register('goal', {
                       required: true
                     })
                   }
                 >
-                  Lightly active (light exercise/sports 1-3 days/week)
+                  Gain muscles
                 </RadioButton>
                 <RadioButton
-                  name="howActive"
-                  id="howActive-3"
-                  value="moderate"
-                  selectedValue={watch('howActive')}
+                  name="goal"
+                  id="goal-3"
+                  value="improve_stamina"
+                  selectedValue={watch('goal')}
                   register={() =>
-                    register('howActive', {
+                    register('goal', {
                       required: true
                     })
                   }
                 >
-                  Moderately active (moderate exercise/sports 3-5 days/week)
+                  Improve stamina
                 </RadioButton>
                 <RadioButton
-                  name="howActive"
-                  id="howActive-4"
-                  value="very"
-                  selectedValue={watch('howActive')}
+                  name="goal"
+                  id="goal-4"
+                  value="maintenance"
+                  selectedValue={watch('goal')}
                   register={() =>
-                    register('howActive', {
+                    register('goal', {
                       required: true
                     })
                   }
                 >
-                  Very active (hard exercise/sports 6-7 days/week)
-                </RadioButton>
-                <RadioButton
-                  name="howActive"
-                  id="howActive-5"
-                  value="super"
-                  selectedValue={watch('howActive')}
-                  register={() =>
-                    register('howActive', {
-                      required: true
-                    })
-                  }
-                >
-                  Super active (very hard exercise/sports & physical job or 2x
-                  training)
+                  Maintain a healthy lifestyle
                 </RadioButton>
               </div>
-              <FormError error={errors.howActive} />
+              <FormError error={errors.goal?.message} />
             </div>
+          )}
+          <div className="flex gap-4">
+            {step > 0 && (
+              <Button
+                variant="outline"
+                type="button"
+                onClick={goToPreviousStep}
+              >
+                Retour
+              </Button>
+            )}
+            {step < stepCount - 1 && (
+              <Button type="button" onClick={goToNextStep}>
+                Continuer
+              </Button>
+            )}
+            {step === stepCount - 1 && <Button type="submit">Continuer</Button>}
           </div>
-        )}
-        {step === 2 && (
-          <div>
-            Quel est votre objectif
-            <div className="flex flex-wrap gap-2 mt-2">
-              <RadioButton
-                name="goal"
-                id="goal-1"
-                value="fat_loss"
-                selectedValue={watch('goal')}
-                register={() =>
-                  register('goal', {
-                    required: true
-                  })
-                }
-              >
-                Lose weight
-              </RadioButton>
-              <RadioButton
-                name="goal"
-                id="goal-2"
-                value="muscle_gain"
-                selectedValue={watch('goal')}
-                register={() =>
-                  register('goal', {
-                    required: true
-                  })
-                }
-              >
-                Gain muscles
-              </RadioButton>
-              <RadioButton
-                name="goal"
-                id="goal-3"
-                value="improve_stamina"
-                selectedValue={watch('goal')}
-                register={() =>
-                  register('goal', {
-                    required: true
-                  })
-                }
-              >
-                Improve stamina
-              </RadioButton>
-              <RadioButton
-                name="goal"
-                id="goal-4"
-                value="maintenance"
-                selectedValue={watch('goal')}
-                register={() =>
-                  register('goal', {
-                    required: true
-                  })
-                }
-              >
-                Maintain a healthy lifestyle
-              </RadioButton>
-            </div>
-            <FormError error={errors.goal} />
-          </div>
-        )}
-        <div className="flex gap-4">
-          {step > 0 && (
-            <button
-              type="button"
-              className="btn btn-secondary grow max-w-xs"
-              onClick={goToPreviousStep}
-            >
-              Retour
-            </button>
-          )}
-          {step < stepCount - 1 && (
-            <button
-              type="button"
-              className="btn btn-primary grow max-w-xs"
-              onClick={goToNextStep}
-            >
-              Continuer
-            </button>
-          )}
-          {step === stepCount - 1 && (
-            <button type="submit" className="btn btn-primary grow max-w-xs">
-              Continuer
-            </button>
-          )}
         </div>
-      </div>
-    </form>
+      </form>
+    </Form>
   );
 };
 

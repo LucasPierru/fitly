@@ -1,5 +1,5 @@
-import { DishTypes, RecipeInformation } from '@/types/recipes';
-import { Flavonoid } from '@/types/foods';
+import { DishTypes, RecipeInformation } from '@/types-old/recipes';
+import { Flavonoid } from '@/types-old/foods';
 
 export const formatPhoneNumber = (phoneNumber: string) => {
   let newPhoneNumber;

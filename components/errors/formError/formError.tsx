@@ -1,14 +1,13 @@
-import { CircleAlert } from 'lucide-react';
-import { FieldError } from 'react-hook-form';
+import { AlertCircle } from 'lucide-react';
 
-const FormError = ({ error }: { error?: FieldError }) => {
+import { Alert, AlertDescription } from '@/components/ui/alert';
+
+const FormError = ({ error }: { error?: string }) => {
   return (
-    <div className="flex gap-2 justify-end text-red-400 mt-2">
-      <div className="w-6 h-6">
-        {error && <CircleAlert className="h-6 w-6" />}
-      </div>
-      {error && error.message}
-    </div>
+    <Alert variant="destructive">
+      {error && <AlertCircle className="h-4 w-4" />}
+      <AlertDescription>{error}&nbsp;</AlertDescription>
+    </Alert>
   );
 };
 

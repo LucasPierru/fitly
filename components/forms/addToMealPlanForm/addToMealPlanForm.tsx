@@ -6,7 +6,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import FormError from '@/components/errors/formError/formError';
 import FormInput from '@/components/inputs/formInput';
-import { RecipeInformation } from '@/types/recipes';
+import { RecipeInformation } from '@/types-old/recipes';
 
 type AddToMealPlanFormProps = {
   mealPlans:

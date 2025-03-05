@@ -13,7 +13,7 @@ import {
   getIngredientsAutocomplete
 } from '@/requests/food';
 import { calculateMacros, capitalizeWord } from '@/utils/utils';
-import { FoodInformation, FoodInformationDetails } from '@/types/foods';
+import { FoodInformation, FoodInformationDetails } from '@/types-old/foods';
 import Modal from '@/components/modal/modal';
 import { createMeal } from '@/requests/meal';
 

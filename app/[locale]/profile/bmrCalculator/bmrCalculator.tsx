@@ -1,7 +1,7 @@
 import React from 'react';
 import { calculateAgeFromBirthday, calculateBMR } from '@/utils/utils';
 import Card from '@/components/cards/card';
-import { UserBMRData } from '@/types/users';
+import { UserBMRData } from '@/types-old/users';
 
 export function BMRCalculator({
   weight,

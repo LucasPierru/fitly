@@ -1,7 +1,7 @@
 'use server';
 
 import { cookies } from 'next/headers';
-import { UserBMRData } from '@/types/users';
+import { UserBMRData } from '@/types-old/users';
 
 export const getProfile = async () => {
   const cookieStore = cookies();

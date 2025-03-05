@@ -1,5 +1,7 @@
 import { ReactNode } from 'react';
 import { RegisterOptions, UseFormRegisterReturn } from 'react-hook-form';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 type RadioButtonProps = {
   id: string;
@@ -19,12 +21,12 @@ const RadioButton = ({
   register
 }: RadioButtonProps) => {
   return (
-    <label
+    <Label
       htmlFor={id}
-      className={`cursor-pointer border-secondary border-2 rounded-lg p-3 ${selectedValue === value ? 'bg-primary' : ''}`}
+      className={`cursor-pointer border-secondary border-2 rounded-lg p-3 ${selectedValue === value ? 'bg-primary text-secondary' : ''}`}
     >
       {children}
-      <input
+      <Input
         id={id}
         type="radio"
         value={value}
@@ -33,7 +35,7 @@ const RadioButton = ({
           required: true
         })}
       />
-    </label>
+    </Label>
   );
 };
 

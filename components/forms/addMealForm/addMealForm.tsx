@@ -8,7 +8,7 @@ import * as yup from 'yup';
 import { MinusIcon, PlusIcon } from '@heroicons/react/24/outline';
 import FormInput from '@/components/inputs/formInput';
 import FormTextArea from '@/components/inputs/formTextArea';
-import type { FoodInformation } from '@/types/foods';
+import type { FoodInformation } from '@/types-old/foods';
 import { capitalizeWord, getMealTypeList } from '@/utils/utils';
 import { getIngredientsAutocomplete } from '@/requests/food';
 import useOutsideClick from '@/hooks/useOutsideClick';
