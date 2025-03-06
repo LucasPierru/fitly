@@ -20,7 +20,7 @@ const SearchInput = ({ className, ...otherProps }: SearchInputProps) => {
       </div>
       <input
         ref={inputRef}
-        className="input bg-background-secondary text-foreground placeholder:text-foreground w-full focus:outline-0 indent-9 text-lg font-light"
+        className="input bg-card text-foreground placeholder:text-foreground w-full focus:outline-0 indent-9 text-lg font-light"
         onKeyDown={(event) => {
           if (event.key === 'Enter') {
             router.push({

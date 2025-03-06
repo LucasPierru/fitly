@@ -23,7 +23,7 @@ export function DayMeals() {
             </div>
             <button
               type="button"
-              className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-full"
+              className="p-2 text-primary hover:bg-muted rounded-full"
             >
               <Plus className="h-5 w-5" />{' '}
             </button>

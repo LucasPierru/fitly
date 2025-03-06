@@ -31,7 +31,7 @@ export function NextMeals() {
       {meals.map((meal) => (
         <div
           key={meal.id}
-          className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+          className="flex items-center justify-between p-3 bg-card rounded-lg"
         >
           <div className="flex items-center gap-3">
             <button
@@ -39,8 +39,8 @@ export function NextMeals() {
               className={`w-6 h-6 rounded-full border-2 flex items-center justify-center
                 ${
                   meal.consumed
-                    ? 'bg-green-500 border-green-500'
-                    : 'border-gray-300 hover:border-green-500'
+                    ? 'bg-success border-success'
+                    : 'border-border hover:border-success'
                 }`}
             >
               {meal.consumed && <Check className="w-4 h-4 text-white" />}

@@ -2,6 +2,7 @@ import createMiddleware from 'next-intl/middleware';
 import { NextResponse, type NextRequest } from 'next/server';
 import { cookies } from 'next/headers';
 import { localePrefix, locales, pathnames } from './navigation';
+import { getSubscription } from './requests/subscription';
 
 const publicPages = ['/', '/login', '/signup'];
 
@@ -23,6 +24,19 @@ const authMiddleware = async (request: NextRequest) => {
     }
     const intlResponse = intlMiddleware(request);
     intlResponse.headers.set('x-default-locale', defaultLocale);
+
+    const { subscription, error } = await getSubscription();
+
+    if (error) {
+      request.nextUrl.pathname = `/${defaultLocale}`;
+      return NextResponse.redirect(request.nextUrl);
+    }
+
+    if (subscription.status !== 'active') {
+      request.nextUrl.pathname = `/${defaultLocale}`;
+      return NextResponse.redirect(request.nextUrl);
+    }
+
     return intlResponse;
   } catch (error) {
     return NextResponse.next({

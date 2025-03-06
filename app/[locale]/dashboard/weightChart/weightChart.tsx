@@ -22,7 +22,7 @@ export function WeightChart() {
         </div>
         <button
           type="button"
-          className="text-sm text-indigo-600 hover:text-indigo-700"
+          className="text-sm text-primary hover:text-primary"
         >
           Log Weight
         </button>
@@ -33,7 +33,7 @@ export function WeightChart() {
             <XAxis dataKey="name" />
             <Bar
               dataKey="weight"
-              fill="#8884d8"
+              fill="#22C55E"
               name="Weight"
               radius={[5, 5, 0, 0]}
             />

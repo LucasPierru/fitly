@@ -17,7 +17,7 @@ const MealCard = ({
   macros
 }: MealCardProps) => {
   return (
-    <div className="bg-background-secondary rounded-lg shadow-sm overflow-hidden">
+    <div className="bg-card rounded-lg shadow-sm overflow-hidden">
       <div className="relative w-full h-48">
         <Image
           src={
@@ -59,7 +59,7 @@ const MealCard = ({
         </div>
         <button
           type="button"
-          className="mt-4 w-full flex items-center justify-center gap-2 px-4 py-2 border border-indigo-600 rounded-md text-indigo-600 hover:bg-indigo-50"
+          className="mt-4 w-full flex items-center justify-center gap-2 px-4 py-2 border border-primary rounded-md text-primary hover:bg-primary hover:text-white transition-all ease-in duration-100"
         >
           <Plus className="h-4 w-4" />
           Add to Plan

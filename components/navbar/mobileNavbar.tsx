@@ -3,7 +3,7 @@ import MobileNavLink from './mobileNavlink';
 
 const MobileNavbar = ({ locale }: { locale: string }) => {
   return (
-    <nav className="absolute lg:hidden bottom-0 w-full bg-white border-t border-gray-200">
+    <nav className="absolute lg:hidden bottom-0 w-full bg-background border-t border-secondary">
       <div className="max-w-7xl mx-auto sm:px-4">
         <div className="flex justify-around py-3">
           <MobileNavLink href="/dashboard" locale={locale}>

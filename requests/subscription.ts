@@ -32,3 +32,31 @@ export const createSubscription = async () => {
     };
   }
 };
+
+export const getSubscription = async () => {
+  const cookieStore = cookies();
+  const token = cookieStore.get('token');
+  try {
+    if (!token) {
+      throw new Error('User not authenticated');
+    }
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/v1/subscription`,
+      {
+        method: 'GET',
+        headers: {
+          authorization: `Bearer ${token.value}`
+        }
+      }
+    );
+    const data = await response.json();
+    const { subscription, error } = data;
+    if (error) throw error;
+    return { subscription, error };
+  } catch (error) {
+    return {
+      subscription: null,
+      error
+    };
+  }
+};

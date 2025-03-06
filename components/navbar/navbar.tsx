@@ -3,7 +3,9 @@ import Link from 'next/link';
 import { cookies } from 'next/headers';
 import { Link as NavLink, pathnames, AppPathname } from '@/navigation';
 import { logout } from '@/requests/auth';
+import { getSubscription } from '@/requests/subscription';
 import { ModeToggle } from '../mode-toggle/mode-toggle';
+import { Button } from '../ui/button';
 
 type LinkProps = {
   name: string;
@@ -39,6 +41,8 @@ const Navbar = async ({ locale }: { locale: string }) => {
     } */
   ];
 
+  const { subscription } = await getSubscription();
+
   return (
     <nav className="flex items-center bg-background h-20 shadow-sm">
       <div className="w-full mx-8 flex justify-between items-center text-sm">
@@ -46,26 +50,25 @@ const Navbar = async ({ locale }: { locale: string }) => {
           FitLy
         </Link>
         <div className="hidden lg:flex gap-6 items-center">
-          {links.map((link, index) => {
-            return (
-              <NavLink
-                key={index as Key}
-                className="text-lg p-2 px-4 rounded-full font-base"
-                href={link.path as AppPathname}
-                locale={locale as 'en' | 'fr'}
-              >
-                {link.name}
-              </NavLink>
-            );
-          })}
+          {subscription &&
+            subscription.status === 'active' &&
+            links.map((link, index) => {
+              return (
+                <NavLink
+                  key={index as Key}
+                  className="text-lg p-2 px-4 rounded-full font-base"
+                  href={link.path as AppPathname}
+                  locale={locale as 'en' | 'fr'}
+                >
+                  {link.name}
+                </NavLink>
+              );
+            })}
           {cookies().get('token') ? (
             <form action={logout}>
-              <button
-                className="btn btn-secondary text-foreground"
-                type="submit"
-              >
+              <Button variant="secondary" type="submit">
                 Log out
-              </button>
+              </Button>
             </form>
           ) : (
             <>

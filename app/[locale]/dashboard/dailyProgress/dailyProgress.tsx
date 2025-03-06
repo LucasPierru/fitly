@@ -21,9 +21,9 @@ export function DailyProgress() {
                 {unit}
               </span>
             </div>
-            <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+            <div className="h-2 bg-secondary rounded-full overflow-hidden">
               <div
-                className="h-full bg-indigo-600 rounded-full"
+                className="h-full bg-primary rounded-full"
                 style={{ width: `${Math.min((current / target) * 100, 100)}%` }}
               />
             </div>

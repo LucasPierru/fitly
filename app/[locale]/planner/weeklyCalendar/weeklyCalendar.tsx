@@ -22,10 +22,10 @@ export function WeeklyCalendar({
               pathname: '/planner',
               query: { start: date.toISOString() }
             }}
-            className={`p-1 sm:p-4 rounded-lg text-center ${
+            className={`p-1 sm:p-4 border-2 rounded-lg bg-card text-center ${
               isToday
-                ? 'bg-primary text-white'
-                : 'bg-background-secondary hover:bg-background'
+                ? 'border-primary text-card-foreground hover:bg-muted'
+                : 'border-card hover:bg-muted hover:border-muted'
             }`}
           >
             <p className="text-sm sm:text-md font-medium">

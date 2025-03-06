@@ -16,6 +16,7 @@ import { calculateMacros, capitalizeWord } from '@/utils/utils';
 import { FoodInformation, FoodInformationDetails } from '@/types-old/foods';
 import Modal from '@/components/modal/modal';
 import { createMeal } from '@/requests/meal';
+import { Button } from '@/components/ui/button';
 
 const CreateMealForm = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -207,14 +208,16 @@ const CreateMealForm = () => {
 
   return (
     <>
-      <button
+      <Button
         type="button"
-        className="btn btn-primary text-white"
+        variant="default"
+        size="lg"
+        className="text-white"
         onClick={onOpen}
       >
         <Plus className="h-4 w-4 mr-2" />
         Create Meal
-      </button>
+      </Button>
       <Modal isOpen={isOpen}>
         <div className="p-4 border-b flex justify-between items-center">
           <h2 className="text-lg font-semibold">Create New Recipe</h2>

@@ -14,7 +14,7 @@ export default async function MealsPage({
   const recipes = await getRecipes(query);
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 min-h-screen px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 bg-background">
       <div className="col-span-full flex items-center justify-between">
         <h1 className="text-xl font-bold text-foreground">My Meals</h1>
         <CreateMealForm />
