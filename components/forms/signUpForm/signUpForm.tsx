@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useForm, SubmitHandler } from 'react-hook-form';
+import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import FormError from '@/components/errors/formError/formError';
@@ -24,10 +25,12 @@ import { DatePicker } from '@/components/date-picker/date-picker';
 
 const SignUpForm = () => {
   const t = useTranslations('Common');
-  const [step, setStep] = useState(2);
+  const [step, setStep] = useState(0);
   const [isKg, setIsKg] = useState(true);
   const [isCm, setIsCm] = useState(true);
   const [trueBmr, setTrueBmr] = useState(0);
+
+  const router = useRouter();
 
   // eslint-disable-next-line no-console
   console.log({ trueBmr });
@@ -49,10 +52,10 @@ const SignUpForm = () => {
   };
 
   const convertCmToFeetAndInches = (cm: number) => {
-    const inches = cm / 2.54;
+    const inches = Number(cm) / 2.54;
     const ft = Math.floor(inches / 12);
     const remainingInches = Math.round(inches % 12);
-    return { cm, ft, in: remainingInches };
+    return { cm: Number(cm), ft, in: remainingInches };
   };
 
   const calculateBmr = (
@@ -62,7 +65,9 @@ const SignUpForm = () => {
     sex: 'male' | 'female'
   ) => {
     const kgWeight = isKg ? weight : convertLbsToKgs(weight);
-    const h = convertFeetAndInchesToCms(height.ft, height.in);
+    const h = isCm
+      ? { cm: Number(height.cm) }
+      : convertFeetAndInchesToCms(Number(height.ft), Number(height.in));
     if (sex === 'male') {
       return 10 * kgWeight + 6.25 * h.cm - 5 * age + 5;
     }
@@ -155,8 +160,14 @@ const SignUpForm = () => {
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     const kgWeight = isKg ? data.weight : convertLbsToKgs(data.weight);
     const height = convertFeetAndInchesToCms(data.height.ft, data.height.in);
-    await signUp({ ...data, height: height.cm, weight: kgWeight });
+    await signUp({
+      ...data,
+      height: height.cm,
+      weight: kgWeight,
+      bmr: trueBmr
+    });
     reset();
+    router.push('/signup/subscribe');
   };
 
   const personalInputs: {
