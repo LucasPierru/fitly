@@ -1,6 +1,6 @@
 import { format, addDays } from 'date-fns';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { Link } from '@/navigation';
+import { Link } from '@/i18n/navigation';
 
 const WeekSwitch = ({ startDate }: { startDate: Date }) => {
   return (

@@ -1,17 +1,12 @@
 import createMiddleware from 'next-intl/middleware';
 import { NextResponse, type NextRequest } from 'next/server';
 import { cookies } from 'next/headers';
-import { localePrefix, locales, pathnames } from './navigation';
 import { getSubscription } from './requests/subscription';
+import { routing } from './i18n/routing';
 
 const publicPages = ['/', '/login', '/signup'];
 
-const intlMiddleware = createMiddleware({
-  defaultLocale: 'fr',
-  localePrefix,
-  locales,
-  pathnames
-});
+const intlMiddleware = createMiddleware(routing);
 
 const authMiddleware = async (request: NextRequest) => {
   const requestHeaders = new Headers(request.headers);
@@ -49,7 +44,7 @@ const authMiddleware = async (request: NextRequest) => {
 
 export default async function middleware(request: NextRequest) {
   const publicPathnameRegex = RegExp(
-    `^(/(${locales.join('|')}))?(${publicPages
+    `^(/(${routing.locales.join('|')}))?(${publicPages
       .flatMap((p) => (p === '/' ? ['', '/'] : p))
       .join('|')})/?$`,
     'i'

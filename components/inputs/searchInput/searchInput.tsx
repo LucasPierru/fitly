@@ -2,7 +2,7 @@
 
 import { InputHTMLAttributes, useRef } from 'react';
 import { Search } from 'lucide-react';
-import { useRouter, usePathname, AppPathname } from '@/navigation';
+import { useRouter, usePathname } from '@/i18n/navigation';
 
 type SearchInputProps = {
   className?: string;
@@ -24,7 +24,7 @@ const SearchInput = ({ className, ...otherProps }: SearchInputProps) => {
         onKeyDown={(event) => {
           if (event.key === 'Enter') {
             router.push({
-              pathname: pathname as AppPathname,
+              pathname,
               query: { query: inputRef?.current?.value }
             });
           }

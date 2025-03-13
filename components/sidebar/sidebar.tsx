@@ -1,10 +1,9 @@
 import { ReactNode } from 'react';
-import { AppPathname } from '@/navigation';
 import SidebarLink from './sidebarLink';
 
 type SidebarLinkProps = {
   name: string;
-  path: AppPathname;
+  path: string;
   icon: ReactNode;
 };
 

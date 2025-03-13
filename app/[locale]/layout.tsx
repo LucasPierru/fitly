@@ -1,6 +1,8 @@
 import { ReactNode } from 'react';
 import { Lexend } from 'next/font/google';
-import { NextIntlClientProvider, useMessages } from 'next-intl';
+import { NextIntlClientProvider, hasLocale } from 'next-intl';
+import { notFound } from 'next/navigation';
+import { routing } from '@/i18n/routing';
 import './globals.css';
 import Navbar from '@/components/navbar/navbar';
 import MobileNavbar from '@/components/navbar/mobileNavbar';
@@ -28,11 +30,14 @@ export default function RootLayout({
   children: ReactNode;
   params: { locale: string };
 }) {
-  const messages = useMessages();
+  if (!hasLocale(routing.locales, locale)) {
+    notFound();
+  }
+
   return (
     <html
       lang={locale}
-      className={`${lexend.className}`}
+      className={`${lexend.className} bg-background`}
       suppressHydrationWarning
     >
       <body className="text-foreground h-screen overflow-hidden">
@@ -42,7 +47,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <NextIntlClientProvider locale={locale} messages={messages}>
+          <NextIntlClientProvider>
             <Navbar locale={locale} />
             <div className="overflow-y-auto max-h-[var(--page-size)] h-full scrollbar scrollbar-smooth pb-16 lg:pb-0">
               <main className="max-w-7-xl mx-auto">

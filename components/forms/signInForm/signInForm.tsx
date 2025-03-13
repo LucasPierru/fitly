@@ -2,41 +2,54 @@
 
 import { useTranslations } from 'next-intl';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import FormError from '@/components/errors/formError/formError';
-import Card from '@/components/cards/card';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from '@/components/ui/form';
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle
+} from '@/components/ui/card';
 import { login } from '@/requests/auth';
-import { useRouter } from '@/navigation';
+import { Link, useRouter } from '@/i18n/navigation';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 const SignUpForm = () => {
   const t = useTranslations('Common');
   const router = useRouter();
 
-  const schema = yup
+  const schema = z
     .object({
-      email: yup
-        .string()
-        .required(t('errors.isRequired'))
+      email: z
+        .string({ message: t('errors.isRequired') })
         .email(t('errors.invalidEmail')),
-      password: yup.string().required(t('errors.isRequired'))
+      password: z.string({ message: t('errors.isRequired') })
     })
     .required();
 
-  type Inputs = yup.InferType<typeof schema>;
+  type Inputs = z.infer<typeof schema>;
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors }
-  } = useForm<Inputs>({ resolver: yupResolver(schema) });
+  const form = useForm<Inputs>({ resolver: zodResolver(schema) });
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    const { token, message, error } = await login(data.email, data.password);
-    router.push('/dashboard');
-    console.log({ token, message, error });
-    reset();
+    const { token, message } = await login(data.email, data.password);
+    if (token) {
+      router.push('/dashboard');
+      form.reset();
+    } else {
+      form.setError('email', { message: '' });
+      form.setError('password', { message });
+    }
   };
 
   const inputs: { id: keyof Inputs; label: string; type: string }[] = [
@@ -54,33 +67,54 @@ const SignUpForm = () => {
 
   return (
     <Card>
-      <form
-        className="flex flex-col gap-4 min-w-full mt-4"
-        onSubmit={handleSubmit(onSubmit)}
-      >
-        <div className="flex flex-col grow rounded-lg gap-1 items-center">
-          {inputs.map((input) => (
-            <label key={input.id} htmlFor={input.id} className="w-full">
-              {input.label}
-              <input
-                id={input.id}
-                type={input.type}
-                className="input bg-secondary text-foreground placeholder:text-white w-full focus:outline-0 mt-2"
-                {...register(input.id, {
-                  required: true
-                })}
-              />
-              <FormError error={errors[input.id]} />
-            </label>
-          ))}
-          <button
-            type="submit"
-            className="btn btn-primary max-w-xs w-full text-white"
+      <CardHeader>
+        <CardTitle className="text-lg mx-auto">
+          Sign in to your account
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Form {...form}>
+          <form
+            className="flex flex-col gap-4 min-w-full mt-4"
+            onSubmit={form.handleSubmit(onSubmit)}
           >
-            Sign in
-          </button>
-        </div>
-      </form>
+            <div className="flex flex-col grow rounded-lg gap-4 items-center">
+              {inputs.map((input) => (
+                <FormField
+                  key={input.id}
+                  control={form.control}
+                  name={input.id}
+                  render={({ field }) => (
+                    <FormItem className="w-full">
+                      <FormLabel className="mb-2">{input.label}</FormLabel>
+                      <FormControl>
+                        <Input
+                          id={input.id}
+                          type={input.type}
+                          {...field}
+                          className="mb-2"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              ))}
+              <Button type="submit" size="lg" className="text-white">
+                Sign in
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </CardContent>
+      <CardFooter>
+        <span className="text-center w-full block">
+          Don&apos;t have an account ?{' '}
+          <Link href="/signup" className="hover:text-primary">
+            Sign up
+          </Link>
+        </span>
+      </CardFooter>
     </Card>
   );
 };

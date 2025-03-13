@@ -1,11 +1,11 @@
 'use client';
 
 import { ReactNode } from 'react';
-import { Link, AppPathname, usePathname } from '@/navigation';
+import { Link, usePathname } from '@/i18n/navigation';
 
 type SidebarLinkProps = {
   name: string;
-  path: AppPathname;
+  path: string;
   icon: ReactNode;
 };
 

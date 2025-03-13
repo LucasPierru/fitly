@@ -1,6 +1,6 @@
 'use client';
 
-import { Link, usePathname, AppPathname } from '@/navigation';
+import { Link, usePathname, AppPathname } from '@/i18n/navigation';
 
 type DayFiltersProps = {
   id: string;

@@ -2,7 +2,7 @@
 
 import { Key, useState } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
-import { Link, AppPathname, usePathname } from '@/navigation';
+import { Link, AppPathname, usePathname } from '@/i18n/navigation';
 import { capitalizeWord } from '@/utils/utils';
 
 type FilterProps = {
