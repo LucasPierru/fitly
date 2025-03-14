@@ -1,5 +1,5 @@
 import { DishTypes, RecipeInformation } from '@/types-old/recipes';
-import { Flavonoid } from '@/types-old/foods';
+import { Nutrient } from '@/types';
 
 export const formatPhoneNumber = (phoneNumber: string) => {
   let newPhoneNumber;
@@ -164,16 +164,21 @@ export const getSelectNutrients = (recipe: RecipeInformation) => {
   return selectNutrients;
 };
 
-export const calculateMacros = (nutrients: Flavonoid[]) => {
+export const calculateMacros = (nutrients: Nutrient[]) => {
   return nutrients.reduce(
     (acc, nutrient) => {
-      if (nutrient.name === 'Calories')
-        acc.calories += Math.round(nutrient.amount);
-      if (nutrient.name === 'Protein')
+      if (nutrient.name === 'Protein') {
         acc.protein += Math.round(nutrient.amount);
-      if (nutrient.name === 'Carbohydrates')
+        acc.calories += 4 * Math.round(nutrient.amount);
+      }
+      if (nutrient.name.includes('Carbohydrate')) {
         acc.carbs += Math.round(nutrient.amount);
-      if (nutrient.name === 'Fat') acc.fat += Math.round(nutrient.amount);
+        acc.calories += 4 * Math.round(nutrient.amount);
+      }
+      if (nutrient.name.includes('fat')) {
+        acc.fat += Math.round(nutrient.amount);
+        acc.calories += 9 * Math.round(nutrient.amount);
+      }
       return acc;
     },
     { calories: 0, protein: 0, carbs: 0, fat: 0 }

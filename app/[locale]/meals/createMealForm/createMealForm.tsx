@@ -6,6 +6,7 @@ import { useForm, useFieldArray, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Minus, Plus, X } from 'lucide-react';
+import { CheckedState } from '@radix-ui/react-checkbox';
 import {
   getIngredientInformations,
   getIngredientsAutocomplete
@@ -24,6 +25,7 @@ import {
   FormMessage
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import {
@@ -33,6 +35,12 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger
+} from '@/components/ui/accordion';
 import { IIngredient } from '@/types';
 
 const CreateMealForm = () => {
@@ -52,7 +60,8 @@ const CreateMealForm = () => {
   };
 
   const defaultInstruction = {
-    content: ''
+    name: '',
+    step: 0
   };
 
   const t = useTranslations('Common');
@@ -64,6 +73,8 @@ const CreateMealForm = () => {
   const form = useForm<Inputs>({
     resolver: zodResolver(schema),
     defaultValues: {
+      title: '',
+      description: '',
       vegetarian: false,
       vegan: false,
       glutenFree: false,
@@ -73,7 +84,11 @@ const CreateMealForm = () => {
       veryPopular: false,
       sustainable: false,
       ingredients: [],
-      instructions: []
+      instructions: [],
+      isPublic: false,
+      cookingMinutes: 0,
+      preparationMinutes: 0,
+      servings: 0
     }
   });
 
@@ -110,7 +125,6 @@ const CreateMealForm = () => {
           return info.ingredient;
         })
       ).then((result) => result.filter((ingredient) => ingredient !== null));
-      console.log({ ingredientsInformation });
     }
 
     const nutrition = calculateMacros(
@@ -118,8 +132,6 @@ const CreateMealForm = () => {
         .map((ingredient) => ingredient.nutrients!.flat())
         .flat()
     );
-
-    console.log({ data, nutrition });
 
     const pricePerServing = data.servings
       ? Math.round(
@@ -129,7 +141,34 @@ const CreateMealForm = () => {
           ) / data.servings
         ) / 100
       : 0;
-    /* await createMeal({ ...data, pricePerServing }); */
+
+    const meal = {
+      title: data.title,
+      description: data.description,
+      preparationMinutes: data.preparationMinutes,
+      cookingMinutes: data.cookingMinutes,
+      pricePerServing,
+      servings: data.servings,
+      vegetarian: data.vegetarian,
+      vegan: data.vegan,
+      glutenFree: data.glutenFree,
+      dairyFree: data.dairyFree,
+      veryHealthy: data.veryHealthy,
+      cheap: data.cheap,
+      veryPopular: data.veryPopular,
+      sustainable: data.sustainable,
+      nutrition,
+      ingredients:
+        data.ingredients?.map((ingredient) => ({
+          id: ingredient.id,
+          quantity: ingredient.quantity,
+          unit: ingredient.unit
+        })) ?? [],
+      instructions: data.instructions,
+      isPublic: data.isPublic,
+      isApproved: false
+    };
+    await createMeal(meal);
     // router.push('/dashboard');
     /* reset(); */
   };
@@ -173,6 +212,45 @@ const CreateMealForm = () => {
 
     setIngredients({});
   };
+
+  const checkboxes: { name: keyof Inputs; label: string }[] = [
+    {
+      name: 'vegetarian',
+      label: 'Vegetarian'
+    },
+    {
+      name: 'vegan',
+      label: 'Vegan'
+    },
+    {
+      name: 'glutenFree',
+      label: 'Gluten Free'
+    },
+    {
+      name: 'dairyFree',
+      label: 'Dairy Free'
+    },
+    {
+      name: 'veryHealthy',
+      label: 'Very Healthy'
+    },
+    {
+      name: 'cheap',
+      label: 'Cheap'
+    },
+    {
+      name: 'veryPopular',
+      label: 'Very Popular'
+    },
+    {
+      name: 'sustainable',
+      label: 'Sustainable'
+    },
+    {
+      name: 'isPublic',
+      label: 'Make Public'
+    }
+  ];
 
   return (
     <>
@@ -404,10 +482,6 @@ const CreateMealForm = () => {
                                   .ingredients?.[
                                     index
                                   ].alternateUnits?.map((unit) => <SelectItem value={unit.unit}>{unit.unit}</SelectItem>)}
-                                {/* <SelectItem value="ml">ml</SelectItem>
-                                <SelectItem value="pcs">pcs</SelectItem>
-                                <SelectItem value="tbsp">tbsp</SelectItem>
-                                <SelectItem value="tsp">tsp</SelectItem> */}
                               </SelectContent>
                             </Select>
                             <FormMessage />
@@ -450,12 +524,12 @@ const CreateMealForm = () => {
                       <span className="text-gray-500">{index + 1}.</span>
                       <FormField
                         control={control}
-                        name={`instructions.${index}.content`}
+                        name={`instructions.${index}.name`}
                         render={({ field }) => (
                           <FormItem className="flex-1 gap-2">
                             <FormControl>
                               <Input
-                                id={`instructions.${index}.content`}
+                                id={`instructions.${index}.name`}
                                 type="text"
                                 {...field}
                                 autoComplete="off"
@@ -468,7 +542,10 @@ const CreateMealForm = () => {
                       />
                       <Button
                         type="button"
-                        onClick={() => instructionRemove(index)}
+                        onClick={() => {
+                          instructionRemove(index);
+                          setValue(`instructions.${index}.step`, index + 1);
+                        }}
                         variant="destructive"
                         size="icon"
                         className="rounded-full"
@@ -480,6 +557,42 @@ const CreateMealForm = () => {
                   ))}
                 </div>
               </div>
+              <Accordion type="single" collapsible className="w-full">
+                <AccordionItem value="item-1">
+                  <AccordionTrigger>More options</AccordionTrigger>
+                  <AccordionContent className="flex flex-wrap gap-4">
+                    {checkboxes.map((checkbox) => (
+                      <FormField
+                        control={form.control}
+                        key={checkbox.name}
+                        name={checkbox.name}
+                        render={({ field }) => {
+                          return (
+                            <FormItem
+                              key="isPublic"
+                              className="flex flex-row items-start space-x-3 space-y-0"
+                            >
+                              <FormControl>
+                                <Checkbox
+                                  checked={field.value as CheckedState}
+                                  onCheckedChange={(checked) =>
+                                    field.onChange(checked)
+                                  }
+                                  name={checkbox.name}
+                                  className="!text-base"
+                                />
+                              </FormControl>
+                              <FormLabel className="text-sm font-normal">
+                                {checkbox.label}
+                              </FormLabel>
+                            </FormItem>
+                          );
+                        }}
+                      />
+                    ))}
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
               <div className="flex justify-end gap-3">
                 <Button type="button" onClick={onClose} variant="outline">
                   Cancel

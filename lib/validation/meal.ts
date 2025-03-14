@@ -18,14 +18,10 @@ export const formMealSchema = (t: (arg: string) => string) =>
     sustainable: z.boolean().optional(),
     nutrition: z
       .object({
-        nutrients: z
-          .array(
-            z.object({
-              name: z.string(),
-              amount: z.number()
-            })
-          )
-          .optional()
+        calories: z.number().optional(),
+        protein: z.number().optional(),
+        fat: z.number().optional(),
+        carbs: z.number().optional()
       })
       .optional(),
     ingredients: z
@@ -65,69 +61,55 @@ export const formMealSchema = (t: (arg: string) => string) =>
     instructions: z
       .array(
         z.object({
-          content: z.string().nonempty({ message: t('errors.isRequired') })
+          name: z.string().nonempty({ message: t('errors.isRequired') }),
+          step: z.number().min(1)
         })
       )
-      .optional()
+      .optional(),
+    isPublic: z.boolean().optional(),
+    isApproved: z.boolean().optional()
   });
 
-export const createMealSchema = z
-  .object({
-    title: z.string().nonempty(),
-    description: z.string().nonempty(),
-    preparationMinutes: z.number().optional(),
-    cookingMinutes: z.number().optional(),
-    pricePerServing: z.number().optional(),
-    servings: z.number().optional(),
-    vegetarian: z.boolean().optional(),
-    vegan: z.boolean().optional(),
-    glutenFree: z.boolean().optional(),
-    dairyFree: z.boolean().optional(),
-    veryHealthy: z.boolean().optional(),
-    cheap: z.boolean().optional(),
-    veryPopular: z.boolean().optional(),
-    sustainable: z.boolean().optional(),
-    nutrition: z
-      .object({
-        nutrients: z
-          .array(
-            z.object({
-              name: z.string(),
-              amount: z.number()
-            })
-          )
-          .optional()
+export const createMealSchema = z.object({
+  title: z.string().nonempty(),
+  description: z.string().nonempty(),
+  preparationMinutes: z.number().min(0).optional(),
+  cookingMinutes: z.number().min(0).optional(),
+  pricePerServing: z.number().min(0).optional(),
+  servings: z.number().optional(),
+  vegetarian: z.boolean().optional(),
+  vegan: z.boolean().optional(),
+  glutenFree: z.boolean().optional(),
+  dairyFree: z.boolean().optional(),
+  veryHealthy: z.boolean().optional(),
+  cheap: z.boolean().optional(),
+  veryPopular: z.boolean().optional(),
+  sustainable: z.boolean().optional(),
+  nutrition: z
+    .object({
+      calories: z.number().optional(),
+      protein: z.number().optional(),
+      fat: z.number().optional(),
+      carbs: z.number().optional()
+    })
+    .optional(),
+  ingredients: z
+    .array(
+      z.object({
+        id: z.string().nonempty(),
+        quantity: z.number().min(1),
+        unit: z.string().nonempty()
       })
-      .optional(),
-    ingredients: z
-      .array(
-        z.object({
-          id: z.string().nonempty(),
-          name: z.string().nonempty(),
-          cost: z.number().optional(),
-          nutrition: z
-            .object({
-              nutrients: z
-                .array(
-                  z.object({
-                    name: z.string().nonempty(),
-                    amount: z.number().min(0)
-                  })
-                )
-                .optional()
-            })
-            .optional(),
-          quantity: z.number().min(1),
-          unit: z.string().nonempty()
-        })
-      )
-      .optional(),
-    instructions: z
-      .array(
-        z.object({
-          content: z.string().nonempty()
-        })
-      )
-      .optional()
-  })
-  .required();
+    )
+    .optional(),
+  instructions: z
+    .array(
+      z.object({
+        name: z.string().nonempty(),
+        step: z.number().min(1)
+      })
+    )
+    .optional(),
+  isPublic: z.boolean().optional(),
+  isApproved: z.boolean().optional()
+});
