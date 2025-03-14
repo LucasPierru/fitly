@@ -1,15 +1,17 @@
 'use server';
 
 import { cookies } from 'next/headers';
-import { CreateMeal } from '@/types-old/meal';
+import { z } from 'zod';
+import { createMealSchema } from '@/lib/validation/meal';
 
-export const createMeal = async (newMeal: CreateMeal) => {
+export const createMeal = async (context: z.infer<typeof createMealSchema>) => {
   const cookieStore = cookies();
   const token = cookieStore.get('token');
   try {
     if (!token) {
       throw new Error('User not authenticated');
     }
+    const newMeal = createMealSchema.parse(context);
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/v1/meal/create`,
       {

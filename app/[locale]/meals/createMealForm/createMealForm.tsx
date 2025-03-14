@@ -14,7 +14,7 @@ import { calculateMacros, capitalizeWord } from '@/utils/utils';
 import Modal from '@/components/modal/modal';
 import { createMeal } from '@/requests/meal';
 import { Button } from '@/components/ui/button';
-import { createMealSchema } from '@/lib/validation/meal';
+import { formMealSchema } from '@/lib/validation/meal';
 import {
   Form,
   FormControl,
@@ -57,7 +57,7 @@ const CreateMealForm = () => {
 
   const t = useTranslations('Common');
 
-  const schema = createMealSchema(t);
+  const schema = formMealSchema(t);
 
   type Inputs = z.infer<typeof schema>;
 
@@ -102,10 +102,15 @@ const CreateMealForm = () => {
     if (data.ingredients) {
       ingredientsInformation = await Promise.all(
         data.ingredients?.map(async (ingredient) => {
-          const info = await getIngredientInformations(ingredient.id);
-          return info;
+          const info = await getIngredientInformations(
+            ingredient.id,
+            ingredient.quantity,
+            ingredient.unit
+          );
+          return info.ingredient;
         })
-      );
+      ).then((result) => result.filter((ingredient) => ingredient !== null));
+      console.log({ ingredientsInformation });
     }
 
     const nutrition = calculateMacros(
@@ -113,6 +118,8 @@ const CreateMealForm = () => {
         .map((ingredient) => ingredient.nutrients!.flat())
         .flat()
     );
+
+    console.log({ data, nutrition });
 
     const pricePerServing = data.servings
       ? Math.round(
@@ -122,7 +129,7 @@ const CreateMealForm = () => {
           ) / data.servings
         ) / 100
       : 0;
-    await createMeal({ ...data, nutrition, pricePerServing });
+    /* await createMeal({ ...data, pricePerServing }); */
     // router.push('/dashboard');
     /* reset(); */
   };
@@ -158,10 +165,11 @@ const CreateMealForm = () => {
   };
 
   const onSelectIngredient = async (index: number, ingredient: IIngredient) => {
-    const { _id, name, possibleUnits } = ingredient;
+    const { _id, name, alternateUnits } = ingredient;
 
     setValue(`ingredients.${index}.id`, _id);
     setValue(`ingredients.${index}.name`, capitalizeWord(name));
+    setValue(`ingredients.${index}.alternateUnits`, alternateUnits);
 
     setIngredients({});
   };
@@ -322,7 +330,7 @@ const CreateMealForm = () => {
                                   placeholder="E.g. Chicken breast"
                                   type="text"
                                   value={
-                                    form.getValues().ingredients[index].name
+                                    form.getValues().ingredients?.[index].name
                                   }
                                   onChange={(e) =>
                                     onChange(e, ingredient.id, index)
@@ -391,10 +399,15 @@ const CreateMealForm = () => {
                               </FormControl>
                               <SelectContent>
                                 <SelectItem value="g">g</SelectItem>
-                                <SelectItem value="ml">ml</SelectItem>
+                                {form
+                                  .getValues()
+                                  .ingredients?.[
+                                    index
+                                  ].alternateUnits?.map((unit) => <SelectItem value={unit.unit}>{unit.unit}</SelectItem>)}
+                                {/* <SelectItem value="ml">ml</SelectItem>
                                 <SelectItem value="pcs">pcs</SelectItem>
                                 <SelectItem value="tbsp">tbsp</SelectItem>
-                                <SelectItem value="tsp">tsp</SelectItem>
+                                <SelectItem value="tsp">tsp</SelectItem> */}
                               </SelectContent>
                             </Select>
                             <FormMessage />

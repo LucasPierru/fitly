@@ -1,6 +1,6 @@
-import { Types } from "mongoose";
-import { DefaultProperties } from "./common.types";
-import { IIngredientCategory } from "./ingredientCategories.types";
+import { Types } from 'mongoose';
+import { DefaultProperties } from './common.types';
+import { IIngredientCategory } from './ingredientCategories.types';
 
 export type AlternateUnit = {
   amount: number;
@@ -22,6 +22,7 @@ export type Nutrient = {
 export type IIngredient = DefaultProperties & {
   usdaId: number;
   name: string;
+  keywords: string[];
   amount: number;
   unit: string;
   unitShort: string;
