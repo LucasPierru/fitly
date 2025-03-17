@@ -1,13 +1,31 @@
 import { z } from 'zod';
 
+const MAX_FILE_SIZE = 5000000;
+const ACCEPTED_IMAGE_TYPES = [
+  'image/jpeg',
+  'image/jpg',
+  'image/png',
+  'image/webp'
+];
+
 export const formMealSchema = (t: (arg: string) => string) =>
   z.object({
     title: z.string().nonempty({ message: t('errors.isRequired') }),
+    image: z
+      .any({ message: t('errors.imageIsRequired') })
+      .refine((file) => file?.size <= MAX_FILE_SIZE, `Max image size is 5MB.`)
+      .refine(
+        (file) => ACCEPTED_IMAGE_TYPES.includes(file?.type),
+        'Only .jpg, .jpeg, .png and .webp formats are supported.'
+      ),
     description: z.string().nonempty({ message: t('errors.isRequired') }),
-    preparationMinutes: z.coerce.number().min(0).optional(),
-    cookingMinutes: z.coerce.number().min(0).optional(),
-    pricePerServing: z.number().optional(),
-    servings: z.coerce.number().min(0).optional(),
+    preparationMinutes: z.coerce
+      .number()
+      .min(1, { message: t('errors.isNotPositive') }),
+    cookingMinutes: z.coerce
+      .number()
+      .min(1, { message: t('errors.isNotPositive') }),
+    servings: z.coerce.number().min(1, { message: t('errors.isNotPositive') }),
     vegetarian: z.boolean().optional(),
     vegan: z.boolean().optional(),
     glutenFree: z.boolean().optional(),
@@ -53,11 +71,11 @@ export const formMealSchema = (t: (arg: string) => string) =>
             .optional(),
           quantity: z.coerce
             .number()
-            .min(1, { message: 'Quantity must be higher than 1' }),
+            .min(1, { message: t('errors.isNotPositive') }),
           unit: z.string().nonempty({ message: t('errors.isRequired') })
         })
       )
-      .optional(),
+      .min(1, { message: t('errors.atLeastOneIngredient') }),
     instructions: z
       .array(
         z.object({
@@ -72,6 +90,7 @@ export const formMealSchema = (t: (arg: string) => string) =>
 
 export const createMealSchema = z.object({
   title: z.string().nonempty(),
+  image: z.string(),
   description: z.string().nonempty(),
   preparationMinutes: z.number().min(0).optional(),
   cookingMinutes: z.number().min(0).optional(),

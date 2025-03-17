@@ -6,7 +6,9 @@
       "isRequired": "This field is required",
       "invalidEmail": "This is not a valid e-mail",
       "isNotNumber": "Please enter a number",
-      "isNotPositive": "Number must be positive"
+      "imageIsRequired": "Image is required",
+      "isNotPositive": "Number must be positive",
+      "atLeastOneIngredient": "Meal must have at least one ingredient"
     }
   }
 }

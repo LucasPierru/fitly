@@ -5,7 +5,10 @@
     "errors": {
       "isRequired": "Ce champ est requis",
       "invalidEmail": "Ce courriel n'est pas valide",
-      "isNotNumber": "Veuillez entre un chiffre"
+      "imageIsRequired": "Une image est requise",
+      "isNotNumber": "Veuillez entre un chiffre",
+      "isNotPositive": "Le chiffre doit être positif",
+      "atLeastOneIngredient": "Le repas doit avoir au minimum un ingrédient"
     }
   }
 }
