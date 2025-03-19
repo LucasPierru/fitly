@@ -1,3 +1,4 @@
+import { XIcon } from 'lucide-react';
 import MealCard from './mealCard/mealCard';
 import { getRecipes } from '@/actions/recipes';
 import SearchInput from '@/components/inputs/searchInput/searchInput';
@@ -8,14 +9,12 @@ import { Link } from '@/i18n/navigation';
 export default async function MealsPage({
   searchParams
 }: {
-  searchParams: { query: string; own: string; protein: string };
+  searchParams: { query: string; filter: string };
 }) {
-  const { query, own, protein } = searchParams;
+  const { query, filter } = searchParams;
 
   const recipes = await getRecipes(query);
-  const { meals } = await getMeals();
-
-  console.log({ meals });
+  const { meals } = await getMeals(searchParams);
 
   return (
     <div className="flex flex-col gap-6 min-h-screen px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 auto-rows-min">
@@ -29,23 +28,31 @@ export default async function MealsPage({
       />
       <div className="flex gap-4">
         <Link
-          href={{ pathname: 'meals', query: { own: true } }}
-          className={`${own ? 'bg-primary text-white' : 'bg-background text-primary'} border border-primary py-2 px-3 rounded-md`}
+          href={{ pathname: 'meals', query: { filter: 'own' } }}
+          className={`${filter === 'own' ? 'bg-primary text-white' : 'bg-background text-primary'} border border-primary py-2 px-3 rounded-md`}
         >
           My meals
         </Link>
         <Link
-          href={{ pathname: 'meals', query: { protein: true } }}
-          className={`${protein ? 'bg-primary text-white' : 'bg-background text-primary'} border border-primary py-2 px-3 rounded-md`}
+          href={{ pathname: 'meals', query: { filter: 'protein' } }}
+          className={`${filter === 'protein' ? 'bg-primary text-white' : 'bg-background text-primary'} border border-primary py-2 px-3 rounded-md`}
         >
           High protein
         </Link>
         <Link
-          href={{ pathname: 'meals', query: { carbs: true } }}
-          className={`${protein ? 'bg-primary text-white' : 'bg-background text-primary'} border border-primary py-2 px-3 rounded-md`}
+          href={{ pathname: 'meals', query: { filter: 'carbs' } }}
+          className={`${filter === 'carbs' ? 'bg-primary text-white' : 'bg-background text-primary'} border border-primary py-2 px-3 rounded-md`}
         >
           High carbs
         </Link>
+        {filter && (
+          <Link
+            href={{ pathname: 'meals' }}
+            className="bg-background text-primary border border-border py-2 px-3 rounded-md flex gap-2"
+          >
+            <XIcon /> Reset
+          </Link>
+        )}
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {meals &&

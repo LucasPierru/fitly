@@ -39,7 +39,12 @@ export const createMeal = async (
   }
 };
 
-export const getMeals = async (): Promise<{
+export const getMeals = async (query: {
+  query?: string;
+  protein?: string;
+  carbs?: string;
+  own?: string;
+}): Promise<{
   meals: (IMeal & { isOwner: boolean })[] | null;
   error: unknown;
 }> => {
@@ -50,7 +55,9 @@ export const getMeals = async (): Promise<{
       throw new Error('User not authenticated');
     }
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/v1/meal/all`,
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/v1/meal/all?${new URLSearchParams(
+        query
+      )} `,
       {
         method: 'GET',
         headers: {
