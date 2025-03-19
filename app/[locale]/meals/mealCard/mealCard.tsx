@@ -1,41 +1,52 @@
 import Image from 'next/image';
-import { Clock, Plus } from 'lucide-react';
+import { Clock, EditIcon, Plus } from 'lucide-react';
+import getImage from '@/lib/storage';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
 type MealCardProps = {
+  id: string;
   title: string;
-  ingredientsString: string;
-  imageUrl?: string;
+  description: string;
+  image: string;
   readyInMinutes: number;
   macros: { calories: number; protein: number; carbs: number; fat: number };
+  isOwner: boolean;
 };
 
-const MealCard = ({
+const MealCard = async ({
+  id,
   title,
-  ingredientsString,
-  imageUrl,
+  description,
+  image,
   readyInMinutes,
-  macros
+  macros,
+  isOwner
 }: MealCardProps) => {
+  const imageData = await getImage(id, image);
+
   return (
-    <div className="bg-card rounded-lg shadow-sm overflow-hidden">
+    <Card>
       <div className="relative w-full h-48">
         <Image
-          src={
-            imageUrl
-              ? imageUrl.replace('312x231', '556x370')
-              : '/defaultImage.jpg'
-          }
+          src={imageData.url || '/defaultImage.jpg'}
           alt={title}
           fill
-          className="w-full h-full object-cover absolute"
+          className="w-full h-full object-cover absolute rounded-t-xl"
         />
+        {isOwner && (
+          <Button
+            variant="secondary"
+            size="icon"
+            className="absolute top-2 right-2 rounded-full"
+          >
+            <EditIcon className="h-6 w-6 text-foreground" />
+          </Button>
+        )}
       </div>
       <div className="p-4">
         <h3 className="font-semibold text-lg truncate">{title}</h3>
-        <p className="text-md text-gray-500 mt-1 truncate">
-          {ingredientsString}
-        </p>
-
+        <p className="text-md text-gray-500 mt-1 truncate">{description}</p>
         <div className="mt-4 flex items-center justify-between text-md">
           <div className="flex items-center gap-2 text-gray-500">
             <Clock className="h-4 w-4" />
@@ -65,7 +76,7 @@ const MealCard = ({
           Add to Plan
         </button>
       </div>
-    </div>
+    </Card>
   );
 };
 

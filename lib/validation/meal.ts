@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const MAX_FILE_SIZE = 5000000;
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_IMAGE_TYPES = [
   'image/jpeg',
   'image/jpg',
@@ -13,9 +13,12 @@ export const formMealSchema = (t: (arg: string) => string) =>
     title: z.string().nonempty({ message: t('errors.isRequired') }),
     image: z
       .any({ message: t('errors.imageIsRequired') })
-      .refine((file) => file?.size <= MAX_FILE_SIZE, `Max image size is 5MB.`)
       .refine(
-        (file) => ACCEPTED_IMAGE_TYPES.includes(file?.type),
+        (file) => file[0]?.size <= MAX_FILE_SIZE,
+        `Max image size is 5MB.`
+      )
+      .refine(
+        (file) => ACCEPTED_IMAGE_TYPES.includes(file[0]?.type),
         'Only .jpg, .jpeg, .png and .webp formats are supported.'
       ),
     description: z.string().nonempty({ message: t('errors.isRequired') }),
@@ -90,7 +93,7 @@ export const formMealSchema = (t: (arg: string) => string) =>
 
 export const createMealSchema = z.object({
   title: z.string().nonempty(),
-  image: z.string(),
+  image: z.object({ name: z.string(), data: z.string(), type: z.string() }),
   description: z.string().nonempty(),
   preparationMinutes: z.number().min(0).optional(),
   cookingMinutes: z.number().min(0).optional(),
@@ -115,7 +118,7 @@ export const createMealSchema = z.object({
   ingredients: z
     .array(
       z.object({
-        id: z.string().nonempty(),
+        ingredient: z.string().nonempty(),
         quantity: z.number().min(1),
         unit: z.string().nonempty()
       })

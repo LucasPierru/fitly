@@ -8,6 +8,7 @@ import { z } from 'zod';
 import { CameraIcon, Minus, Plus, X, XIcon } from 'lucide-react';
 import { CheckedState } from '@radix-ui/react-checkbox';
 import Image from 'next/image';
+import { useRouter } from '@/i18n/navigation';
 import {
   getIngredientInformations,
   getIngredientsAutocomplete
@@ -50,6 +51,7 @@ const CreateMealForm = () => {
     {}
   );
   const [image, setImage] = useState<string | null>(null);
+  const router = useRouter();
 
   const defaultIngredient = {
     id: '',
@@ -151,7 +153,11 @@ const CreateMealForm = () => {
 
     const newMeal = {
       title: data.title,
-      image: data.image.item(0)?.name!,
+      image: {
+        name: data.image.item(0)?.name!,
+        data: image!,
+        type: data.image.item(0)?.type!
+      },
       description: data.description,
       preparationMinutes: data.preparationMinutes,
       cookingMinutes: data.cookingMinutes,
@@ -168,7 +174,7 @@ const CreateMealForm = () => {
       nutrition,
       ingredients:
         data.ingredients?.map((ingredient) => ({
-          id: ingredient.id,
+          ingredient: ingredient.id,
           quantity: ingredient.quantity,
           unit: ingredient.unit
         })) ?? [],
@@ -176,11 +182,8 @@ const CreateMealForm = () => {
       isPublic: data.isPublic,
       isApproved: false
     };
-    console.log({ newMeal });
     const { meal } = await createMeal(newMeal);
-    console.log({ meal });
-    // router.push('/dashboard');
-    /* reset(); */
+    router.refresh();
   };
 
   const onClose = () => {

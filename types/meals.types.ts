@@ -55,9 +55,9 @@ export type IMeal = DefaultProperties & {
   isApproved: boolean;
   creator: Types.ObjectId | IUser;
   nutrition: {
-    calories: Number;
-    protein: Number;
-    fat: Number;
-    carbs: Number;
+    calories: number;
+    protein: number;
+    fat: number;
+    carbs: number;
   };
 };
