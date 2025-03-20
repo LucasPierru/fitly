@@ -1,10 +1,12 @@
 import { format, addDays } from 'date-fns';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
+import CreateMealButton from '../create-meal-button/create-meal-button';
 
 const WeekSwitch = ({ startDate }: { startDate: Date }) => {
   return (
     <div className="flex items-center gap-4">
+      <CreateMealButton />
       <Link
         href={{
           pathname: '/planner',

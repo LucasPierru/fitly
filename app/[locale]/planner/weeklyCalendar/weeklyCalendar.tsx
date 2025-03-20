@@ -1,7 +1,7 @@
 import { format, addDays } from 'date-fns';
 import { Link } from '@/i18n/navigation';
 
-export function WeeklyCalendar({
+export default function WeeklyCalendar({
   startDate,
   selectedDate
 }: {

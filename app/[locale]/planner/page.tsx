@@ -1,5 +1,5 @@
-import { WeeklyCalendar } from './weeklyCalendar/weeklyCalendar';
-import { DayMeals } from './dayMeals/dayMeals';
+import WeeklyCalendar from './weeklyCalendar/weeklyCalendar';
+import DayMeals from './dayMeals/dayMeals';
 import WeekSwitch from './weekSwitch/weekSwitch';
 import { getStartOfWeek } from '@/utils/utils';
 
