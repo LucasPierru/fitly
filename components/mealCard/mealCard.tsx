@@ -12,6 +12,7 @@ type MealCardProps = {
   readyInMinutes: number;
   macros: { calories: number; protein: number; carbs: number; fat: number };
   isOwner: boolean;
+  addMealAction: () => void;
 };
 
 const MealCard = async ({
@@ -21,7 +22,8 @@ const MealCard = async ({
   image,
   readyInMinutes,
   macros,
-  isOwner
+  isOwner,
+  addMealAction
 }: MealCardProps) => {
   const imageData = await getImage(id, image);
 
@@ -71,6 +73,7 @@ const MealCard = async ({
         <button
           type="button"
           className="mt-4 w-full flex items-center justify-center gap-2 px-4 py-2 border border-primary rounded-md text-primary hover:bg-primary hover:text-white transition-all ease-in duration-100"
+          onClick={addMealAction}
         >
           <Plus className="h-4 w-4" />
           Add to Plan

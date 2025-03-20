@@ -3,7 +3,7 @@ import DayMeals from './dayMeals/dayMeals';
 import WeekSwitch from './weekSwitch/weekSwitch';
 import { getStartOfWeek } from '@/utils/utils';
 
-export default function PlannerPage({
+export default async function PlannerPage({
   searchParams
 }: {
   searchParams: { start: string };

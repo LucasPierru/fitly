@@ -9,3 +9,4 @@ export type { IWeightLog } from './weightLogs.types';
 export type { IFoodLog } from './foodLogs.types';
 export type { ISubscription } from './subscription.types';
 export type { Nutrient } from './ingredients.types';
+export type { Day } from './common.types';

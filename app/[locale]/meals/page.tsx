@@ -1,5 +1,5 @@
 import { XIcon } from 'lucide-react';
-import MealCard from './mealCard/mealCard';
+import MealCard from '../../../components/mealCard/mealCard';
 import { getRecipes } from '@/actions/recipes';
 import SearchInput from '@/components/inputs/searchInput/searchInput';
 import CreateMealForm from './createMealForm/createMealForm';

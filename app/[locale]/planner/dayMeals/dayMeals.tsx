@@ -1,4 +1,4 @@
-import { Plus } from 'lucide-react';
+import { Types } from 'mongoose';
 import {
   Card,
   CardContent,
@@ -6,16 +6,40 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import AddMeal from './add-meal/add-meal';
+import { getMeals } from '@/requests/meal';
+import MealCard from '@/components/mealCard/mealCard';
+import { IMealPlan } from '@/types';
+import { updateMealPlan } from '@/requests/meal-plan';
 
-export default function DayMeals() {
+export default async function DayMeals({
+  planId,
+  day,
+  mealPlanMeals
+}: {
+  planId: string;
+  day: string;
+  mealPlanMeals: IMealPlan['meals'];
+}) {
   const timeSlots = [
-    { time: '08:00', name: 'Breakfast' },
-    { time: '11:00', name: 'Snack' },
-    { time: '13:00', name: 'Lunch' },
-    { time: '16:00', name: 'Snack' },
-    { time: '19:00', name: 'Dinner' }
+    { time: '08:00', name: 'Breakfast', value: 'breakfast' },
+    { time: '11:00', name: 'Snack', value: 'snack' },
+    { time: '13:00', name: 'Lunch', value: 'lunch' },
+    { time: '16:00', name: 'Snack', value: 'snack' },
+    { time: '19:00', name: 'Dinner', value: 'dinner' }
   ];
+
+  const { meals } = await getMeals({});
+
+  const addMealAction = async (mealId: Types.ObjectId, time: string) => {
+    const newMeals = [...mealPlanMeals];
+    newMeals.push({
+      meal: mealId,
+      dishType: time,
+      day
+    });
+    const { mealPlan } = await updateMealPlan({ _id: planId, meals: newMeals });
+  };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-5 gap-4">
@@ -26,14 +50,24 @@ export default function DayMeals() {
               <CardTitle className="font-medium">{slot.name}</CardTitle>
               <CardDescription className="text-md">{slot.time}</CardDescription>
             </div>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="text-primary !mt-0 hover:text-primary hover:bg-muted rounded-full"
-            >
-              <Plus className="h-5 w-5" />{' '}
-            </Button>
+            <AddMeal>
+              {meals &&
+                meals.map((meal) => (
+                  <MealCard
+                    key={meal._id.toString()}
+                    id={meal._id.toString()}
+                    title={meal.title}
+                    description={meal.description}
+                    image={meal.image}
+                    readyInMinutes={
+                      meal.cookingMinutes + meal.preparationMinutes
+                    }
+                    macros={meal.nutrition}
+                    isOwner={meal.isOwner}
+                    addMealAction={() => addMealAction(meal._id, slot.value)}
+                  />
+                ))}
+            </AddMeal>
           </CardHeader>
 
           <CardContent>
