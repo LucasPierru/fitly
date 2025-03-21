@@ -1,4 +1,3 @@
-import { Types } from 'mongoose';
 import {
   Card,
   CardContent,
@@ -9,21 +8,16 @@ import {
 import AddMeal from './add-meal/add-meal';
 import { getMeals } from '@/requests/meal';
 import MealCard from '@/components/mealCard/mealCard';
-import { IMealPlan } from '@/types';
-import { updateMealPlan } from '@/requests/meal-plan';
+import { IMeal, IMealPlan } from '@/types';
+import AddMealButton from '@/components/mealCard/add-meal-button/add-meal-button';
 
 export default async function DayMeals({
-  planId,
-  day,
   mealPlanMeals
 }: {
-  planId: string;
-  day: string;
   mealPlanMeals: IMealPlan['meals'];
 }) {
   const timeSlots = [
     { time: '08:00', name: 'Breakfast', value: 'breakfast' },
-    { time: '11:00', name: 'Snack', value: 'snack' },
     { time: '13:00', name: 'Lunch', value: 'lunch' },
     { time: '16:00', name: 'Snack', value: 'snack' },
     { time: '19:00', name: 'Dinner', value: 'dinner' }
@@ -31,18 +25,12 @@ export default async function DayMeals({
 
   const { meals } = await getMeals({});
 
-  const addMealAction = async (mealId: Types.ObjectId, time: string) => {
-    const newMeals = [...mealPlanMeals];
-    newMeals.push({
-      meal: mealId,
-      dishType: time,
-      day
-    });
-    const { mealPlan } = await updateMealPlan({ _id: planId, meals: newMeals });
+  const filteredMeals = (time: string) => {
+    return mealPlanMeals.filter((meal) => meal.dishType === time);
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+    <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-4">
       {timeSlots.map((slot) => (
         <Card key={slot.time}>
           <CardHeader className="flex-row items-start justify-between mb-2">
@@ -55,7 +43,7 @@ export default async function DayMeals({
                 meals.map((meal) => (
                   <MealCard
                     key={meal._id.toString()}
-                    id={meal._id.toString()}
+                    id={meal._id}
                     title={meal.title}
                     description={meal.description}
                     image={meal.image}
@@ -64,16 +52,27 @@ export default async function DayMeals({
                     }
                     macros={meal.nutrition}
                     isOwner={meal.isOwner}
-                    addMealAction={() => addMealAction(meal._id, slot.value)}
-                  />
+                  >
+                    <AddMealButton mealId={meal._id} time={slot.value} />
+                  </MealCard>
                 ))}
             </AddMeal>
           </CardHeader>
 
           <CardContent>
-            <p className="text-muted-foreground p-4 border-2 border-dashed border-border rounded-lg text-center">
-              Add a meal for {slot.name.toLowerCase()}
-            </p>
+            {filteredMeals(slot.value).length === 0 ? (
+              <p className="text-muted-foreground p-4 border-2 border-dashed border-border rounded-lg text-center">
+                Add a meal for {slot.name.toLowerCase()}
+              </p>
+            ) : (
+              <div>
+                {filteredMeals(slot.value).map((meal) => (
+                  <div key={meal._id?.toString()}>
+                    {(meal.meal as IMeal)?.title}
+                  </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
       ))}

@@ -26,7 +26,7 @@ export default async function PlanPage({
         />
       </div>
       <WeekDays selectedDay={day || 'monday'} planId={planId} />
-      <DayMeals planId={planId} day={day} mealPlanMeals={mealPlan!.meals} />
+      <DayMeals mealPlanMeals={mealPlan!.meals} />
     </div>
   );
 }

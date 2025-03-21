@@ -1,18 +1,20 @@
+import { ReactNode } from 'react';
 import Image from 'next/image';
-import { Clock, EditIcon, Plus } from 'lucide-react';
+import { Types } from 'mongoose';
+import { Clock, EditIcon } from 'lucide-react';
 import getImage from '@/lib/storage';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
 type MealCardProps = {
-  id: string;
+  id: Types.ObjectId;
   title: string;
   description: string;
   image: string;
   readyInMinutes: number;
   macros: { calories: number; protein: number; carbs: number; fat: number };
   isOwner: boolean;
-  addMealAction: () => void;
+  children: ReactNode;
 };
 
 const MealCard = async ({
@@ -23,9 +25,9 @@ const MealCard = async ({
   readyInMinutes,
   macros,
   isOwner,
-  addMealAction
+  children
 }: MealCardProps) => {
-  const imageData = await getImage(id, image);
+  const imageData = await getImage(id.toString(), image);
 
   return (
     <Card>
@@ -70,14 +72,7 @@ const MealCard = async ({
             <p className="font-medium">{macros.fat}g</p>
           </div>
         </div>
-        <button
-          type="button"
-          className="mt-4 w-full flex items-center justify-center gap-2 px-4 py-2 border border-primary rounded-md text-primary hover:bg-primary hover:text-white transition-all ease-in duration-100"
-          onClick={addMealAction}
-        >
-          <Plus className="h-4 w-4" />
-          Add to Plan
-        </button>
+        {children}
       </div>
     </Card>
   );

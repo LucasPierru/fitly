@@ -8,6 +8,7 @@ export type IMealPlan = DefaultProperties & {
   name: string;
   description: string;
   meals: {
+    _id?: Types.ObjectId;
     meal?: Types.ObjectId | IMeal;
     ingredient?: Types.ObjectId | IIngredient;
     quantity?: number;

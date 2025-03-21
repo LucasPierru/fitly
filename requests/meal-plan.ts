@@ -76,6 +76,40 @@ export const updateMealPlan = async (
   }
 };
 
+export const addMealToMealPlan = async (
+  context: z.infer<typeof updateMealPlanSchema>
+): Promise<{
+  mealPlan: IMealPlan | null;
+  error: unknown;
+}> => {
+  const cookieStore = cookies();
+  const token = cookieStore.get('token');
+  try {
+    if (!token) {
+      throw new Error('User not authenticated');
+    }
+    const newMealPlan = updateMealPlanSchema.parse(context);
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/v1/meal-plan/add-meal`,
+      {
+        method: 'POST',
+        body: JSON.stringify(newMealPlan),
+        headers: {
+          'Content-Type': 'application/json',
+          authorization: `Bearer ${token.value}`
+        },
+        credentials: 'include'
+      }
+    );
+    const data = await response.json();
+    const { mealPlan, error } = data;
+    if (error) throw error;
+    return { mealPlan, error };
+  } catch (error) {
+    return { mealPlan: null, error };
+  }
+};
+
 export const getMealPlan = async (
   id: string,
   day: Day

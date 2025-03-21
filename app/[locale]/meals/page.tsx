@@ -59,7 +59,7 @@ export default async function MealsPage({
           meals.map((meal) => {
             return (
               <MealCard
-                key={meal._id}
+                key={meal._id.toString()}
                 id={meal._id}
                 title={meal.title}
                 description={meal.description}
@@ -67,7 +67,9 @@ export default async function MealsPage({
                 readyInMinutes={meal.cookingMinutes + meal.preparationMinutes}
                 macros={meal.nutrition}
                 isOwner={meal.isOwner}
-              />
+              >
+                {' '}
+              </MealCard>
             );
           })}
       </div>
