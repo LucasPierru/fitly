@@ -16,7 +16,6 @@ const CreateMealButton = () => {
           name: 'New Plan',
           description: 'test'
         };
-        console.log({ newPlan });
         const { mealPlan } = await createMealPlan(newPlan);
         if (mealPlan) router.push(`/planner/${mealPlan._id}`);
       }}

@@ -1,10 +1,11 @@
 import { Link } from '@/i18n/navigation';
+import { Day } from '@/types';
 
-export default function WeekDays({
+export default async function WeekDays({
   selectedDay,
   planId
 }: {
-  selectedDay: string;
+  selectedDay: Day;
   planId: string;
 }) {
   const days = [

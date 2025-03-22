@@ -1,4 +1,5 @@
-import DayMeals from '../dayMeals/dayMeals';
+import { Suspense } from 'react';
+import DayMeals from './dayMeals/dayMeals';
 import WeekDays from './week-days/week-days';
 import { getMealPlan } from '@/requests/meal-plan';
 import PlanMetadata from './plan-metadata/plan-metadata';

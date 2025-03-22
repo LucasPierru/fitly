@@ -1,5 +1,5 @@
 import { DishTypes, RecipeInformation } from '@/types-old/recipes';
-import { Nutrient } from '@/types';
+import { IMeal, IMealPlan, Nutrient } from '@/types';
 
 export const formatPhoneNumber = (phoneNumber: string) => {
   let newPhoneNumber;
@@ -198,4 +198,20 @@ export const calculateAgeFromBirthday = (birthday: string) => {
   const age = Math.floor(timeDiff / (1000 * 3600 * 24) / 365.25);
 
   return age;
+};
+
+export const calculateMealPlanMacros = (meals: IMealPlan['meals']) => {
+  const flatMeals: IMeal[] = meals.map((meal) => meal.meal) as IMeal[];
+
+  return flatMeals.reduce(
+    (acc, meal) => {
+      const { calories, protein, carbs, fat } = meal.nutrition;
+      acc.calories += calories;
+      acc.protein += protein;
+      acc.carbs += carbs;
+      acc.fat += fat;
+      return acc;
+    },
+    { calories: 0, protein: 0, carbs: 0, fat: 0 }
+  );
 };

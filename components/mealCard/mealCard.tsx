@@ -58,7 +58,7 @@ const MealCard = async ({
           </div>
           <span className="font-medium">{macros.calories} kcal</span>
         </div>
-        <div className="mt-4 grid grid-cols-3 gap-2 text-md">
+        <div className="mt-4 flex gap-2 text-md justify-between">
           <div>
             <span className="text-gray-500">Protein</span>
             <p className="font-medium">{macros.protein}g</p>

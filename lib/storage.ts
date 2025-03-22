@@ -1,3 +1,5 @@
+'use server';
+
 import { Storage } from '@google-cloud/storage';
 import path from 'path';
 

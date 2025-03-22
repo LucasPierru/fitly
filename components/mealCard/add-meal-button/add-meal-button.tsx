@@ -29,7 +29,7 @@ const AddMealButton = ({
       _id: params.planId as string,
       meals: newMeals
     });
-    router.refresh();
+    if (mealPlan) router.refresh();
   };
 
   return (

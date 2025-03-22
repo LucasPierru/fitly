@@ -25,7 +25,7 @@ export default function WeeklyCalendar({
             className={`p-1 sm:p-4 border-2 rounded-lg bg-card text-center ${
               isToday
                 ? 'border-primary text-card-foreground hover:bg-muted'
-                : 'border-card hover:bg-muted hover:border-muted'
+                : 'border-border hover:bg-muted hover:border-muted'
             }`}
           >
             <p className="text-sm sm:text-md font-medium">

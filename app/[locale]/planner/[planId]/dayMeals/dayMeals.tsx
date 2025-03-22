@@ -7,9 +7,9 @@ import {
 } from '@/components/ui/card';
 import AddMeal from './add-meal/add-meal';
 import { getMeals } from '@/requests/meal';
-import MealCard from '@/components/mealCard/mealCard';
+import MealCard from '../meal-card/meal-card';
 import { IMeal, IMealPlan } from '@/types';
-import AddMealButton from '@/components/mealCard/add-meal-button/add-meal-button';
+import MinMealCard from './min-meal-card/min-meal-card';
 
 export default async function DayMeals({
   mealPlanMeals
@@ -30,7 +30,7 @@ export default async function DayMeals({
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-4 gap-4">
       {timeSlots.map((slot) => (
         <Card key={slot.time}>
           <CardHeader className="flex-row items-start justify-between mb-2">
@@ -43,33 +43,25 @@ export default async function DayMeals({
                 meals.map((meal) => (
                   <MealCard
                     key={meal._id.toString()}
-                    id={meal._id}
-                    title={meal.title}
-                    description={meal.description}
-                    image={meal.image}
-                    readyInMinutes={
-                      meal.cookingMinutes + meal.preparationMinutes
-                    }
-                    macros={meal.nutrition}
-                    isOwner={meal.isOwner}
-                  >
-                    <AddMealButton mealId={meal._id} time={slot.value} />
-                  </MealCard>
+                    meal={meal}
+                    time={slot.value}
+                  />
                 ))}
             </AddMeal>
           </CardHeader>
-
           <CardContent>
             {filteredMeals(slot.value).length === 0 ? (
               <p className="text-muted-foreground p-4 border-2 border-dashed border-border rounded-lg text-center">
                 Add a meal for {slot.name.toLowerCase()}
               </p>
             ) : (
-              <div>
+              <div className="flex flex-col gap-6">
                 {filteredMeals(slot.value).map((meal) => (
-                  <div key={meal._id?.toString()}>
-                    {(meal.meal as IMeal)?.title}
-                  </div>
+                  <MinMealCard
+                    key={meal._id?.toString()}
+                    meal={meal.meal as IMeal}
+                    mealPlanMealId={meal._id}
+                  />
                 ))}
               </div>
             )}
