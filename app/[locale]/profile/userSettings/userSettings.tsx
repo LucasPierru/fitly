@@ -2,39 +2,53 @@
 
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
+import dayjs from 'dayjs';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import FormError from '@/components/errors/formError/formError';
-import { HowActive, Sex, User } from '@/types-old/users';
-import Card from '@/components/cards/card';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { CalendarIcon } from 'lucide-react';
+import { User } from '@/types-old/users';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { updateProfile } from '@/requests/profile';
+import { updateUserSchema } from '@/lib/validation/user';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger
+} from '@/components/ui/popover';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { Calendar } from '@/components/ui/calendar';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select';
 
 export function UserSettings({ profile }: { profile: User }) {
   const t = useTranslations('Common');
   const router = useRouter();
-  const schema = yup
-    .object({
-      height: yup.number().min(0, t('errors.isNotNumber')),
-      weight: yup.number().min(0, t('errors.isNotNumber')),
-      birthday: yup.string(),
-      sex: yup.string<Sex>().oneOf(['male', 'female']),
-      howActive: yup
-        .string<HowActive>()
-        .oneOf(['sedentary', 'light', 'moderate', 'active', 'very_active'])
-    })
-    .required();
+  const schema = updateUserSchema(t);
 
-  type Inputs = yup.InferType<typeof schema>;
+  type Inputs = z.infer<typeof schema>;
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors }
-  } = useForm<Inputs>({
-    resolver: yupResolver(schema),
+  const form = useForm<Inputs>({
+    resolver: zodResolver(schema),
     defaultValues: profile
   });
+
+  const { handleSubmit } = form;
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     await updateProfile(data);
@@ -43,110 +57,152 @@ export function UserSettings({ profile }: { profile: User }) {
 
   return (
     <Card>
-      <h2 className="text-lg font-semibold mb-4">Personal Information</h2>
-
-      <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label
-              htmlFor="height"
-              className="block text-md font-medium textforeground-secondary"
-            >
-              Height (cm)
-              <input
-                id="height"
-                type="number"
-                className="mt-1 block bg-secondary w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                {...register('height', {
-                  required: true
-                })}
+      <CardHeader>
+        <CardTitle className="text-lg font-semibold mb-4">
+          Personal Information
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Form {...form}>
+          <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="height"
+                render={({ field }) => {
+                  return (
+                    <FormItem className="gap-2">
+                      <FormLabel>Height (cm)</FormLabel>
+                      <FormControl>
+                        <Input id="height" type="number" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
               />
-            </label>
-          </div>
-          <div>
-            <label
-              htmlFor="weight"
-              className="block text-md font-medium textforeground-secondary"
-            >
-              Weight (kg)
-              <input
-                id="weight"
-                type="number"
-                className="mt-1 block bg-secondary w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                {...register('weight', {
-                  required: true
-                })}
+              <FormField
+                control={form.control}
+                name="weight"
+                render={({ field }) => {
+                  return (
+                    <FormItem className="gap-2">
+                      <FormLabel>Weight (kg)</FormLabel>
+                      <FormControl>
+                        <Input id="weight" type="number" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
               />
-            </label>
-          </div>
-        </div>
-
-        <div>
-          <label
-            htmlFor="birthday"
-            className="block text-md font-medium textforeground-secondary"
-          >
-            Birthday
-            <input
-              id="birthday"
-              type="date"
-              {...register('birthday', {
-                required: true
-              })}
-              defaultValue={new Date(profile.birthday!).toLocaleDateString()}
-              className="mt-1 block bg-secondary w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            </div>
+            <FormField
+              control={form.control}
+              name="birthday"
+              render={({ field }) => {
+                return (
+                  <FormItem className="gap-2">
+                    <FormLabel>Birthday</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              'pl-3 text-left font-normal',
+                              !field.value && 'text-muted-foreground'
+                            )}
+                          >
+                            {field.value ? (
+                              dayjs(field.value).format('MMMM D, YYYY')
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          disabled={(date) =>
+                            date > new Date() || date < new Date('1900-01-01')
+                          }
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
             />
-          </label>
-        </div>
-
-        <div>
-          <label
-            htmlFor="sex"
-            className="block text-md font-medium textforeground-secondary"
-          >
-            Sex
-            <select
-              id="sex"
-              className="mt-1 block bg-secondary w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-              {...register('sex', {
-                required: true
-              })}
-            >
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-            </select>
-          </label>
-        </div>
-
-        <div>
-          <label
-            htmlFor="howActive"
-            className="block text-md font-medium textforeground-secondary"
-          >
-            Activity Level
-            <select
-              id="howActive"
-              className="mt-1 block bg-secondary w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-              {...register('howActive', {
-                required: true
-              })}
-            >
-              <option value="sedentary">Sedentary</option>
-              <option value="light">Light Exercise</option>
-              <option value="moderate">Moderate Exercise</option>
-              <option value="active">Active</option>
-              <option value="very_active">Very Active</option>
-            </select>
-          </label>
-        </div>
-
-        <button
-          type="submit"
-          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-        >
-          Save Changes
-        </button>
-      </form>
+            <FormField
+              control={form.control}
+              name="sex"
+              render={({ field }) => {
+                return (
+                  <FormItem className="gap-2">
+                    <FormLabel>Sex</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select your sex" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="male">Male</SelectItem>
+                        <SelectItem value="female">Female</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <FormField
+              control={form.control}
+              name="howActive"
+              render={({ field }) => {
+                return (
+                  <FormItem className="gap-2">
+                    <FormLabel>Activity Level</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select your activity level" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="sedentary">Sedentary</SelectItem>
+                        <SelectItem value="light">Light Exercise</SelectItem>
+                        <SelectItem value="moderate">
+                          Moderate Exercise
+                        </SelectItem>
+                        <SelectItem value="active">Active</SelectItem>
+                        <SelectItem value="very_active">Very Active</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <Button type="submit" className="w-full">
+              Save Changes
+            </Button>
+          </form>
+        </Form>
+      </CardContent>
     </Card>
   );
 }

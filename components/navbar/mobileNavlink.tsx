@@ -15,7 +15,7 @@ const MobileNavLink = ({
     <Link
       {...linkProps}
       className={`flex flex-col items-center ${
-        pathname === path ? 'text-primary' : 'text-foreground-secondary'
+        pathname.includes(path) ? 'text-primary' : 'text-foreground-secondary'
       }`}
     >
       {children}

@@ -6,6 +6,7 @@ import { getSubscription } from '@/requests/subscription';
 import { ModeToggle } from '../mode-toggle/mode-toggle';
 import { Button } from '../ui/button';
 import LocaleToggle from '../locale-toggle/locale-toggle';
+import GoBack from '../go-back/go-back';
 
 type LinkProps = {
   name: string;
@@ -46,6 +47,7 @@ const Navbar = async ({ locale }: { locale: string }) => {
   return (
     <nav className="flex items-center bg-background h-20 drop-shadow-md">
       <div className="w-full mx-8 flex justify-between items-center text-sm">
+        <GoBack />
         <Link href="/" className="font-semibold text-xl">
           FitLy
         </Link>

@@ -1,12 +1,24 @@
+import { FlameIcon } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
-import { Day } from '@/types';
+import { Day, IMealPlan } from '@/types';
 
 export default async function WeekDays({
   selectedDay,
-  planId
+  planId,
+  mealPlan
 }: {
   selectedDay: Day;
   planId: string;
+  mealPlan: IMealPlan & {
+    macros: {
+      [x: string]: {
+        calories: number;
+        protein: number;
+        carbs: number;
+        fat: number;
+      };
+    };
+  };
 }) {
   const days = [
     { label: 'Monday', value: 'monday' },
@@ -42,8 +54,36 @@ export default async function WeekDays({
             } ${index === 1 || index === 5 ? 'hidden md:block' : ''} ${index === 6 || index === 0 ? 'hidden xl:block' : ''}`}
           >
             <p className="text-lg md:text-lg xl:text-xl font-medium sm:mt-1 truncate">
-              {day.label}
+              {day.label}{' '}
             </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-4 justify-between">
+              <div className="flex justify-center items-center">
+                <span>
+                  {mealPlan.macros[day.value]
+                    ? mealPlan.macros[day.value].calories
+                    : 0}
+                </span>
+                <FlameIcon className="w-4 h-4 min-w-4 min-h-4" />
+              </div>
+              <span>
+                {mealPlan.macros[day.value]
+                  ? mealPlan.macros[day.value].protein
+                  : 0}
+                P
+              </span>
+              <span>
+                {mealPlan.macros[day.value]
+                  ? mealPlan.macros[day.value].carbs
+                  : 0}
+                C
+              </span>
+              <span>
+                {mealPlan.macros[day.value]
+                  ? mealPlan.macros[day.value].fat
+                  : 0}
+                F
+              </span>
+            </div>
           </Link>
         );
       })}

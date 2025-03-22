@@ -11,7 +11,8 @@ import {
   Legend,
   ResponsiveContainer
 } from 'recharts';
-import Card from '@/components/cards/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
 export function WeightTracker() {
   const weightData = Array.from(Array(30).keys())
@@ -29,14 +30,13 @@ export function WeightTracker() {
 
   return (
     <Card>
-      <div className="flex justify-between items-center mb-6">
+      <CardHeader className="flex flex-row justify-between items-center mb-6">
         <h2 className="text-lg font-semibold">Weight History</h2>
-        <button type="button" className="btn btn-primary text-white">
+        <Button type="button" className="btn text-white">
           Log Weight
-        </button>
-      </div>
-
-      <div className="h-64">
+        </Button>
+      </CardHeader>
+      <CardContent className="h-64">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
             data={weightData}
@@ -68,7 +68,7 @@ export function WeightTracker() {
             />
           </LineChart>
         </ResponsiveContainer>
-      </div>
+      </CardContent>
     </Card>
   );
 }

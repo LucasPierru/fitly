@@ -1,7 +1,7 @@
-import { Suspense } from 'react';
+import dayjs from 'dayjs';
 import DayMeals from './dayMeals/dayMeals';
 import WeekDays from './week-days/week-days';
-import { getMealPlan } from '@/requests/meal-plan';
+import { getMealPlanMetadata } from '@/requests/meal-plan';
 import PlanMetadata from './plan-metadata/plan-metadata';
 import { Day } from '@/types';
 
@@ -15,7 +15,8 @@ export default async function PlanPage({
   const { planId } = params;
   const { day } = searchParams;
 
-  const { mealPlan } = await getMealPlan(planId, day);
+  const { mealPlan } = await getMealPlanMetadata(planId);
+  const today = dayjs().format('dddd').toLowerCase();
 
   return (
     <div className="space-y-6 px-4 sm:px-6 min-h-screen lg:px-8 py-4 sm:py-6 lg:py-8 bg-background">
@@ -26,8 +27,12 @@ export default async function PlanPage({
           description={mealPlan?.description!}
         />
       </div>
-      <WeekDays selectedDay={day || 'monday'} planId={planId} />
-      <DayMeals mealPlanMeals={mealPlan!.meals} />
+      <WeekDays
+        selectedDay={day || today}
+        planId={planId}
+        mealPlan={mealPlan!}
+      />
+      <DayMeals planId={planId} day={day || today} />
     </div>
   );
 }

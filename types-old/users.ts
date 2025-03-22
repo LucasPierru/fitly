@@ -21,7 +21,7 @@ export type User = {
   confirmPassword: string;
   height?: number;
   weight?: number;
-  birthday?: string;
+  birthday?: Date;
   sex?: Sex;
   howActive?: HowActive;
   goal?: Goal;
