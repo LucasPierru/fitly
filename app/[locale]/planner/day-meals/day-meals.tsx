@@ -6,18 +6,15 @@ import {
   CardTitle
 } from '@/components/ui/card';
 import { getMeals } from '@/requests/meal';
-import MealCard from '../../meal-card/meal-card';
-import { Day, IMeal } from '@/types';
+import { IMeal, IMealPlan, ISavedMealPlan } from '@/types';
 import MinMealCard from '@/components/mealCard/min-meal-card/min-meal-card';
-import { getSavedMealPlan } from '@/requests/meal-plan';
-import AddMealDialog from '../../add-meal-dialog/add-meal-dialog';
+import AddMealDialog from '../add-meal-dialog/add-meal-dialog';
+import MealCard from '../meal-card/meal-card';
 
 export default async function DayMeals({
-  planId,
-  day
+  mealPlan
 }: {
-  planId: string;
-  day: Day;
+  mealPlan: IMealPlan | ISavedMealPlan;
 }) {
   const timeSlots = [
     { time: '08:00', name: 'Breakfast', value: 'breakfast' },
@@ -27,13 +24,9 @@ export default async function DayMeals({
   ];
 
   const { meals } = await getMeals({});
-  const { savedMealPlan } = await getSavedMealPlan(planId, day);
 
   const filteredMeals = (time: string) => {
-    return (
-      savedMealPlan &&
-      savedMealPlan.meals.filter((meal) => meal.dishType === time)
-    );
+    return mealPlan && mealPlan.meals.filter((meal) => meal.dishType === time);
   };
 
   return (

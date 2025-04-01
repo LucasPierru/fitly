@@ -4,6 +4,7 @@ export type { IIngredient } from './ingredients.types';
 export type { IIngredientCategory } from './ingredientCategories.types';
 export type { IMeal } from './meals.types';
 export type { IMealPlan } from './mealPlans.types';
+export type { ISavedMealPlan } from './savedMealPlans.types';
 export type { IUserMeal } from './userMeals.types';
 export type { IWeightLog } from './weightLogs.types';
 export type { IFoodLog } from './foodLogs.types';

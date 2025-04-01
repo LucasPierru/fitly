@@ -1,4 +1,5 @@
 import React from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export function DailyProgress() {
   const goals = {
@@ -9,9 +10,13 @@ export function DailyProgress() {
   };
 
   return (
-    <>
-      <h2 className="text-lg font-semibold mb-4">Today&apos;s Progress</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+    <Card className="col-span-full">
+      <CardHeader>
+        <CardTitle className="text-lg font-semibold mb-4">
+          Today&apos;s Progress
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
         {Object.entries(goals).map(([nutrient, { current, target, unit }]) => (
           <div key={nutrient} className="space-y-2">
             <div className="flex justify-between text-md">
@@ -29,7 +34,7 @@ export function DailyProgress() {
             </div>
           </div>
         ))}
-      </div>
-    </>
+      </CardContent>
+    </Card>
   );
 }

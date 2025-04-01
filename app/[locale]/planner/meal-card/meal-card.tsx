@@ -4,11 +4,15 @@ import Image from 'next/image';
 import { Clock, EditIcon, Plus } from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import dayjs from 'dayjs';
 import getImage from '@/lib/storage';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { IMeal } from '@/types';
-import { addMealToMealPlan } from '@/requests/meal-plan';
+import {
+  addMealToMealPlan,
+  addMealToSavedMealPlan
+} from '@/requests/meal-plan';
 import { DialogClose } from '@/components/ui/dialog';
 
 type MealCardProps = {
@@ -38,9 +42,12 @@ const MealCard = ({ meal, time }: MealCardProps) => {
     fetchImage();
   }, []);
 
-  const params = useParams();
+  const { planId } = useParams();
   const searchParams = useSearchParams();
-  const day = searchParams.get('day') || 'monday';
+  const day =
+    dayjs(searchParams.get('start')).format('dddd').toLowerCase() ||
+    searchParams.get('day') ||
+    'monday';
   const router = useRouter();
 
   const addMealAction = async () => {
@@ -51,11 +58,15 @@ const MealCard = ({ meal, time }: MealCardProps) => {
         day
       }
     ];
-    const { mealPlan } = await addMealToMealPlan({
-      _id: params.planId as string,
-      meals: newMeals
-    });
-    if (mealPlan) router.refresh();
+    const data = !planId
+      ? await addMealToMealPlan({
+          meals: newMeals
+        })
+      : await addMealToSavedMealPlan({
+          _id: planId as string,
+          meals: newMeals
+        });
+    if (!data.error) router.refresh();
   };
 
   return (

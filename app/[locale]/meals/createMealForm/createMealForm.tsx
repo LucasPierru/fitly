@@ -219,7 +219,7 @@ const CreateMealForm = () => {
   const onSelectIngredient = async (index: number, ingredient: IIngredient) => {
     const { _id, name, alternateUnits } = ingredient;
 
-    setValue(`ingredients.${index}.id`, _id);
+    setValue(`ingredients.${index}.id`, _id.toString());
     setValue(`ingredients.${index}.name`, capitalizeWord(name));
     setValue(`ingredients.${index}.alternateUnits`, alternateUnits);
 
@@ -498,6 +498,7 @@ const CreateMealForm = () => {
                                           onChange(e, ingredient.id, index)
                                         }
                                         className="mb-2"
+                                        autoComplete="off"
                                       />
                                     </FormControl>
                                     <FormMessage />
@@ -511,7 +512,7 @@ const CreateMealForm = () => {
                                       return (
                                         <Button
                                           // eslint-disable-next-line no-underscore-dangle
-                                          key={ingr._id}
+                                          key={ingr._id.toString()}
                                           type="button"
                                           variant="ghost"
                                           className="text-left block hover:bg-black/5 w-full rounded-none last:rounded-b-xl truncate min-h-fit"

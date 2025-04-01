@@ -16,21 +16,22 @@ const authMiddleware = async (request: NextRequest) => {
     const token = cookieStore.get('token');
     if (!token) {
       request.nextUrl.pathname = `/${defaultLocale}/login`;
+      return NextResponse.redirect(request.nextUrl);
     }
     const intlResponse = intlMiddleware(request);
     intlResponse.headers.set('x-default-locale', defaultLocale);
 
-    const { subscription, error } = await getSubscription();
-
+    /* const { subscription, error } = await getSubscription();
+    console.log({ subscription, error });
     if (error) {
       request.nextUrl.pathname = `/${defaultLocale}`;
       return NextResponse.redirect(request.nextUrl);
     }
 
-    if (subscription.status !== 'active') {
-      request.nextUrl.pathname = `/${defaultLocale}`;
+    if (!subscription || subscription.status !== 'active') {
+      request.nextUrl.pathname = `/${defaultLocale}/signup/subscribe`;
       return NextResponse.redirect(request.nextUrl);
-    }
+    } */
 
     return intlResponse;
   } catch (error) {

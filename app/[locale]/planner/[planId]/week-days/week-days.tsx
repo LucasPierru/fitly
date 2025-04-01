@@ -1,6 +1,6 @@
 import { FlameIcon } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
-import { Day, IMealPlan } from '@/types';
+import { Day, ISavedMealPlan } from '@/types';
 
 export default async function WeekDays({
   selectedDay,
@@ -9,7 +9,7 @@ export default async function WeekDays({
 }: {
   selectedDay: Day;
   planId: string;
-  mealPlan: IMealPlan & {
+  mealPlan: ISavedMealPlan & {
     macros: {
       [x: string]: {
         calories: number;

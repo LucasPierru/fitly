@@ -5,7 +5,10 @@ import { Types } from 'mongoose';
 import { useParams, useRouter } from 'next/navigation';
 import { XIcon, LoaderCircleIcon } from 'lucide-react';
 import { IMeal } from '@/types';
-import { removeMealFromMealPlan } from '@/requests/meal-plan';
+import {
+  removeMealFromMealPlan,
+  removeMealFromSavedMealPlan
+} from '@/requests/meal-plan';
 import { Button } from '@/components/ui/button';
 
 const MinMealCard = ({
@@ -49,12 +52,15 @@ const MinMealCard = ({
             type="button"
             onClick={async () => {
               setIsLoading(true);
-              const mealToDelete = {
-                mealPlanId: planId as string,
-                mealPlanMealId: mealPlanMealId.toString()
-              };
-              const { mealPlan } = await removeMealFromMealPlan(mealToDelete);
-              if (mealPlan) {
+              const data = planId
+                ? await removeMealFromSavedMealPlan({
+                    mealPlanId: planId as string,
+                    mealPlanMealId: mealPlanMealId.toString()
+                  })
+                : await removeMealFromMealPlan({
+                    mealPlanMealId: mealPlanMealId.toString()
+                  });
+              if (!data.error) {
                 router.refresh();
               }
             }}

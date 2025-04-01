@@ -5,7 +5,7 @@ import { useRef, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useRouter } from '@/i18n/navigation';
 import { Input } from '@/components/ui/input';
-import { updateMealPlan } from '@/requests/meal-plan';
+import { saveMealPlan } from '@/requests/meal-plan';
 import { Button } from '@/components/ui/button';
 
 const EditMetadata = ({
@@ -48,7 +48,7 @@ const EditMetadata = ({
             size="icon"
             variant="outline"
             onClick={async () => {
-              await updateMealPlan({
+              await saveMealPlan({
                 _id: id,
                 [name]: inputRef.current?.value
               });

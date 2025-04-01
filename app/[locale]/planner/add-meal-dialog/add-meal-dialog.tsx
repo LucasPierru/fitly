@@ -11,7 +11,7 @@ import {
   DialogTrigger
 } from '@/components/ui/dialog';
 
-const AddMeal = ({ children }: { children: ReactNode }) => {
+const AddMealDialog = ({ children }: { children: ReactNode }) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -36,4 +36,4 @@ const AddMeal = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export default AddMeal;
+export default AddMealDialog;

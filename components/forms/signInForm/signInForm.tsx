@@ -25,21 +25,24 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
 const SignUpForm = () => {
-  const t = useTranslations('Common');
+  const t = useTranslations();
   const router = useRouter();
 
   const schema = z
     .object({
       email: z
-        .string({ message: t('errors.isRequired') })
-        .email(t('errors.invalidEmail')),
-      password: z.string({ message: t('errors.isRequired') })
+        .string({ message: t('Common.errors.isRequired') })
+        .email(t('Common.errors.invalidEmail')),
+      password: z.string({ message: t('Common.errors.isRequired') })
     })
     .required();
 
   type Inputs = z.infer<typeof schema>;
 
-  const form = useForm<Inputs>({ resolver: zodResolver(schema) });
+  const form = useForm<Inputs>({
+    resolver: zodResolver(schema),
+    defaultValues: { email: '', password: '' }
+  });
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     const { token, message } = await login(data.email, data.password);
@@ -68,9 +71,7 @@ const SignUpForm = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg mx-auto">
-          Sign in to your account
-        </CardTitle>
+        <CardTitle className="text-lg mx-auto">{t('Login.title')}</CardTitle>
       </CardHeader>
       <CardContent>
         <Form {...form}>
