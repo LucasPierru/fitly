@@ -1,6 +1,5 @@
 import { XIcon } from 'lucide-react';
 import MealCard from '../../../components/mealCard/mealCard';
-import { getRecipes } from '@/actions/recipes';
 import SearchInput from '@/components/inputs/searchInput/searchInput';
 import CreateMealForm from './createMealForm/createMealForm';
 import { getMeals } from '@/requests/meal';
@@ -11,9 +10,9 @@ export default async function MealsPage({
 }: {
   searchParams: { query: string; filter: string };
 }) {
-  const { query, filter } = searchParams;
+  const { filter } = searchParams;
 
-  const recipes = await getRecipes(query);
+  // const recipes = await getRecipes(query);
   const { meals } = await getMeals(searchParams);
 
   return (
@@ -54,18 +53,13 @@ export default async function MealsPage({
           </Link>
         )}
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {meals &&
           meals.map((meal) => {
             return (
               <MealCard
                 key={meal._id.toString()}
-                id={meal._id}
-                title={meal.title}
-                description={meal.description}
-                image={meal.image}
-                readyInMinutes={meal.cookingMinutes + meal.preparationMinutes}
-                macros={meal.nutrition}
+                meal={meal}
                 isOwner={meal.isOwner}
               >
                 {' '}

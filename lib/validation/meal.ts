@@ -74,7 +74,7 @@ export const formMealSchema = (t: (arg: string) => string) =>
             .optional(),
           quantity: z.coerce
             .number()
-            .min(1, { message: t('errors.isNotPositive') }),
+            .min(0, { message: t('errors.isNotPositive') }),
           unit: z.string().nonempty({ message: t('errors.isRequired') })
         })
       )
@@ -119,7 +119,7 @@ export const createMealSchema = z.object({
     .array(
       z.object({
         ingredient: z.string().nonempty(),
-        quantity: z.number().min(1),
+        quantity: z.number().min(0),
         unit: z.string().nonempty()
       })
     )

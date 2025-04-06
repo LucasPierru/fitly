@@ -32,20 +32,28 @@ const MinMealCard = ({
             <span className="text-base mb-2 block truncate line-clamp-1">
               {meal?.title}
             </span>
-            <span>{meal.nutrition.calories}kcal</span>
+            <span>
+              {Math.round(meal.nutrition.calories / meal.servings)}kcal
+            </span>
           </div>
           <div className="flex gap-2 text-md justify-between">
             <div>
               <span className="text-gray-500">Protein</span>
-              <p className="font-medium">{meal.nutrition.protein}g</p>
+              <p className="font-medium">
+                {Math.round(meal.nutrition.protein / meal.servings)}g
+              </p>
             </div>
             <div>
               <span className="text-gray-500">Carbs</span>
-              <p className="font-medium">{meal.nutrition.carbs}g</p>
+              <p className="font-medium">
+                {Math.round(meal.nutrition.carbs / meal.servings)}g
+              </p>
             </div>
             <div>
               <span className="text-gray-500">Fat</span>
-              <p className="font-medium">{meal.nutrition.fat}g</p>
+              <p className="font-medium">
+                {Math.round(meal.nutrition.fat / meal.servings)}g
+              </p>
             </div>
           </div>
           <Button

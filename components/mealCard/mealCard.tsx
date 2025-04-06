@@ -1,33 +1,30 @@
 import { ReactNode } from 'react';
 import Image from 'next/image';
-import { Types } from 'mongoose';
 import { Clock, EditIcon } from 'lucide-react';
 import getImage from '@/lib/storage';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { IMeal } from '@/types';
 
 type MealCardProps = {
-  id: Types.ObjectId;
-  title: string;
-  description: string;
-  image: string;
-  readyInMinutes: number;
-  macros: { calories: number; protein: number; carbs: number; fat: number };
+  meal: IMeal;
   isOwner: boolean;
   children: ReactNode;
 };
 
-const MealCard = async ({
-  id,
-  title,
-  description,
-  image,
-  readyInMinutes,
-  macros,
-  isOwner,
-  children
-}: MealCardProps) => {
-  const imageData = await getImage(id.toString(), image);
+const MealCard = async ({ meal, isOwner, children }: MealCardProps) => {
+  const {
+    _id,
+    image,
+    title,
+    description,
+    cookingMinutes,
+    preparationMinutes,
+    servings,
+    nutrition
+  } = meal;
+
+  const imageData = await getImage(_id.toString(), image);
 
   return (
     <Card>
@@ -50,26 +47,43 @@ const MealCard = async ({
       </div>
       <div className="p-4">
         <h3 className="font-semibold text-lg truncate">{title}</h3>
-        <p className="text-md text-gray-500 mt-1 truncate">{description}</p>
+        <p className="text-md text-muted-foreground mt-1 line-clamp-2">
+          {description}
+        </p>
         <div className="mt-4 flex items-center justify-between text-md">
-          <div className="flex items-center gap-2 text-gray-500">
+          <div className="flex items-center gap-2 text-muted-foreground">
             <Clock className="h-4 w-4" />
-            <span>{readyInMinutes} min</span>
+            <span>{cookingMinutes + preparationMinutes} min</span>
           </div>
-          <span className="font-medium">{macros.calories} kcal</span>
+          <span className="font-medium">{servings} servings</span>
         </div>
+        <span className="block font-semibold mt-4">
+          Nutrition facts (per serving)
+        </span>
         <div className="mt-4 flex gap-2 text-md justify-between">
           <div>
-            <span className="text-gray-500">Protein</span>
-            <p className="font-medium">{macros.protein}g</p>
+            <span className="text-muted-foreground">Calories</span>
+            <p className="font-medium">
+              {Math.round(nutrition.calories / servings)}kcal
+            </p>
           </div>
           <div>
-            <span className="text-gray-500">Carbs</span>
-            <p className="font-medium">{macros.carbs}g</p>
+            <span className="text-muted-foreground">Protein</span>
+            <p className="font-medium">
+              {Math.round(nutrition.protein / servings)}g
+            </p>
           </div>
           <div>
-            <span className="text-gray-500">Fat</span>
-            <p className="font-medium">{macros.fat}g</p>
+            <span className="text-muted-foreground">Carbs</span>
+            <p className="font-medium">
+              {Math.round(nutrition.carbs / servings)}g
+            </p>
+          </div>
+          <div>
+            <span className="text-muted-foreground">Fat</span>
+            <p className="font-medium">
+              {Math.round(nutrition.fat / servings)}g
+            </p>
           </div>
         </div>
         {children}

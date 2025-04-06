@@ -183,7 +183,12 @@ const CreateMealForm = () => {
       isApproved: false
     };
     const { meal } = await createMeal(newMeal);
-    router.refresh();
+    if (meal) {
+      setIsOpen(false);
+      setImage(null);
+      reset();
+      router.refresh();
+    }
   };
 
   const onClose = () => {
@@ -570,7 +575,14 @@ const CreateMealForm = () => {
                                         .getValues()
                                         .ingredients?.[
                                           index
-                                        ].alternateUnits?.map((unit) => <SelectItem value={unit.unit}>{unit.unit}</SelectItem>)}
+                                        ].alternateUnits?.map((unit) => (
+                                          <SelectItem
+                                            key={unit.unit}
+                                            value={unit.unit}
+                                          >
+                                            {unit.unit}
+                                          </SelectItem>
+                                        ))}
                                     </SelectContent>
                                   </Select>
                                   <FormMessage />
